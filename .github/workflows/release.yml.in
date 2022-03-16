@@ -79,9 +79,9 @@ jobs:
           from commitizen.bump import update_version_in_files
           update_version_in_files({% raw %}
               current_version='${{ env.cur_pre_tag }}'.lstrip('v'),
-              new_version='${{ env.cur_tag }}'.lstrip('v'),
-              files=['pyproject.toml', 'hpcflow/_version.py'],
-          )"{% endraw %}
+              new_version='${{ env.cur_tag }}'.lstrip('v'),{% endraw %}
+              files=['pyproject.toml', '{{ version_file }}'],
+          )"
           cz bump
 
       - name: Get new tag
@@ -285,17 +285,17 @@ jobs:
         with:
           body_path: release-artifacts/CHANGELOG_increment/CHANGELOG_increment.md
           tag_name: {% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}
-          files: release-artifacts/hpcflow-*/*
+          files: release-artifacts/{{ executable_name }}-*/*
           prerelease: {{ '${{' }} github.event.pull_request.base.ref == '{{ pre_release_branch }}' {{ '}}' }}
-{% raw %}
+
       - name: Release info
         id: get_binary_download_links
         run: |
           binaryYaml=$(python3 -c "
           from pathlib import Path
           out_yaml = ''
-          for i in Path('release-artifacts').glob('*/hpcflow*'):
-            out_yaml += str(i.name) + ': https://github.com/hpcflow/hpcflow-new/releases/download/${{ needs.bump-version.outputs.new_tag_name }}'
+          for i in Path('release-artifacts').glob('*/{{ executable_name }}*'):
+            out_yaml += str(i.name) + ': https://github.com/{{ org }}/{{ repo }}/releases/download/{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}'
             out_yaml += f'/{str(i.name)}\n'
           print(out_yaml)
           ")
@@ -304,7 +304,7 @@ jobs:
           binaryYaml="${binaryYaml//$'\n'/'%0A'}"
           binaryYaml="${binaryYaml//$'\r'/'%0D'}"
           echo "::set-output name=binary_download_links::$binaryYaml"
-{% endraw %}
+
       - name: Publish (to test PyPI)
         run: |
           poetry config repositories.pypi {{ PYPI_URL }} 
@@ -388,8 +388,8 @@ jobs:
 
       - uses: actions/checkout@v2
         with:
-          repository: hpcflow/hpcflow.github.io
-          token: {{ '${{' }} secrets.{{ token_name }} {{ '}}' }}
+          repository: {{ website_source_org }}/{{ website_source_repo }}
+          token: {{ '${{' }} secrets.{{ website_source_token_name }} {{ '}}' }}
 
       - run: |
           git config user.name {{ bot_account_name }}

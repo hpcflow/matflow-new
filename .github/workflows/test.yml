@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          # PAT of user (hpcflow-actions) who has permission to bypass branch
+          # PAT of user who has permission to bypass branch
           # protection || or standard GITHUB_TOKEN if running on an external fork (won't
           # be able to commit fixes):
           token: ${{ secrets.HPCFLOW_ACTIONS_TOKEN || secrets.GITHUB_TOKEN }}

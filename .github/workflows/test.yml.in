@@ -20,10 +20,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          # PAT of user (hpcflow-actions) who has permission to bypass branch
+          # PAT of user who has permission to bypass branch
           # protection || or standard GITHUB_TOKEN if running on an external fork (won't
           # be able to commit fixes):
-          token: {% raw %}${{ secrets.HPCFLOW_ACTIONS_TOKEN || secrets.GITHUB_TOKEN }}{% endraw %}
+          token: {{ '${{' }} secrets.{{ token_name }} {{ '|| secrets.GITHUB_TOKEN }}' }}
           # checkout PR source branch (head_ref) if event is pull_request:
           ref: {% raw %}${{ github.head_ref || github.ref }}{% endraw %}
 
