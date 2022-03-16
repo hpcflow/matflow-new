@@ -1,0 +1,34 @@
+style: github
+template: CHANGELOG.tpl.md
+info:
+  title: CHANGELOG
+  repository_url: https://github.com/hpcflow/matflow-new
+options:
+  commits:
+    filters:
+      Type:
+        - feat
+        - update
+        - perf
+        - fix
+        - refactor
+        - build
+        - chore
+  commit_groups:
+    title_maps:
+      feat: ✨ Features
+      fix: 🐛 Bug Fixes
+      perf: ⚡ Performance Improvements
+      refactor: ♻ Code Refactoring
+      update: 🔄 Updates
+      build: 👷 Build changes
+      chore: Other changes
+  header:
+    pattern: "^(\\w*)(?:\\(([\\w\\$\\.\\-\\*\\s]*)\\))?\\:\\s(.*)$"
+    pattern_maps:
+      - Type
+      - Scope
+      - Subject
+  notes:
+    keywords:
+      - BREAKING CHANGE
