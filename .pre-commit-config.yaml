@@ -1,0 +1,32 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+      - id: end-of-file-fixer
+        exclude: |
+          (?x)^(
+            CHANGELOG.tpl.md|
+            CHANGELOG.md|
+            CHANGELOG-dev.md
+          )$
+      - id: check-yaml
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: no-commit-to-branch
+        args: [--branch=main, --branch=develop]
+        exclude: |
+          (?x)^(
+            CHANGELOG.md|
+            CHANGELOG-dev.md
+          )$
+        always_run: false # required to respect exclude
+  - repo: https://github.com/psf/black
+    rev: 19.3b0
+    hooks:
+      - id: black
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v1.2.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: [] # optional: list of Conventional Commits types to allow
