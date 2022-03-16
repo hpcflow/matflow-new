@@ -1,6 +1,6 @@
 <img src="docs/source/_static/images/logo-90dpi.png" width="250" alt="MatFlow logo"/>
 
-**Design, run, and share computational materials science workflows with MatFlow**
+**Design, run, and share computational materials science workflows**
 
 Documentation: [https://hpcflow.github.io/matflow/docs](https://hpcflow.github.io/matflow/docs)
 
