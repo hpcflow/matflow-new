@@ -1,6 +1,7 @@
 import click
 
-from matflow import MatFlow, __version__
+from matflow import MatFlow
+from matflow._version import __version__
 
 
 cli = MatFlow.CLI
