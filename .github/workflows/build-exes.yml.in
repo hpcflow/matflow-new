@@ -1,0 +1,109 @@
+name: build-exes
+
+env:
+  PYTHON_VERSION_BUILD_EXES: 3.9
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-executables:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2019, macos-10.15]
+        include:
+          - os: windows-2019
+            executable_ext: .exe
+            executable_os: win
+          - os: macos-10.15
+            executable_ext: ""
+            executable_os: macOS
+
+    runs-on: {% raw %}${{ matrix.os }}{% endraw %}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # get all history and tags
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: {% raw %}${{ env.PYTHON_VERSION_BUILD_EXES }}{% endraw %}
+
+      - name: Cache the virtualenv
+        uses: actions/cache@v2
+        with:
+          path: ./.venv
+          key: {% raw %}venv-${{ matrix.os }}-${{ hashFiles('**/poetry.lock') }}{% endraw %}
+
+      - name: Install poetry
+        run: python -m pip install poetry==1.1.11
+
+      - name: Configure poetry
+        run: poetry config virtualenvs.in-project true
+
+      - name: Install dependencies
+        run: |
+          poetry install --no-dev
+          poetry run pip install pyinstaller
+
+      - name: Get exectuable version name
+        run: |
+          vers=$(git describe --tags)
+          echo "vers is: $vers"
+          echo "vers=$vers" >> $GITHUB_ENV
+
+      - name: Build with pyinstaller for {% raw %}${{matrix.executable_os}}{% endraw %}
+        run: poetry run pyinstaller {{ pyinstaller_package }} --name={{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %} --onefile
+
+      - name: Rename executable for {% raw %}${{matrix.executable_os}}{% endraw %}
+        run: mv dist/{{ executable_name }}-{% raw %}${{ env.vers }}${{ matrix.executable_ext }}{% endraw %} dist/{{ executable_name }}-{% raw %}${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %}
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: {{ executable_name }}-{% raw %}${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %}
+          path: dist/{{ executable_name }}-{% raw %}${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %}
+
+      - name: Basic executable test
+        run: dist/{{ executable_name }}-{% raw %}${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} --version
+
+  build-executables-linux:
+    runs-on: ubuntu-latest
+    container:
+      image: aplowman/centos7-poetry
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # get all history and tags
+
+      - name: Configure poetry
+        run: poetry config virtualenvs.in-project true
+
+      - name: Cache the virtualenv
+        uses: actions/cache@v2
+        with:
+          path: ./.venv
+          key: {% raw %}venv-CentOS-${{ hashFiles('**/poetry.lock') }}{% endraw %}
+
+      - name: Install dependencies
+        run: |
+          poetry install --no-dev
+          poetry run pip install pyinstaller
+
+      - name: Get exectuable version name
+        run: |
+          ls -la
+          vers=$(git describe --tags)
+          echo "vers is: $vers"
+          echo "vers=$vers" >> $GITHUB_ENV
+
+      - name: Build with pyinstaller for CentOS
+        run: poetry run pyinstaller {{ pyinstaller_package }} --name={{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux --onefile
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: {{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux
+          path: dist/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux
+
+      - name: Basic executable test
+        run: dist/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux --version

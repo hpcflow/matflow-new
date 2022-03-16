@@ -12,7 +12,7 @@ include = [
 
 [tool.poetry.dependencies]
 python = ">=3.7,<3.11"
-hpcflow = {path = "../hpcflow-new", develop = true}
+hpcflow = {git = "https://github.com/hpcflow/hpcflow-new.git", rev = "develop"}
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.12.2"
@@ -21,6 +21,13 @@ pytest = "^6.2.5"
 commitizen = "^2.20.3"
 pre-commit = "^2.16.0"
 black = "^21.12b0"
+Sphinx = "^4.4.0"
+pydata-sphinx-theme = "^0.8.0"
+sphinx-jinja = "^2.0.1"
+sphinx-copybutton = "^0.5.0"
+
+[tool.poetry.scripts]
+matflow = 'matflow.cli:cli'
 
 [tool.commitizen]
 name = "cz_conventional_commits"

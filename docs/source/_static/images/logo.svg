@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="79.212074mm"
+   height="26.888502mm"
+   viewBox="0 0 79.212074 26.888502"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04, custom)"
+   sodipodi:docname="logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="1"
+     inkscape:cx="251"
+     inkscape:cy="-57"
+     inkscape:window-width="1920"
+     inkscape:window-height="1137"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-paths="true"
+     inkscape:bbox-nodes="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:object-paths="true"
+     inkscape:snap-intersection-paths="true"
+     inkscape:snap-smooth-nodes="true"
+     inkscape:snap-midpoints="true"
+     inkscape:snap-object-midpoints="true"
+     inkscape:snap-center="true"
+     inkscape:snap-text-baseline="true"
+     inkscape:snap-global="false" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-47.203102,-125.85667)">
+    <g
+       id="g53118"
+       inkscape:export-filename="C:\Users\adamj\Dropbox (The University of Manchester)\code_db\python_dev\matflow-new\docs\source\_static\images\logo-50dpi.png"
+       inkscape:export-xdpi="50.066006"
+       inkscape:export-ydpi="50.066006">
+      <g
+         id="g43576-8"
+         transform="matrix(2.2744573,0,0,2.0968315,-35.244966,-387.93177)"
+         style="stroke-width:0.457909">
+        <path
+           style="fill:#3798c8;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.121155px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 40.581581,246.44424 -2.171984,6.67352 3.790969,3.59118 z"
+           id="path26644-4"
+           sodipodi:nodetypes="cccc" />
+        <path
+           style="fill:#3798c8;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.121155px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 40.983641,246.1762 1.618985,10.2647 2.102224,-7.51997 z"
+           id="path26646-7"
+           sodipodi:nodetypes="cccc" />
+      </g>
+      <text
+         xml:space="preserve"
+         style="font-size:11.9944px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#3798c8;fill-opacity:1;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="72.576477"
+         y="140.15158"
+         id="text32008"
+         transform="scale(0.97410583,1.0265825)"><tspan
+           sodipodi:role="line"
+           id="tspan32006"
+           style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:11.9944px;font-family:Montserrat;-inkscape-font-specification:'Montserrat Medium';fill:#3798c8;fill-opacity:1;stroke:none;stroke-width:0.264583px"
+           x="72.576477"
+           y="140.15158">Mat<tspan
+   style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Montserrat;-inkscape-font-specification:Montserrat"
+   id="tspan52616">Flow</tspan></tspan></text>
+      <rect
+         style="fill:none;stroke:none;stroke-width:0.1;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="rect52831"
+         width="79.212074"
+         height="26.888502"
+         x="47.203102"
+         y="125.85667"
+         inkscape:export-filename="C:\Users\adamj\Dropbox (The University of Manchester)\code_db\python_dev\hpcflow-new\docs\source\_static\images\logo.png"
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90" />
+    </g>
+  </g>
+</svg>

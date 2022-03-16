@@ -1,0 +1,109 @@
+name: build-exes
+
+env:
+  PYTHON_VERSION_BUILD_EXES: 3.9
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-executables:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2019, macos-10.15]
+        include:
+          - os: windows-2019
+            executable_ext: .exe
+            executable_os: win
+          - os: macos-10.15
+            executable_ext: ""
+            executable_os: macOS
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # get all history and tags
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.PYTHON_VERSION_BUILD_EXES }}
+
+      - name: Cache the virtualenv
+        uses: actions/cache@v2
+        with:
+          path: ./.venv
+          key: venv-${{ matrix.os }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install poetry
+        run: python -m pip install poetry==1.1.11
+
+      - name: Configure poetry
+        run: poetry config virtualenvs.in-project true
+
+      - name: Install dependencies
+        run: |
+          poetry install --no-dev
+          poetry run pip install pyinstaller
+
+      - name: Get exectuable version name
+        run: |
+          vers=$(git describe --tags)
+          echo "vers is: $vers"
+          echo "vers=$vers" >> $GITHUB_ENV
+
+      - name: Build with pyinstaller for ${{matrix.executable_os}}
+        run: poetry run pyinstaller matflow/cli.py --name=matflow-${{ env.vers }} --onefile
+
+      - name: Rename executable for ${{matrix.executable_os}}
+        run: mv dist/matflow-${{ env.vers }}${{ matrix.executable_ext }} dist/matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
+          path: dist/matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
+
+      - name: Basic executable test
+        run: dist/matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version
+
+  build-executables-linux:
+    runs-on: ubuntu-latest
+    container:
+      image: aplowman/centos7-poetry
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # get all history and tags
+
+      - name: Configure poetry
+        run: poetry config virtualenvs.in-project true
+
+      - name: Cache the virtualenv
+        uses: actions/cache@v2
+        with:
+          path: ./.venv
+          key: venv-CentOS-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: |
+          poetry install --no-dev
+          poetry run pip install pyinstaller
+
+      - name: Get exectuable version name
+        run: |
+          ls -la
+          vers=$(git describe --tags)
+          echo "vers is: $vers"
+          echo "vers=$vers" >> $GITHUB_ENV
+
+      - name: Build with pyinstaller for CentOS
+        run: poetry run pyinstaller matflow/cli.py --name=matflow-${{ env.vers }}-linux --onefile
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: matflow-${{ env.vers }}-linux
+          path: dist/matflow-${{ env.vers }}-linux
+
+      - name: Basic executable test
+        run: dist/matflow-${{ env.vers }}-linux --version

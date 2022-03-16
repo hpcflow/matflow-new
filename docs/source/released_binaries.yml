@@ -1,0 +1,3 @@
+matflow-v0.3.0-linux: https://github.com/hpcflow/hpcflow-new/releases/download/v0.73.0/hpcflow-v0.73.0-linux
+matflow-v0.3.0-macOS: https://github.com/hpcflow/hpcflow-new/releases/download/v0.73.0/hpcflow-v0.73.0-macOS
+matflow-v0.3.0-win.exe: https://github.com/hpcflow/hpcflow-new/releases/download/v0.73.0/hpcflow-v0.73.0-win.exe
