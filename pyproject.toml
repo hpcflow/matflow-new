@@ -12,8 +12,8 @@ include = [
 
 [tool.poetry.dependencies]
 python = ">=3.7,<3.11"
-hpcflow = {git = "https://github.com/hpcflow/hpcflow-new.git", rev = "develop"}
 pyinstaller = { version = "^4.10", optional = true}
+hpcflow = { url = "https://test-files.pythonhosted.org/packages/b3/d4/c7ae722aa403fe239e961d16bbc2656dd410dd141abea84a95b8616467df/hpcflow-0.79.0.tar.gz" }
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.12.2"
