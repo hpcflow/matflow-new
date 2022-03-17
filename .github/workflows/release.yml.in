@@ -18,7 +18,7 @@ jobs:
     if:
       | # skip if: trying to re-run; PR is closed without merging; '[skip release]' is in the PR title; or if merging any branch other than pre_release_branch into release_branch
       (
-        github.run_attempt == '1' 
+        github.run_attempt == '1'
         && github.event.pull_request.merged
         && ! contains(github.event.pull_request.title, '[skip release]')
         && (
@@ -298,7 +298,7 @@ jobs:
         id: download_executables
         with:
           path: release-artifacts
-      
+
       - name: Display structure of downloaded files
         run: ls -R
 
@@ -332,9 +332,9 @@ jobs:
           binaryYaml="${binaryYaml//$'\r'/'%0D'}"
           echo "::set-output name=binary_download_links::$binaryYaml"
 
-      - name: Publish (to test PyPI)
+      - name: Publish (to {{ PYPI_URL }})
         run: |
-          poetry config repositories.pypi {{ PYPI_URL }} 
+          poetry config repositories.pypi {{ PYPI_URL }}
           poetry config pypi-token.pypi {{ '${{' }} secrets.{{ PYPI_token_name }} {{ '}}' }}
           poetry publish --repository pypi
 
