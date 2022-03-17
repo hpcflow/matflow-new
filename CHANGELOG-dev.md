@@ -1,4 +1,17 @@
 
+<a name="v0.3.0a4"></a>
+## [v0.3.0a4](https://github.com/hpcflow/matflow-new/compare/v0.3.0a3...v0.3.0a4) - 2022.03.17
+
+### ✨ Features
+
+* test
+
+### 👷 Build changes
+
+* update website
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a3"></a>
 ## [v0.3.0a3](https://github.com/hpcflow/matflow-new/compare/v0.3.0a2...v0.3.0a3) - 2022.03.17
 
