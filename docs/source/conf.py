@@ -61,12 +61,12 @@ exclude_patterns = []
 #
 html_theme = "pydata_sphinx_theme"
 html_theme_options = {
-    "logo_link": "https://hpcflow.github.io/matflow",
+    "logo_link": "https://matflow.io",
     "github_url": "https://github.com/hpcflow/matflow-new",
     "external_links": [],
     "switcher": {
-        "json_url": "https://hpcflow.github.io/matflow/docs/switcher.json",
-        "url_template": "https://hpcflow.github.io/matflow/docs/v{version}/",
+        "json_url": "https://matflow.io/docs/switcher.json",
+        "url_template": "https://matflow.io/docs/v{version}/",
         "version_match": __version__,
     },
     "navbar_end": ["version-switcher", "navbar-icon-links.html"],
