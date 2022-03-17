@@ -43,26 +43,42 @@ jobs:
         run: poetry config virtualenvs.in-project true
 
       - name: Install dependencies
-        run: |
-          poetry install --no-dev
-          poetry run pip install pyinstaller
+        run: poetry install --no-dev --extras "pyinstaller"
 
-      - name: Get exectuable version name
+      - name: Get exectuable version name (non Windows)
+        if: "!contains(matrix.os, 'windows')"
         run: |
           vers=$(git describe --tags)
           echo "vers is: $vers"
           echo "vers=$vers" >> $GITHUB_ENV
 
-      - name: Build with pyinstaller for ${{matrix.executable_os}}
-        run: poetry run pyinstaller matflow/cli.py --name=matflow-${{ env.vers }} --onefile
+      - name: Get exectuable version name (Windows)
+        if: contains(matrix.os, 'windows')
+        run: |
+          $vers = git describe --tags
+          echo "vers is: $vers"
+          echo "vers=$vers" >> $env:GITHUB_ENV
 
-      - name: Rename executable for ${{matrix.executable_os}}
-        run: mv dist/matflow-${{ env.vers }}${{ matrix.executable_ext }} dist/matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
+      - name: Build with pyinstaller for ${{ matrix.executable_os }}
+        run: poetry run pyinstaller --name=matflow-${{ env.vers }}-${{ matrix.executable_os }} --onefile matflow/cli.py
 
-      - uses: actions/upload-artifact@v2
+      - name: Upload executable artifact
+        uses: actions/upload-artifact@v2
         with:
           name: matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
           path: dist/matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
+
+      - name: Upload spec file
+        uses: actions/upload-artifact@v2
+        with:
+          name: matflow-${{ env.vers }}-${{ matrix.executable_os }}.spec
+          path: matflow-${{ env.vers }}-${{ matrix.executable_os }}.spec
+
+      - name: Upload build directory
+        uses: actions/upload-artifact@v2
+        with:
+          name: matflow-${{ env.vers }}-${{ matrix.executable_os }}-build
+          path: build/matflow-${{ env.vers }}-${{ matrix.executable_os }}
 
       - name: Basic executable test
         run: dist/matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version
@@ -86,9 +102,7 @@ jobs:
           key: venv-CentOS-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install dependencies
-        run: |
-          poetry install --no-dev
-          poetry run pip install pyinstaller
+        run: poetry install --no-dev --extras "pyinstaller"
 
       - name: Get exectuable version name
         run: |
@@ -98,12 +112,25 @@ jobs:
           echo "vers=$vers" >> $GITHUB_ENV
 
       - name: Build with pyinstaller for CentOS
-        run: poetry run pyinstaller matflow/cli.py --name=matflow-${{ env.vers }}-linux --onefile
+        run: poetry run pyinstaller --name=matflow-${{ env.vers }}-linux --onefile matflow/cli.py
 
-      - uses: actions/upload-artifact@v2
+      - name: Upload executable artifact
+        uses: actions/upload-artifact@v2
         with:
           name: matflow-${{ env.vers }}-linux
           path: dist/matflow-${{ env.vers }}-linux
+
+      - name: Upload spec file
+        uses: actions/upload-artifact@v2
+        with:
+          name: matflow-${{ env.vers }}-linux.spec
+          path: matflow-${{ env.vers }}-linux.spec
+
+      - name: Upload build directory
+        uses: actions/upload-artifact@v2
+        with:
+          name: matflow-${{ env.vers }}-linux-build
+          path: build/matflow-${{ env.vers }}-linux
 
       - name: Basic executable test
         run: dist/matflow-${{ env.vers }}-linux --version

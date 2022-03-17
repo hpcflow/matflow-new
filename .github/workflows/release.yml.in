@@ -16,9 +16,10 @@ on:
 jobs:
   bump-version:
     if:
-      | # skip if: PR is closed without merging; '[skip release]' is in the PR title; or if merging any branch other than pre_release_branch into release_branch
+      | # skip if: trying to re-run; PR is closed without merging; '[skip release]' is in the PR title; or if merging any branch other than pre_release_branch into release_branch
       (
-        github.event.pull_request.merged
+        github.run_attempt == '1'
+        && github.event.pull_request.merged
         && ! contains(github.event.pull_request.title, '[skip release]')
         && (
           github.event.pull_request.base.ref == '{{ pre_release_branch }}' || (
@@ -180,20 +181,28 @@ jobs:
         run: poetry config virtualenvs.in-project true
 
       - name: Install dependencies
-        run: |
-          poetry install --no-dev
-          poetry run pip install pyinstaller
+        run: poetry install --no-dev --extras "pyinstaller"
 
-      - name: Build with pyinstaller for {% raw %}${{matrix.executable_os}}{% endraw %}
-        run: poetry run pyinstaller {{ pyinstaller_package }} --name={{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %} --onefile
+      - name: Build with pyinstaller for {% raw %}${{ matrix.executable_os }}{% endraw %}
+        run: poetry run pyinstaller --name={{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %} --onefile {{ pyinstaller_package }}
 
-      - name: Rename executable for {% raw %}${{matrix.executable_os}}{% endraw %}
-        run: mv dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}${{ matrix.executable_ext }}{% endraw %} dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %}
-
-      - uses: actions/upload-artifact@v2
+      - name: Upload executable artifact
+        uses: actions/upload-artifact@v2
         with:
           name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %}
           path: dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %}
+
+      - name: Upload spec file
+        uses: actions/upload-artifact@v2
+        with:
+          name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %}.spec
+          path: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %}.spec
+
+      - name: Upload build directory
+        uses: actions/upload-artifact@v2
+        with:
+          name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %}-build
+          path: build/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %}
 
       - name: Basic executable test
         run: dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} --version
@@ -218,17 +227,28 @@ jobs:
           key: {% raw %}venv-CentOS-${{ hashFiles('**/poetry.lock') }}{% endraw %}
 
       - name: Install dependencies
-        run: |
-          poetry install --no-dev
-          poetry run pip install pyinstaller
+        run: poetry install --no-dev --extras "pyinstaller"
 
       - name: Build with pyinstaller for CentOS
-        run: poetry run pyinstaller {{ pyinstaller_package }} --name={{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux --onefile
+        run: poetry run pyinstaller --name={{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux --onefile {{ pyinstaller_package }}
 
-      - uses: actions/upload-artifact@v2
+      - name: Upload executable artifact
+        uses: actions/upload-artifact@v2
         with:
           name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux
           path: dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux
+
+      - name: Upload spec file
+        uses: actions/upload-artifact@v2
+        with:
+          name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux.spec
+          path: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux.spec
+
+      - name: Upload build directory
+        uses: actions/upload-artifact@v2
+        with:
+          name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux-build
+          path: build/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux
 
       - name: Basic executable test
         run: dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux --version
@@ -279,13 +299,19 @@ jobs:
         with:
           path: release-artifacts
 
+      - name: Display structure of downloaded files
+        run: ls -R
+
       - name: Release
         id: release
         uses: softprops/action-gh-release@v1
         with:
           body_path: release-artifacts/CHANGELOG_increment/CHANGELOG_increment.md
           tag_name: {% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}
-          files: release-artifacts/{{ executable_name }}-*/*
+          files: |
+            **/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-win.exe
+            **/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-macOS
+            **/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux
           prerelease: {{ '${{' }} github.event.pull_request.base.ref == '{{ pre_release_branch }}' {{ '}}' }}
 
       - name: Release info
@@ -294,9 +320,10 @@ jobs:
           binaryYaml=$(python3 -c "
           from pathlib import Path
           out_yaml = ''
-          for i in Path('release-artifacts').glob('*/{{ executable_name }}*'):
-            out_yaml += str(i.name) + ': https://github.com/{{ org }}/{{ repo }}/releases/download/{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}'
-            out_yaml += f'/{str(i.name)}\n'
+          for i in ['win.exe', 'macOS', 'linux']:
+            exe_name = '{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-' + i
+            url = 'https://github.com/{{ org }}/{{ repo }}/releases/download/{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}/' + exe_name
+            out_yaml += exe_name + ': ' + url + '\n'
           print(out_yaml)
           ")
           # escape new lines:
@@ -305,9 +332,9 @@ jobs:
           binaryYaml="${binaryYaml//$'\r'/'%0D'}"
           echo "::set-output name=binary_download_links::$binaryYaml"
 
-      - name: Publish (to test PyPI)
+      - name: Publish (to {{ PYPI_URL }})
         run: |
-          poetry config repositories.pypi {{ PYPI_URL }} 
+          poetry config repositories.pypi {{ PYPI_URL }}
           poetry config pypi-token.pypi {{ '${{' }} secrets.{{ PYPI_token_name }} {{ '}}' }}
           poetry publish --repository pypi
 

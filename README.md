@@ -2,10 +2,9 @@
 
 **Design, run, and share computational materials science workflows**
 
-Documentation: [https://hpcflow.github.io/matflow/docs](https://hpcflow.github.io/matflow/docs)
+Documentation: [https://matflow.io/docs](https://matflow.io/docs)
 
 ## Acknowledgements
-
 
 MatFlow was developed using funding from the [LightForm](https://lightform.org.uk/) EPSRC programme grant ([EP/R001715/1](https://gow.epsrc.ukri.org/NGBOViewGrant.aspx?GrantRef=EP/R001715/1))
 

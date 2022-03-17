@@ -16,9 +16,10 @@ on:
 jobs:
   bump-version:
     if:
-      | # skip if: PR is closed without merging; '[skip release]' is in the PR title; or if merging any branch other than pre_release_branch into release_branch
+      | # skip if: trying to re-run; PR is closed without merging; '[skip release]' is in the PR title; or if merging any branch other than pre_release_branch into release_branch
       (
-        github.event.pull_request.merged
+        github.run_attempt == '1'
+        && github.event.pull_request.merged
         && ! contains(github.event.pull_request.title, '[skip release]')
         && (
           github.event.pull_request.base.ref == 'develop' || (
@@ -180,20 +181,28 @@ jobs:
         run: poetry config virtualenvs.in-project true
 
       - name: Install dependencies
-        run: |
-          poetry install --no-dev
-          poetry run pip install pyinstaller
+        run: poetry install --no-dev --extras "pyinstaller"
 
-      - name: Build with pyinstaller for ${{matrix.executable_os}}
-        run: poetry run pyinstaller matflow/cli.py --name=matflow-${{ needs.bump-version.outputs.new_tag_name }} --onefile
+      - name: Build with pyinstaller for ${{ matrix.executable_os }}
+        run: poetry run pyinstaller --name=matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }} --onefile matflow/cli.py
 
-      - name: Rename executable for ${{matrix.executable_os}}
-        run: mv dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}${{ matrix.executable_ext }} dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
-
-      - uses: actions/upload-artifact@v2
+      - name: Upload executable artifact
+        uses: actions/upload-artifact@v2
         with:
           name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
           path: dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
+
+      - name: Upload spec file
+        uses: actions/upload-artifact@v2
+        with:
+          name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}.spec
+          path: matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}.spec
+
+      - name: Upload build directory
+        uses: actions/upload-artifact@v2
+        with:
+          name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-build
+          path: build/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}
 
       - name: Basic executable test
         run: dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version
@@ -218,17 +227,28 @@ jobs:
           key: venv-CentOS-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install dependencies
-        run: |
-          poetry install --no-dev
-          poetry run pip install pyinstaller
+        run: poetry install --no-dev --extras "pyinstaller"
 
       - name: Build with pyinstaller for CentOS
-        run: poetry run pyinstaller matflow/cli.py --name=matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux --onefile
+        run: poetry run pyinstaller --name=matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux --onefile matflow/cli.py
 
-      - uses: actions/upload-artifact@v2
+      - name: Upload executable artifact
+        uses: actions/upload-artifact@v2
         with:
           name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux
           path: dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux
+
+      - name: Upload spec file
+        uses: actions/upload-artifact@v2
+        with:
+          name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux.spec
+          path: matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux.spec
+
+      - name: Upload build directory
+        uses: actions/upload-artifact@v2
+        with:
+          name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux-build
+          path: build/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux
 
       - name: Basic executable test
         run: dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux --version
@@ -279,13 +299,19 @@ jobs:
         with:
           path: release-artifacts
 
+      - name: Display structure of downloaded files
+        run: ls -R
+
       - name: Release
         id: release
         uses: softprops/action-gh-release@v1
         with:
           body_path: release-artifacts/CHANGELOG_increment/CHANGELOG_increment.md
           tag_name: ${{ needs.bump-version.outputs.new_tag_name }}
-          files: release-artifacts/matflow-*/*
+          files: |
+            **/matflow-${{ needs.bump-version.outputs.new_tag_name }}-win.exe
+            **/matflow-${{ needs.bump-version.outputs.new_tag_name }}-macOS
+            **/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux
           prerelease: ${{ github.event.pull_request.base.ref == 'develop' }}
 
       - name: Release info
@@ -294,9 +320,10 @@ jobs:
           binaryYaml=$(python3 -c "
           from pathlib import Path
           out_yaml = ''
-          for i in Path('release-artifacts').glob('*/matflow*'):
-            out_yaml += str(i.name) + ': https://github.com/hpcflow/matflow-new/releases/download/${{ needs.bump-version.outputs.new_tag_name }}'
-            out_yaml += f'/{str(i.name)}\n'
+          for i in ['win.exe', 'macOS', 'linux']:
+            exe_name = 'matflow-${{ needs.bump-version.outputs.new_tag_name }}-' + i
+            url = 'https://github.com/hpcflow/matflow-new/releases/download/${{ needs.bump-version.outputs.new_tag_name }}/' + exe_name
+            out_yaml += exe_name + ': ' + url + '\n'
           print(out_yaml)
           ")
           # escape new lines:
@@ -305,9 +332,9 @@ jobs:
           binaryYaml="${binaryYaml//$'\r'/'%0D'}"
           echo "::set-output name=binary_download_links::$binaryYaml"
 
-      - name: Publish (to test PyPI)
+      - name: Publish (to https://test.pypi.org/legacy/)
         run: |
-          poetry config repositories.pypi https://test.pypi.org/legacy/ 
+          poetry config repositories.pypi https://test.pypi.org/legacy/
           poetry config pypi-token.pypi ${{ secrets.TEST_PYPI }}
           poetry publish --repository pypi
 
