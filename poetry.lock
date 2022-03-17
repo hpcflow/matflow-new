@@ -302,23 +302,19 @@ description = "Computational workflow management"
 category = "main"
 optional = false
 python-versions = ">=3.7,<3.11"
-develop = false
 
 [package.dependencies]
-click = "^8.0.4"
-"ruamel.yaml" = "^0.17.20"
-valida = "^0.2.0"
-zarr = "^2.10.3"
+click = ">=8.0.4,<9.0.0"
+"ruamel.yaml" = ">=0.17.20,<0.18.0"
+valida = ">=0.2.0,<0.3.0"
+zarr = ">=2.10.3,<3.0.0"
 
 [package.extras]
 pyinstaller = ["pyinstaller (>=4.10,<5.0)"]
 
 [package.source]
-type = "git"
-url = "https://github.com/hpcflow/hpcflow-new.git"
-reference = "develop"
-resolved_reference = "5f07186597836a36b60f5711937dfce5890d51a4"
-
+type = "url"
+url = "https://test-files.pythonhosted.org/packages/b3/d4/c7ae722aa403fe239e961d16bbc2656dd410dd141abea84a95b8616467df/hpcflow-0.79.0.tar.gz"
 [[package]]
 name = "identify"
 version = "2.4.12"
@@ -1275,7 +1271,7 @@ pyinstaller = ["pyinstaller"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.11"
-content-hash = "51c01e967c14aefa292efdae4df117e56cde33df36fa0b99166ff2e3d0bd52c8"
+content-hash = "78e36cb1067ad0eae315dfe79328bdccec9a84d0b7caf8826e92872a07f9f04b"
 
 [metadata.files]
 alabaster = [
