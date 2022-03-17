@@ -43,26 +43,42 @@ jobs:
         run: poetry config virtualenvs.in-project true
 
       - name: Install dependencies
-        run: |
-          poetry install --no-dev
-          poetry run pip install pyinstaller
+        run: poetry install --no-dev --extras "pyinstaller"
 
-      - name: Get exectuable version name
+      - name: Get exectuable version name (non Windows)
+        if: "!contains(matrix.os, 'windows')"
         run: |
           vers=$(git describe --tags)
           echo "vers is: $vers"
           echo "vers=$vers" >> $GITHUB_ENV
 
-      - name: Build with pyinstaller for {% raw %}${{matrix.executable_os}}{% endraw %}
-        run: poetry run pyinstaller {{ pyinstaller_package }} --name={{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %} --onefile
+      - name: Get exectuable version name (Windows)
+        if: contains(matrix.os, 'windows')
+        run: |
+          $vers = git describe --tags
+          echo "vers is: $vers"
+          echo "vers=$vers" >> $env:GITHUB_ENV
 
-      - name: Rename executable for {% raw %}${{matrix.executable_os}}{% endraw %}
-        run: mv dist/{{ executable_name }}-{% raw %}${{ env.vers }}${{ matrix.executable_ext }}{% endraw %} dist/{{ executable_name }}-{% raw %}${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %}
+      - name: Build with pyinstaller for {% raw %}${{ matrix.executable_os }}{% endraw %}
+        run: poetry run pyinstaller --name={{ executable_name }}-{% raw %}${{ env.vers }}-${{ matrix.executable_os }}{% endraw %} --onefile {{ pyinstaller_package }}
 
-      - uses: actions/upload-artifact@v2
+      - name: Upload executable artifact
+        uses: actions/upload-artifact@v2
         with:
           name: {{ executable_name }}-{% raw %}${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %}
           path: dist/{{ executable_name }}-{% raw %}${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %}
+
+      - name: Upload spec file
+        uses: actions/upload-artifact@v2
+        with:
+          name: {{ executable_name }}-{% raw %}${{ env.vers }}-${{ matrix.executable_os }}{% endraw %}.spec
+          path: {{ executable_name }}-{% raw %}${{ env.vers }}-${{ matrix.executable_os }}{% endraw %}.spec
+
+      - name: Upload build directory
+        uses: actions/upload-artifact@v2
+        with:
+          name: {{ executable_name }}-{% raw %}${{ env.vers }}-${{ matrix.executable_os }}{% endraw %}-build
+          path: build/{{ executable_name }}-{% raw %}${{ env.vers }}-${{ matrix.executable_os }}{% endraw %}
 
       - name: Basic executable test
         run: dist/{{ executable_name }}-{% raw %}${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} --version
@@ -86,9 +102,7 @@ jobs:
           key: {% raw %}venv-CentOS-${{ hashFiles('**/poetry.lock') }}{% endraw %}
 
       - name: Install dependencies
-        run: |
-          poetry install --no-dev
-          poetry run pip install pyinstaller
+        run: poetry install --no-dev --extras "pyinstaller"
 
       - name: Get exectuable version name
         run: |
@@ -98,12 +112,25 @@ jobs:
           echo "vers=$vers" >> $GITHUB_ENV
 
       - name: Build with pyinstaller for CentOS
-        run: poetry run pyinstaller {{ pyinstaller_package }} --name={{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux --onefile
+        run: poetry run pyinstaller --name={{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux --onefile {{ pyinstaller_package }}
 
-      - uses: actions/upload-artifact@v2
+      - name: Upload executable artifact
+        uses: actions/upload-artifact@v2
         with:
           name: {{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux
           path: dist/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux
+
+      - name: Upload spec file
+        uses: actions/upload-artifact@v2
+        with:
+          name: {{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux.spec
+          path: {{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux.spec
+
+      - name: Upload build directory
+        uses: actions/upload-artifact@v2
+        with:
+          name: {{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux-build
+          path: build/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux
 
       - name: Basic executable test
         run: dist/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux --version
