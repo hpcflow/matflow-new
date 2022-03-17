@@ -2,7 +2,7 @@
 
 **Design, run, and share computational materials science workflows**
 
-Documentation: [https://hpcflow.github.io/matflow/docs](https://hpcflow.github.io/matflow/docs)
+Documentation: [https://matflow.io/docs](https://matflow.io/docs)
 
 ## Acknowledgements
 
