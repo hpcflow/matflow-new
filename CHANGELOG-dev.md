@@ -1,4 +1,20 @@
 
+<a name="v0.3.0a1"></a>
+## [v0.3.0a1](https://github.com/hpcflow/matflow-new/compare/v0.3.0a0...v0.3.0a1) - 2022.03.17
+
+### ✨ Features
+
+* try CLI fix
+
+### 👷 Build changes
+
+* update GH workflows
+* update script
+* update deps
+* fix pyinstaller script
+* add pyinstaller scripts
+
+
 <a name="v0.3.0a0"></a>
 ## [v0.3.0a0](https://github.com/hpcflow/matflow-new/compare/v0.2.30...v0.3.0a0) - 2022.03.16
 
