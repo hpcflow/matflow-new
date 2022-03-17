@@ -1,4 +1,16 @@
 
+<a name="v0.3.0a3"></a>
+## [v0.3.0a3](https://github.com/hpcflow/matflow-new/compare/v0.3.0a2...v0.3.0a3) - 2022.03.17
+
+### ✨ Features
+
+* update release
+
+### 👷 Build changes
+
+* update deps
+
+
 <a name="v0.3.0a2"></a>
 ## [v0.3.0a2](https://github.com/hpcflow/matflow-new/compare/v0.3.0a1...v0.3.0a2) - 2022.03.17
 
