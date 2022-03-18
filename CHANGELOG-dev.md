@@ -1,4 +1,25 @@
 
+<a name="v0.5.0a0"></a>
+## [v0.5.0a0](https://github.com/hpcflow/matflow-new/compare/v0.4.0...v0.5.0a0) - 2022.03.18
+
+### ✨ Features
+
+* update workflows
+
+### 👷 Build changes
+
+* tidy up vers
+* update binary download links file [skip ci]
+
+
+<a name="v0.4.0"></a>
+## [v0.4.0](https://github.com/hpcflow/matflow-new/compare/v0.4.0a0...v0.4.0) - 2022.03.18
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.4.0a0"></a>
 ## [v0.4.0a0](https://github.com/hpcflow/matflow-new/compare/v0.3.0...v0.4.0a0) - 2022.03.17
 
