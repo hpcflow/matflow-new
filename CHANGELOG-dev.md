@@ -1,4 +1,24 @@
 
+<a name="v0.5.0a2"></a>
+## [v0.5.0a2](https://github.com/hpcflow/matflow-new/compare/v0.5.0a1...v0.5.0a2) - 2022.03.18
+
+### Other changes
+
+* update deps
+
+### ✨ Features
+
+* test numpy
+
+### 🐛 Bug Fixes
+
+* README logo src
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.5.0a1"></a>
 ## [v0.5.0a1](https://github.com/hpcflow/matflow-new/compare/v0.5.0a0...v0.5.0a1) - 2022.03.18
 
