@@ -1,0 +1,47 @@
+[tool.poetry]
+name = "matflow"
+version = "0.5.0a1"
+description = "Computational workflows for materials science"
+authors = ["aplowman <adam.plowman@manchester.ac.uk>"]
+license = "MIT"
+readme = "README.md"
+include = [
+    "matflow/data/task_schemas.yaml",
+    "matflow/data/environments.yaml"
+]
+
+[tool.poetry.dependencies]
+python = ">=3.7,<3.11"
+pyinstaller = { version = "^4.10", optional = true}
+hpcflow-new = "0.81.0a0"
+
+[tool.poetry.dev-dependencies]
+pylint = "^2.12.2"
+ipykernel = "^6.6.1"
+pytest = "^6.2.5"
+commitizen = "^2.20.3"
+pre-commit = "^2.16.0"
+black = "^21.12b0"
+Sphinx = "^4.4.0"
+pydata-sphinx-theme = "^0.8.0"
+sphinx-jinja = "^2.0.1"
+sphinx-copybutton = "^0.5.0"
+
+[tool.poetry.extras]
+pyinstaller = ["pyinstaller"]
+
+[tool.poetry.scripts]
+matflow = 'matflow.cli:cli'
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.5.0a1"
+tag_format = "v$version"
+version_files = [ 
+    "pyproject.toml:version",
+    "matflow/_version.py"
+]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
