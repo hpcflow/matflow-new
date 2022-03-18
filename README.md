@@ -1,4 +1,4 @@
-<img src="docs/source/_static/images/logo-90dpi.png" width="250" alt="MatFlow logo"/>
+<img src="https://docs.matflow.io/stable/_static/images/logo-90dpi.png" width="250" alt="MatFlow logo"/>
 
 **Design, run, and share computational materials science workflows**
 
