@@ -48,6 +48,9 @@ jobs:
       - name: Get exectuable version name (non Windows)
         if: "!contains(matrix.os, 'windows')"
         run: |
+          CUR_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "CUR_TAG is: $CUR_TAG"
+          echo "cur_tag=$CUR_TAG" >> $GITHUB_ENV
           vers=$(git describe --tags)
           echo "vers is: $vers"
           echo "vers=$vers" >> $GITHUB_ENV
@@ -55,6 +58,9 @@ jobs:
       - name: Get exectuable version name (Windows)
         if: contains(matrix.os, 'windows')
         run: |
+          $CUR_TAG = $(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "CUR_TAG is: $CUR_TAG"
+          echo "cur_tag=$CUR_TAG" >> $env:GITHUB_ENV
           $vers = git describe --tags
           echo "vers is: $vers"
           echo "vers=$vers" >> $env:GITHUB_ENV
@@ -80,8 +86,29 @@ jobs:
           name: matflow-${{ env.vers }}-${{ matrix.executable_os }}-build
           path: build/matflow-${{ env.vers }}-${{ matrix.executable_os }}
 
-      - name: Basic executable test
-        run: dist/matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version
+      - name: Basic executable test (windows)
+        if: contains(matrix.os, 'windows')
+        run: |
+          $tag = "${{ env.cur_tag }}"
+          $tagNoV = $tag.trim('v')
+          $matflow_vers = dist/matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version
+          $matflow_vers_expected = "matflow, version $tagNoV"
+          echo $matflow_vers
+          echo "$matflow_vers_expected"
+          if ($matflow_vers -ne $matflow_vers_expected) {
+            exit 1
+          }
+
+      - name: Basic executable test (non-windows)
+        if: "!contains(matrix.os, 'windows')"
+        run: |
+          tag=${{ env.cur_tag }}
+          tagNoV=${tag:1}
+          matflow_vers=$(dist/matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version)
+          matflow_vers_expected="matflow, version $tagNoV"
+          echo $matflow_vers
+          echo $matflow_vers_expected
+          [ "$matflow_vers" = "$matflow_vers_expected" ]
 
   build-executables-linux:
     runs-on: ubuntu-latest
@@ -106,7 +133,9 @@ jobs:
 
       - name: Get exectuable version name
         run: |
-          ls -la
+          CUR_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "CUR_TAG is: $CUR_TAG"
+          echo "cur_tag=$CUR_TAG" >> $GITHUB_ENV
           vers=$(git describe --tags)
           echo "vers is: $vers"
           echo "vers=$vers" >> $GITHUB_ENV
@@ -133,4 +162,11 @@ jobs:
           path: build/matflow-${{ env.vers }}-linux
 
       - name: Basic executable test
-        run: dist/matflow-${{ env.vers }}-linux --version
+        run: |
+          tag=${{ env.cur_tag }}
+          tagNoV=${tag:1}
+          matflow_vers=$(dist/matflow-${{ env.vers }}-linux --version)
+          matflow_vers_expected="matflow, version $tagNoV"
+          echo $matflow_vers
+          echo $matflow_vers_expected
+          [ "$matflow_vers" = "$matflow_vers_expected" ]

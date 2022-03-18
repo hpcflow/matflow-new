@@ -204,8 +204,29 @@ jobs:
           name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-build
           path: build/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}
 
-      - name: Basic executable test
-        run: dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version
+      - name: Basic executable test (windows)
+        if: contains(matrix.os, 'windows')
+        run: |
+          $tag = "${{ needs.bump-version.outputs.new_tag_name }}"
+          $tagNoV = $tag.trim('v')
+          $matflow_vers = dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version
+          $matflow_vers_expected = "matflow, version $tagNoV"
+          echo $matflow_vers
+          echo "$matflow_vers_expected"
+          if ($matflow_vers -ne $matflow_vers_expected) {
+            exit 1
+          }
+
+      - name: Basic executable test (non-windows)
+        if: "!contains(matrix.os, 'windows')"
+        run: |
+          tag=${{ needs.bump-version.outputs.new_tag_name }}
+          tagNoV=${tag:1}
+          matflow_vers=$(dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version)
+          matflow_vers_expected="matflow, version $tagNoV"
+          echo $matflow_vers
+          echo $matflow_vers_expected
+          [ "$matflow_vers" = "$matflow_vers_expected" ]
 
   build-executables-linux:
     runs-on: ubuntu-latest
@@ -251,7 +272,14 @@ jobs:
           path: build/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux
 
       - name: Basic executable test
-        run: dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux --version
+        run: |
+          tag=${{ needs.bump-version.outputs.new_tag_name }}
+          tagNoV=${tag:1}
+          matflow_vers=$(dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux --version)
+          matflow_vers_expected="matflow, version $tagNoV"
+          echo $matflow_vers
+          echo $matflow_vers_expected
+          [ "$matflow_vers" = "$matflow_vers_expected" ]
 
   release-github-PyPI:
     needs: [bump-version, build-executables, build-executables-linux]

@@ -1,9 +1,9 @@
 import pytest
 
 from click.testing import CliRunner
-from hpcflow._version import __version__ as hpcflow_version
+from hpcflow import __version__ as hpcflow_version
 
-from matflow._version import __version__ as matflow_version
+from matflow import __version__ as matflow_version
 from matflow.cli import cli
 
 

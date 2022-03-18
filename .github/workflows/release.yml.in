@@ -204,8 +204,29 @@ jobs:
           name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %}-build
           path: build/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %}
 
-      - name: Basic executable test
-        run: dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} --version
+      - name: Basic executable test (windows)
+        if: contains(matrix.os, 'windows')
+        run: |
+          $tag = "{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}"
+          $tagNoV = $tag.trim('v')
+          ${{ executable_name }}_vers = dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} --version
+          ${{ executable_name }}_vers_expected = "{{ executable_name }}, version $tagNoV"
+          echo ${{ executable_name }}_vers
+          echo "${{ executable_name }}_vers_expected"
+          if (${{ executable_name }}_vers -ne ${{ executable_name }}_vers_expected) {
+            exit 1
+          }
+
+      - name: Basic executable test (non-windows)
+        if: "!contains(matrix.os, 'windows')"
+        run: |
+          tag={% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}
+          tagNoV=${tag:1}
+          {{ executable_name }}_vers=$(dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} --version)
+          {{ executable_name }}_vers_expected="{{ executable_name }}, version $tagNoV"
+          echo ${{ executable_name }}_vers
+          echo ${{ executable_name }}_vers_expected
+          [ "${{ executable_name }}_vers" = "${{ executable_name }}_vers_expected" ]
 
   build-executables-linux:
     runs-on: ubuntu-latest
@@ -251,7 +272,14 @@ jobs:
           path: build/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux
 
       - name: Basic executable test
-        run: dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux --version
+        run: |
+          tag={% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}
+          tagNoV=${tag:1}
+          {{ executable_name }}_vers=$(dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux --version)
+          {{ executable_name }}_vers_expected="{{ executable_name }}, version $tagNoV"
+          echo ${{ executable_name }}_vers
+          echo ${{ executable_name }}_vers_expected
+          [ "${{ executable_name }}_vers" = "${{ executable_name }}_vers_expected" ]
 
   release-github-PyPI:
     needs: [bump-version, build-executables, build-executables-linux]
