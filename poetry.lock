@@ -297,7 +297,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "hpcflow-new"
-version = "0.80.0a2"
+version = "0.80.1"
 description = "Computational workflow management"
 category = "main"
 optional = false
@@ -1268,7 +1268,7 @@ pyinstaller = ["pyinstaller"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.11"
-content-hash = "81917f19e93f1c4e28dfee1dad1d75698d9cfcda9aec939ab66568992b7f6e3c"
+content-hash = "d68c63e1ba63b0e94921cd1613b74ea180847fb15d4bee29e71040a7845979b5"
 
 [metadata.files]
 alabaster = [
@@ -1449,8 +1449,8 @@ future = [
     {file = "future-0.18.2.tar.gz", hash = "sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d"},
 ]
 hpcflow-new = [
-    {file = "hpcflow-new-0.80.0a2.tar.gz", hash = "sha256:31ae231fe3ac2ffbd29a6920a7abad5cc44dc9757522ea92c8721f264be48da0"},
-    {file = "hpcflow_new-0.80.0a2-py3-none-any.whl", hash = "sha256:9945718ad1f540ef02f29f39598d65431a61171038d4d5e501446313e4a0441f"},
+    {file = "hpcflow-new-0.80.1.tar.gz", hash = "sha256:971beaa7c2b3c5999cce8a2d617aa16d405b6b2a1801db44c5d766288d6c114c"},
+    {file = "hpcflow_new-0.80.1-py3-none-any.whl", hash = "sha256:36654977422d399b74feffd504cf7e74b30db4de5ef56f94eb4d9b88bcd35584"},
 ]
 identify = [
     {file = "identify-2.4.12-py2.py3-none-any.whl", hash = "sha256:5f06b14366bd1facb88b00540a1de05b69b310cbc2654db3c7e07fa3a4339323"},
