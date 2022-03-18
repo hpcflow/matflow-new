@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "matflow"
-version = "0.4.0a0"
+version = "0.4.0"
 description = "Computational workflows for materials science"
 authors = ["aplowman <adam.plowman@manchester.ac.uk>"]
 license = "MIT"
@@ -35,7 +35,7 @@ matflow = 'matflow.cli:cli'
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.4.0a0"
+version = "0.4.0"
 tag_format = "v$version"
 version_files = [ 
     "pyproject.toml:version",
