@@ -19,7 +19,7 @@ from textwrap import indent
 
 from ruamel.yaml import YAML
 
-from matflow._version import __version__
+from matflow import __version__
 
 # -- Project information -----------------------------------------------------
 
