@@ -415,7 +415,7 @@ jobs:
 
       - uses: actions/checkout@v2
         with:
-          repository: hpcflow/matflow.io
+          repository: hpcflow/docs.matflow.io
           token: ${{ secrets.HPCFLOW_ACTIONS_TOKEN }}
 
       - run: |

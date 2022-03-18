@@ -65,8 +65,8 @@ html_theme_options = {
     "github_url": "https://github.com/hpcflow/matflow-new",
     "external_links": [],
     "switcher": {
-        "json_url": "https://matflow.io/docs/switcher.json",
-        "url_template": "https://matflow.io/docs/v{version}/",
+        "json_url": "https://docs.matflow.io/switcher.json",
+        "url_template": "https://docs.matflow.io/v{version}/",
         "version_match": __version__,
     },
     "navbar_end": ["version-switcher", "navbar-icon-links.html"],
