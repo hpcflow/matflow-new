@@ -1,4 +1,12 @@
 
+<a name="v0.5.0a1"></a>
+## [v0.5.0a1](https://github.com/hpcflow/matflow-new/compare/v0.5.0a0...v0.5.0a1) - 2022.03.18
+
+### ✨ Features
+
+* update deps
+
+
 <a name="v0.5.0a0"></a>
 ## [v0.5.0a0](https://github.com/hpcflow/matflow-new/compare/v0.4.0...v0.5.0a0) - 2022.03.18
 
