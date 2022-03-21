@@ -297,27 +297,20 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "hpcflow-new2"
-version = "0.2.0a1"
+version = "0.2.0a2"
 description = "Computational workflow management"
 category = "main"
 optional = false
 python-versions = ">=3.7,<3.11"
-develop = false
 
 [package.dependencies]
-click = "^8.0.4"
-"ruamel.yaml" = "^0.17.20"
-valida = "^0.2.0"
-zarr = "^2.10.3"
+click = ">=8.0.4,<9.0.0"
+"ruamel.yaml" = ">=0.17.20,<0.18.0"
+valida = ">=0.2.0,<0.3.0"
+zarr = ">=2.10.3,<3.0.0"
 
 [package.extras]
 pyinstaller = ["pyinstaller (>=4.10,<5.0)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/hpcflow/hpcflow-new.git"
-reference = "develop"
-resolved_reference = "1bbab6544e4304c850aa594820404eb4fed3c314"
 
 [[package]]
 name = "identify"
@@ -1275,7 +1268,7 @@ pyinstaller = ["pyinstaller"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.11"
-content-hash = "aa73b6843d169e1d49db5b9b66cf43843c006d1e00a13284f9cd861204e98395"
+content-hash = "d442367f3fcc198afd505d93e21a41986369e4c101b32f3d91db609cbc39150d"
 
 [metadata.files]
 alabaster = [
@@ -1455,7 +1448,10 @@ filelock = [
 future = [
     {file = "future-0.18.2.tar.gz", hash = "sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d"},
 ]
-hpcflow-new2 = []
+hpcflow-new2 = [
+    {file = "hpcflow-new2-0.2.0a2.tar.gz", hash = "sha256:e20f82c7740c131f4fac7b49ba78a474f12dda6eb4076beb9d538f2064283c3e"},
+    {file = "hpcflow_new2-0.2.0a2-py3-none-any.whl", hash = "sha256:a8b72b96166e1f278b953f1bd150d5c2413c62cbee2c81b0aff5b8058cc10bde"},
+]
 identify = [
     {file = "identify-2.4.12-py2.py3-none-any.whl", hash = "sha256:5f06b14366bd1facb88b00540a1de05b69b310cbc2654db3c7e07fa3a4339323"},
     {file = "identify-2.4.12.tar.gz", hash = "sha256:3f3244a559290e7d3deb9e9adc7b33594c1bc85a9dd82e0f1be519bf12a1ec17"},
