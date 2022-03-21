@@ -13,7 +13,10 @@ include = [
 [tool.poetry.dependencies]
 python = ">=3.7,<3.11"
 pyinstaller = { version = "^4.10", optional = true}
-hpcflow-new2 = { path = "../hpcflow-new", develop = true }
+# hpcflow-new2 = { path = "../hpcflow-new", develop = true } # for local development
+hpcflow-new2 = { git = "https://github.com/hpcflow/hpcflow-new.git", branch = "develop" } # for testing GH actions workflows
+# hpcflow-new2 = "" # for production
+
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.12.2"
