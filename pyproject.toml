@@ -13,7 +13,7 @@ include = [
 [tool.poetry.dependencies]
 python = ">=3.7,<3.11"
 pyinstaller = { version = "^4.10", optional = true}
-hpcflow-new2 = "^0.2.0-alpha.0"
+hpcflow-new2 = { path = "../hpcflow-new", develop = true }
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.12.2"
@@ -41,6 +41,7 @@ version_files = [
     "pyproject.toml:version",
     "matflow/_version.py"
 ]
+bump_message = "bump: $current_version → $new_version [skip ci]"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
