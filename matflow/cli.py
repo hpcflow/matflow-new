@@ -1,8 +1,10 @@
+import logging
 import click
 
 from matflow import MatFlow
+import matflow.api
 
-
+logger = logging.getLogger(__name__)
 cli = MatFlow.CLI
 
 
@@ -12,8 +14,8 @@ def parameter():  # matflow-only command group
 
 
 @parameter.command("search")  # matflow-only command
-def param_search():
-    click.echo("param_search")
+def parameter_search():
+    matflow.api.parameter_search()
 
 
 if __name__ == "__main__":

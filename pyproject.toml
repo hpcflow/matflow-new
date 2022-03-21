@@ -13,7 +13,10 @@ include = [
 [tool.poetry.dependencies]
 python = ">=3.7,<3.11"
 pyinstaller = { version = "^4.10", optional = true}
-hpcflow-new2 = "^0.2.0-alpha.0"
+# hpcflow-new2 = { path = "../hpcflow-new", develop = true } # for local development
+hpcflow-new2 = { git = "https://github.com/hpcflow/hpcflow-new.git", branch = "develop" } # for testing GH actions workflows
+# hpcflow-new2 = "" # for production
+
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.12.2"
@@ -41,6 +44,10 @@ version_files = [
     "pyproject.toml:version",
     "matflow/_version.py"
 ]
+bump_message = "bump: $current_version → $new_version [skip ci]"
+
+[tool.black]
+line-length = 90
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -15,5 +15,5 @@ def test_version():
 
 def test_hpcflow_version():
     runner = CliRunner()
-    result = runner.invoke(cli, args="hpcflow --version")
+    result = runner.invoke(cli, args="--hpcflow-version")
     assert result.output.strip() == f"hpcflow, version {hpcflow_version}"
