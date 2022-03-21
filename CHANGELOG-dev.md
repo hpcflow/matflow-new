@@ -1,4 +1,33 @@
 
+<a name="v0.3.0a2"></a>
+## [v0.3.0a2](https://github.com/hpcflow/matflow-new/compare/v0.3.0a1...v0.3.0a2) - 2022.03.21
+
+### ♻ Code Refactoring
+
+* store RunTimeInfo in MatFlow obj
+
+### ✨ Features
+
+* add logging
+
+### 🐛 Bug Fixes
+
+* hpcflow version test
+
+### 👷 Build changes
+
+* revert "bump: 0.3.0a1 → 0.3.0a2 [skip ci]"
+* poetry update
+* add poetry pre-commit
+* delete pyinstaller build dirs
+* change commitizen bump message to skip ci
+* update binary download links file [skip ci]
+
+### 🔄 Updates
+
+* deps
+
+
 <a name="v0.3.0a1"></a>
 ## [v0.3.0a1](https://github.com/hpcflow/matflow-new/compare/v0.3.0a0...v0.3.0a1) - 2022.03.18
 
