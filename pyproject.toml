@@ -43,6 +43,9 @@ version_files = [
 ]
 bump_message = "bump: $current_version → $new_version [skip ci]"
 
+[tool.black]
+line-length = 90
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
