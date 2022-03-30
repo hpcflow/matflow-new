@@ -127,3 +127,5 @@ dmypy.json
 
 # Poetry
 poetry.toml
+
+notebooks/
