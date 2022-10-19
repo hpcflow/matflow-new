@@ -12,9 +12,8 @@ include = [
 
 [tool.poetry.dependencies]
 python = ">=3.7,<3.11"
-pyinstaller = { version = "^4.10", optional = true}
-hpcflow-new2 = "^0.2.0-alpha.5"
-
+pyinstaller = {version = "^5.5", optional = true}
+hpcflow-new2 = "^0.2.0a6"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.12.2"
@@ -33,6 +32,9 @@ pyinstaller = ["pyinstaller"]
 
 [tool.poetry.scripts]
 matflow = 'matflow.cli:MatFlow.CLI'
+
+[tool.poetry.plugins.pyinstaller40]
+hook-dirs = "pyinstaller.__init__:get_hook_dirs"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
