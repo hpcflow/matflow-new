@@ -13,7 +13,7 @@ include = [
 [tool.poetry.dependencies]
 python = ">=3.7,<3.11"
 pyinstaller = {version = "^5.5", optional = true}
-hpcflow-new2 = "^0.2.0a6"
+hpcflow-new2 = "^0.2.0a7"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.12.2"
