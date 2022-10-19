@@ -3,7 +3,7 @@ concurrency: release
 
 env:
   PYTHON_VERSION_BUMP: 3.9
-  PYTHON_VERSION_BUILD_EXES: 3.9
+  PYTHON_VERSION_BUILD_EXES: "3.10"
   PYTHON_VERSION_RELEASE: 3.9
   PYTHON_VERSION_BUILD_DOCS: 3.9
   PYTHON_VERSION_UPDATE_WEB: 3.9
@@ -149,12 +149,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2019, macos-10.15]
+        os: [windows-2019, macos-11]
         include:
           - os: windows-2019
             executable_ext: .exe
             executable_os: win
-          - os: macos-10.15
+          - os: macos-11
             executable_ext: ""
             executable_os: macOS
 
@@ -172,7 +172,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./.venv
-          key: {% raw %}venv-${{ matrix.os }}-${{ hashFiles('**/poetry.lock') }}{% endraw %}
+          key: {% raw %}venv-build-${{ matrix.os }}-${{ hashFiles('**/poetry.lock') }}{% endraw %}
 
       - name: Install poetry
         run: python -m pip install poetry==1.1.11
@@ -183,33 +183,40 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-dev --extras "pyinstaller"
 
-      - name: Build with pyinstaller for {% raw %}${{ matrix.executable_os }}{% endraw %}
-        run: poetry run pyinstaller --name={{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %} --onefile {{ pyinstaller_package }}
+      - name: Build with pyinstaller (non Windows)
+        if: "!contains(matrix.os, 'windows')"
+        working-directory: {{ pyinstaller_dir }}
+        run: ./make.sh {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }} INFO{% endraw %}
+
+      - name: Build with pyinstaller (Windows)
+        if: contains(matrix.os, 'windows')
+        working-directory: {{ pyinstaller_dir }}
+        run: ./make.ps1 -ExeName "{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}" -LogLevel INFO{% endraw %}
 
       - name: Upload executable artifact
         uses: actions/upload-artifact@v2
         with:
           name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %}
-          path: dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %}
+          path: {{ pyinstaller_dir }}/dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %}
 
       - name: Upload spec file
         uses: actions/upload-artifact@v2
         with:
           name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %}.spec
-          path: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %}.spec
+          path: {{ pyinstaller_dir }}/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %}.spec
 
       - name: Upload build directory
         uses: actions/upload-artifact@v2
         with:
           name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %}-build
-          path: build/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %}
+          path: {{ pyinstaller_dir }}/build/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %}
 
-      - name: Basic executable test (windows)
+      - name: Version check (windows)
         if: contains(matrix.os, 'windows')
         run: |
           $tag = "{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}"
           $tagNoV = $tag.trim('v')
-          ${{ executable_name }}_vers = dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} --version
+          ${{ executable_name }}_vers = {{ pyinstaller_dir }}/dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} --version
           ${{ executable_name }}_vers_expected = "{{ executable_name }}, version $tagNoV"
           echo ${{ executable_name }}_vers
           echo "${{ executable_name }}_vers_expected"
@@ -217,16 +224,20 @@ jobs:
             exit 1
           }
 
-      - name: Basic executable test (non-windows)
+      - name: Version check (non-windows)
         if: "!contains(matrix.os, 'windows')"
         run: |
           tag={% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}
           tagNoV=${tag:1}
-          {{ executable_name }}_vers=$(dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} --version)
+          {{ executable_name }}_vers=$({{ pyinstaller_dir }}/dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} --version)
           {{ executable_name }}_vers_expected="{{ executable_name }}, version $tagNoV"
           echo ${{ executable_name }}_vers
           echo ${{ executable_name }}_vers_expected
           [ "${{ executable_name }}_vers" = "${{ executable_name }}_vers_expected" ]
+
+      - name: Basic CLI checks
+        run: |
+          {{ pyinstaller_dir }}/dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} config get --all
 
   build-executables-linux:
     runs-on: ubuntu-latest
@@ -245,41 +256,46 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./.venv
-          key: {% raw %}venv-CentOS-${{ hashFiles('**/poetry.lock') }}{% endraw %}
+          key: {% raw %}venv-build-CentOS-${{ hashFiles('**/poetry.lock') }}{% endraw %}
 
       - name: Install dependencies
         run: poetry install --no-dev --extras "pyinstaller"
 
       - name: Build with pyinstaller for CentOS
-        run: poetry run pyinstaller --name={{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux --onefile {{ pyinstaller_package }}
+        working-directory: pyinstaller
+        run: ./make.sh {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-linux INFO{% endraw %}
 
       - name: Upload executable artifact
         uses: actions/upload-artifact@v2
         with:
           name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux
-          path: dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux
+          path: {{ pyinstaller_dir }}/dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux
 
       - name: Upload spec file
         uses: actions/upload-artifact@v2
         with:
           name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux.spec
-          path: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux.spec
+          path: {{ pyinstaller_dir }}/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux.spec
 
       - name: Upload build directory
         uses: actions/upload-artifact@v2
         with:
           name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux-build
-          path: build/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux
+          path: {{ pyinstaller_dir }}/build/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux
 
-      - name: Basic executable test
+      - name: Version check
         run: |
           tag={% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}
           tagNoV=${tag:1}
-          {{ executable_name }}_vers=$(dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux --version)
+          {{ executable_name }}_vers=$({{ pyinstaller_dir }}/dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux --version)
           {{ executable_name }}_vers_expected="{{ executable_name }}, version $tagNoV"
           echo ${{ executable_name }}_vers
           echo ${{ executable_name }}_vers_expected
           [ "${{ executable_name }}_vers" = "${{ executable_name }}_vers_expected" ]
+
+      - name: Basic CLI checks
+        run: |
+          {{ pyinstaller_dir }}/dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }{% endraw %}}-linux config get --all
 
   release-github-PyPI:
     needs: [bump-version, build-executables, build-executables-linux]
@@ -299,19 +315,13 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./.venv
-          key: {% raw %}venv-${{ hashFiles('**/poetry.lock') }}{% endraw %}
+          key: {% raw %}venv-release-${{ hashFiles('**/poetry.lock') }}{% endraw %}
 
       - name: Install poetry
         run: python -m pip install poetry==1.1.11
 
       - name: Configure poetry
         run: poetry config virtualenvs.in-project true
-
-      - name: Cache the virtualenv
-        uses: actions/cache@v2
-        with:
-          path: ./.venv
-          key: {% raw %}venv-${{ hashFiles('**/poetry.lock') }}{% endraw %}
 
       - name: Install dependencies
         run: poetry install
@@ -410,7 +420,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./.venv
-          key: {% raw %}venv-${{ matrix.os }}-${{ hashFiles('**/poetry.lock') }}{% endraw %}
+          key: {% raw %}venv-release-${{ matrix.os }}-${{ hashFiles('**/poetry.lock') }}{% endraw %}
 
       - name: Install poetry
         run: curl -sSL https://install.python-poetry.org | python3 -

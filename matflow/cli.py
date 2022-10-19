@@ -5,10 +5,9 @@ from matflow import MatFlow
 import matflow.api
 
 logger = logging.getLogger(__name__)
-cli = MatFlow.CLI
 
 
-@cli.group()
+@MatFlow.CLI.group()
 def parameter():  # matflow-only command group
     pass
 
@@ -19,4 +18,4 @@ def parameter_search():
 
 
 if __name__ == "__main__":
-    cli()
+    MatFlow.CLI()

@@ -12,6 +12,16 @@ Subpackages
 Submodules
 ----------
 
+matflow.api module
+------------------
+
+.. automodule:: matflow.api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. autofunction:: matflow.api.make_workflow   
+
 matflow.cli module
 ------------------
 

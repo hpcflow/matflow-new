@@ -13,19 +13,19 @@ cluster, using the binary executable file is recommended. If you want to design 
 your workflows using the Python API, then you need the Python package. You can use both simultaneously if you wish!
 
 ********************************
-Download binaries (v0.3.0)
+Download binaries (v0.3.0a1)
 ********************************
 
-Release notes: `on GitHub <https://github.com/hpcflow/matflow-new/releases/tag/v0.3.0>`_
+Release notes: `on GitHub <https://github.com/hpcflow/matflow-new/releases/tag/v0.3.0a1>`_
 
 Click below to download the MatFlow binary for your platform (other binary releases are available by using the version switcher in the top-right corner):
 
 .. raw:: html
 
    <table class="binary-downloads-table">
-     <tr><td>Linux</td><td><a href="https://github.com/hpcflow/hpcflow-new/releases/download/v0.73.0/hpcflow-v0.73.0-linux">matflow-v0.3.0-linux</a></td></tr>
-     <tr><td>macOS</td><td><a href="https://github.com/hpcflow/hpcflow-new/releases/download/v0.73.0/hpcflow-v0.73.0-macOS">matflow-v0.3.0-macOS</a></td></tr>
-     <tr><td>Windows</td><td><a href="https://github.com/hpcflow/hpcflow-new/releases/download/v0.73.0/hpcflow-v0.73.0-win.exe">matflow-v0.3.0-win.exe</a></td></tr>
+     <tr><td>Linux</td><td><a href="https://github.com/hpcflow/matflow-new/releases/download/v0.3.0a1/matflow-v0.3.0a1-linux">matflow-v0.3.0a1-linux</a></td></tr>
+     <tr><td>macOS</td><td><a href="https://github.com/hpcflow/matflow-new/releases/download/v0.3.0a1/matflow-v0.3.0a1-macOS">matflow-v0.3.0a1-macOS</a></td></tr>
+     <tr><td>Windows</td><td><a href="https://github.com/hpcflow/matflow-new/releases/download/v0.3.0a1/matflow-v0.3.0a1-win.exe">matflow-v0.3.0a1-win.exe</a></td></tr>
    </table>
 
 **************************
@@ -34,4 +34,4 @@ Install the Python package
 
 Use pip to install the Python package from PyPI::
 
-  pip install matflow==0.3.0
+  pip install matflow==0.3.0a1
