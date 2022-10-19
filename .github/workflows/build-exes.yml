@@ -72,38 +72,38 @@ jobs:
 
       - name: Build with pyinstaller (non Windows)
         if: "!contains(matrix.os, 'windows')"
-        working-directory: 
+        working-directory: pyinstaller
         run: ./make.sh matflow-${{ env.vers }}-${{ matrix.executable_os }} ${{ github.event.inputs.logLevel }}
 
       - name: Build with pyinstaller (Windows)
         if: contains(matrix.os, 'windows')
-        working-directory: 
+        working-directory: pyinstaller
         run: ./make.ps1 -ExeName "matflow-${{ env.vers }}-${{ matrix.executable_os }}" -LogLevel ${{ github.event.inputs.logLevel }}
 
       - name: Upload executable artifact
         uses: actions/upload-artifact@v2
         with:
           name: matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
-          path: /dist/matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
+          path: pyinstaller/dist/matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
 
       - name: Upload spec file
         uses: actions/upload-artifact@v2
         with:
           name: matflow-${{ env.vers }}-${{ matrix.executable_os }}.spec
-          path: /matflow-${{ env.vers }}-${{ matrix.executable_os }}.spec
+          path: pyinstaller/matflow-${{ env.vers }}-${{ matrix.executable_os }}.spec
 
       - name: Upload build directory
         uses: actions/upload-artifact@v2
         with:
           name: matflow-${{ env.vers }}-${{ matrix.executable_os }}-build
-          path: /build/matflow-${{ env.vers }}-${{ matrix.executable_os }}
+          path: pyinstaller/build/matflow-${{ env.vers }}-${{ matrix.executable_os }}
 
       - name: Version check (windows)
         if: contains(matrix.os, 'windows')
         run: |
           $tag = "${{ env.cur_tag }}"
           $tagNoV = $tag.trim('v')
-          $matflow_vers = /dist/matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version
+          $matflow_vers = pyinstaller/dist/matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version
           $matflow_vers_expected = "matflow, version $tagNoV"
           echo $matflow_vers
           echo "$matflow_vers_expected"
@@ -116,7 +116,7 @@ jobs:
         run: |
           tag=${{ env.cur_tag }}
           tagNoV=${tag:1}
-          matflow_vers=$(/dist/matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version)
+          matflow_vers=$(pyinstaller/dist/matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version)
           matflow_vers_expected="matflow, version $tagNoV"
           echo $matflow_vers
           echo $matflow_vers_expected
@@ -124,7 +124,7 @@ jobs:
 
       - name: Basic CLI checks
         run: |
-          /dist/matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} config get --all
+          pyinstaller/dist/matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} config get --all
 
   build-executables-linux:
     runs-on: ubuntu-latest
@@ -164,25 +164,25 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: matflow-${{ env.vers }}-linux
-          path: /dist/matflow-${{ env.vers }}-linux
+          path: pyinstaller/dist/matflow-${{ env.vers }}-linux
 
       - name: Upload spec file
         uses: actions/upload-artifact@v2
         with:
           name: matflow-${{ env.vers }}-linux.spec
-          path: /matflow-${{ env.vers }}-linux.spec
+          path: pyinstaller/matflow-${{ env.vers }}-linux.spec
 
       - name: Upload build directory
         uses: actions/upload-artifact@v2
         with:
           name: matflow-${{ env.vers }}-linux-build
-          path: /build/matflow-${{ env.vers }}-linux
+          path: pyinstaller/build/matflow-${{ env.vers }}-linux
 
       - name: Version check
         run: |
           tag=${{ env.cur_tag }}
           tagNoV=${tag:1}
-          matflow_vers=$(/dist/matflow-${{ env.vers }}-linux --version)
+          matflow_vers=$(pyinstaller/dist/matflow-${{ env.vers }}-linux --version)
           matflow_vers_expected="matflow, version $tagNoV"
           echo $matflow_vers
           echo $matflow_vers_expected
@@ -190,4 +190,4 @@ jobs:
 
       - name: Basic CLI checks
         run: |
-          /dist/matflow-${{ env.vers }}-linux config get --all
+          pyinstaller/dist/matflow-${{ env.vers }}-linux config get --all

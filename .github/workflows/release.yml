@@ -185,38 +185,38 @@ jobs:
 
       - name: Build with pyinstaller (non Windows)
         if: "!contains(matrix.os, 'windows')"
-        working-directory: 
+        working-directory: pyinstaller
         run: ./make.sh matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }} INFO
 
       - name: Build with pyinstaller (Windows)
         if: contains(matrix.os, 'windows')
-        working-directory: 
+        working-directory: pyinstaller
         run: ./make.ps1 -ExeName "matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}" -LogLevel INFO
 
       - name: Upload executable artifact
         uses: actions/upload-artifact@v2
         with:
           name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
-          path: /dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
+          path: pyinstaller/dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
 
       - name: Upload spec file
         uses: actions/upload-artifact@v2
         with:
           name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}.spec
-          path: /matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}.spec
+          path: pyinstaller/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}.spec
 
       - name: Upload build directory
         uses: actions/upload-artifact@v2
         with:
           name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-build
-          path: /build/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}
+          path: pyinstaller/build/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}
 
       - name: Version check (windows)
         if: contains(matrix.os, 'windows')
         run: |
           $tag = "${{ needs.bump-version.outputs.new_tag_name }}"
           $tagNoV = $tag.trim('v')
-          $matflow_vers = /dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version
+          $matflow_vers = pyinstaller/dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version
           $matflow_vers_expected = "matflow, version $tagNoV"
           echo $matflow_vers
           echo "$matflow_vers_expected"
@@ -229,7 +229,7 @@ jobs:
         run: |
           tag=${{ needs.bump-version.outputs.new_tag_name }}
           tagNoV=${tag:1}
-          matflow_vers=$(/dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version)
+          matflow_vers=$(pyinstaller/dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version)
           matflow_vers_expected="matflow, version $tagNoV"
           echo $matflow_vers
           echo $matflow_vers_expected
@@ -237,7 +237,7 @@ jobs:
 
       - name: Basic CLI checks
         run: |
-          /dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} config get --all
+          pyinstaller/dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} config get --all
 
   build-executables-linux:
     runs-on: ubuntu-latest
@@ -269,25 +269,25 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux
-          path: /dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux
+          path: pyinstaller/dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux
 
       - name: Upload spec file
         uses: actions/upload-artifact@v2
         with:
           name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux.spec
-          path: /matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux.spec
+          path: pyinstaller/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux.spec
 
       - name: Upload build directory
         uses: actions/upload-artifact@v2
         with:
           name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux-build
-          path: /build/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux
+          path: pyinstaller/build/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux
 
       - name: Version check
         run: |
           tag=${{ needs.bump-version.outputs.new_tag_name }}
           tagNoV=${tag:1}
-          matflow_vers=$(/dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux --version)
+          matflow_vers=$(pyinstaller/dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux --version)
           matflow_vers_expected="matflow, version $tagNoV"
           echo $matflow_vers
           echo $matflow_vers_expected
@@ -295,7 +295,7 @@ jobs:
 
       - name: Basic CLI checks
         run: |
-          /dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux config get --all
+          pyinstaller/dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux config get --all
 
   release-github-PyPI:
     needs: [bump-version, build-executables, build-executables-linux]
