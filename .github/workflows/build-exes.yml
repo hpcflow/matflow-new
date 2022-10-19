@@ -42,7 +42,7 @@ jobs:
           key: venv-build-${{ matrix.os }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install poetry
-        run: python -m pip install poetry==1.1.11
+        run: python -m pip install poetry==1.2.2
 
       - name: Configure poetry
         run: poetry config virtualenvs.in-project true
