@@ -100,6 +100,11 @@ jobs:
         with:          
           ref: {% raw %}${{ github.ref }}{% endraw %}
 
+      - name: Set ownership
+        run: |
+          # this is to fix GIT not liking owner of the checkout dir
+          chown -R $(id -u):$(id -g) $PWD
+
       - name: Configure poetry
         run: poetry config virtualenvs.in-project true
 
