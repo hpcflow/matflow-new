@@ -80,11 +80,37 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./.venv
-          key: ${{ runner.os }}-${{ matrix.python-version }}-venv-${{ hashFiles('**/poetry.lock') }}
+          key: ${{ runner.os }}-test-${{ matrix.python-version }}-venv-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install dependencies
         run: |
           poetry install
+
+      - name: Run tests
+        run: |
+          poetry run python -m pytest --verbose --exitfirst -k "not task_schema and not task_template and not resolve_elements and not input_value and not action"
+
+  test-CentOS:
+    needs: pre-commit
+    runs-on: ubuntu-latest
+    container:
+      image: aplowman/centos7-poetry
+    steps:
+      - uses: actions/checkout@v2
+        with:          
+          ref: ${{ github.ref }}
+
+      - name: Configure poetry
+        run: poetry config virtualenvs.in-project true
+
+      - name: Cache the virtualenv
+        uses: actions/cache@v2
+        with:
+          path: ./.venv
+          key: venv-CentOS-test-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: poetry install
 
       - name: Run tests
         run: |
