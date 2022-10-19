@@ -31,6 +31,6 @@ repos:
         stages: [commit-msg]
         args: [] # optional: list of Conventional Commits types to allow
   - repo: https://github.com/python-poetry/poetry
-    rev: dca6ff2699a06c0217ed6d5a278fa3146e4136ff
+    rev: 16046d9ac9b72a49e1bc4618fb686695cc64821c
     hooks:
       - id: poetry-check
