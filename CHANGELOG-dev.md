@@ -1,4 +1,13 @@
 
+<a name="v0.3.0a5"></a>
+## [v0.3.0a5](https://github.com/hpcflow/matflow-new/compare/v0.3.0a4...v0.3.0a5) - 2022.10.20
+
+### 👷 Build changes
+
+* fix release to non-test pypi
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a4"></a>
 ## [v0.3.0a4](https://github.com/hpcflow/matflow-new/compare/v0.3.0a3...v0.3.0a4) - 2022.10.20
 
