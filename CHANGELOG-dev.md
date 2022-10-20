@@ -1,4 +1,31 @@
 
+<a name="v0.3.0a3"></a>
+## [v0.3.0a3](https://github.com/hpcflow/matflow-new/compare/v0.3.0a2...v0.3.0a3) - 2022.10.20
+
+### 🐛 Bug Fixes
+
+* random
+
+### 👷 Build changes
+
+* fix GHA git perms
+* update deps
+* update poetry
+* deps
+* update deps
+* update GH actions template
+* update GH actions template data
+* update git perms
+* update pyi scripts
+* update deps
+* update pre-commit
+* update pre-commit
+* update GH actions workflows
+* update deps
+* update gitignore
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a2"></a>
 ## [v0.3.0a2](https://github.com/hpcflow/matflow-new/compare/v0.3.0a1...v0.3.0a2) - 2022.03.21
 
@@ -41,20 +68,25 @@
 
 
 <a name="v0.3.0a0"></a>
-## [v0.3.0a0](https://github.com/hpcflow/matflow-new/compare/v0.2.25...v0.3.0a0) - 2022.03.18
+## [v0.3.0a0](https://github.com/hpcflow/matflow-new/compare/v0.2.26...v0.3.0a0) - 2022.03.18
 
 ### ✨ Features
 
 * test dev build
 
-### 🐛 Bug Fixes
-
-* print full exception from bad output map
-
 ### 👷 Build changes
 
 * reset versions
 * initial setup
+
+
+<a name="v0.2.26"></a>
+## [v0.2.26](https://github.com/hpcflow/matflow-new/compare/v0.2.25...v0.2.26) - 2022.03.18
+
+### 🐛 Bug Fixes
+
+* bug in scripting module
+* print full exception from bad output map
 
 
 <a name="v0.2.25"></a>
