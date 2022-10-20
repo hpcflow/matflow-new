@@ -1,10 +1,13 @@
 [tool.poetry]
-name = "matflow"
+name = "matflow-new"
 version = "0.3.0a3"
 description = "Computational workflows for materials science"
 authors = ["aplowman <adam.plowman@manchester.ac.uk>"]
 license = "MIT"
 readme = "README.md"
+packages = [
+    { include = "matflow" }
+]
 include = [
     "matflow/data/task_schemas.yaml",
     "matflow/data/environments.yaml"
