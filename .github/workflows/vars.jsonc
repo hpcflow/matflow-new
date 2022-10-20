@@ -12,6 +12,7 @@
     "PYPI_URL": "https://test.pypi.org/legacy/",
     "executable_name": "matflow",
     "pyinstaller_package": "matflow/cli.py",
+    "pyinstaller_dir": "pyinstaller", // directory containing hooks and make.sh and make.ps1 scripts to invoke
     "website_source_org": "hpcflow",
     "website_source_repo": "docs.matflow.io",
     "website_source_token_name": "HPCFLOW_ACTIONS_TOKEN" // as defined within the `secrets` context: PAT of user who has push access and permission to bypass branch protection

@@ -1,0 +1,11 @@
+- type: p1
+- type: p2
+- type: p3
+- type: p4
+- type: p5
+- type: orientations
+- type: number_atoms
+- type: box
+- type: atoms
+- type: empirical_potential
+- type: optimised_atoms

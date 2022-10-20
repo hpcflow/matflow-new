@@ -1,0 +1,10 @@
+- label: lammps_atoms_file
+  name:
+    name: atoms.lammps
+- label: lammps_input_script
+  name:
+    name: in.lammps
+- label: lammps_dump_files
+  name:
+    name: (dump.\d+.txt)
+    is_regex: true

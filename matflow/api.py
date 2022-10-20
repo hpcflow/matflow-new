@@ -1,9 +1,11 @@
 import logging
 
 from matflow import MatFlow
-from hpcflow.api import *
 
 logger = logging.getLogger(__name__)
+
+
+make_workflow = MatFlow.make_workflow
 
 
 def parameter_search():

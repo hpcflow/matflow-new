@@ -80,11 +80,42 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./.venv
-          key: {% raw %}${{ runner.os }}-${{ matrix.python-version }}-venv-${{ hashFiles('**/poetry.lock') }}{% endraw %}
+          key: {% raw %}${{ runner.os }}-test-${{ matrix.python-version }}-venv-${{ hashFiles('**/poetry.lock') }}{% endraw %}
 
       - name: Install dependencies
         run: |
           poetry install
+
+      - name: Run tests
+        run: |
+          poetry run python -m pytest {{ pytest_args }}
+
+  test-CentOS:
+    needs: pre-commit
+    runs-on: ubuntu-latest
+    container:
+      image: aplowman/centos7-poetry
+    steps:
+      - uses: actions/checkout@v2
+        with:          
+          ref: {% raw %}${{ github.ref }}{% endraw %}
+
+      - name: Set ownership
+        run: |
+          # this is to fix GIT not liking owner of the checkout dir
+          chown -R $(id -u):$(id -g) $PWD
+
+      - name: Configure poetry
+        run: poetry config virtualenvs.in-project true
+
+      - name: Cache the virtualenv
+        uses: actions/cache@v2
+        with:
+          path: ./.venv
+          key: {% raw %}venv-CentOS-test-${{ hashFiles('**/poetry.lock') }}{% endraw %}
+
+      - name: Install dependencies
+        run: poetry install
 
       - name: Run tests
         run: |
