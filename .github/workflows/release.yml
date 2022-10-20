@@ -375,10 +375,10 @@ jobs:
           binaryYaml="${binaryYaml//$'\r'/'%0D'}"
           echo "::set-output name=binary_download_links::$binaryYaml"
 
-      - name: Publish (to https://test.pypi.org/legacy/)
+      - name: Publish (to https://upload.pypi.org/legacy/)
         run: |
-          poetry config repositories.pypi https://test.pypi.org/legacy/
-          poetry config pypi-token.pypi ${{ secrets.TEST_PYPI }}
+          poetry config repositories.pypi https://upload.pypi.org/legacy/
+          poetry config pypi-token.pypi ${{ secrets.PYPI }}
           poetry publish --repository pypi
 
   build-documentation:
