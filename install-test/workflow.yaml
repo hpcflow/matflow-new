@@ -3,7 +3,8 @@ tasks:
   - schemas: [dummy_task_1]
 
     resources:
-      scratch: local
+      scratch: CSF3
+      scheduler: SGE
 
     inputs:
       p1:

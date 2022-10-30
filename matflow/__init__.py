@@ -1,10 +1,7 @@
-import socket
 import numpy as np
-
 from hpcflow.sdk import App, ConfigOptions
 
 from matflow._version import __version__
-import matflow.parameters
 
 config_options = ConfigOptions(
     directory_env_var="MATFLOW_CONFIG_DIR",

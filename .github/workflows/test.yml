@@ -4,12 +4,10 @@ concurrency:
   ci-${{ format('{0}github.head_ref', 'refs/heads') || github.ref }}
 
 env:
-  PYTHON_VERSION_PRE_COMMIT: 3.9
+  PYTHON_VERSION_PRE_COMMIT: "3.10"
 
 on:
   workflow_dispatch: # manual invocation
-  push:
-    branches-ignore: [main, develop] # have to manually change these
   pull_request:
     types: [opened, edited, synchronize]
     branches: [main, develop] # have to manually change these
@@ -18,7 +16,7 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           # PAT of user who has permission to bypass branch
           # protection || or standard GITHUB_TOKEN if running on an external fork (won't
@@ -26,6 +24,7 @@ jobs:
           token: ${{ secrets.HPCFLOW_ACTIONS_TOKEN || secrets.GITHUB_TOKEN }}
           # checkout PR source branch (head_ref) if event is pull_request:
           ref: ${{ github.head_ref || github.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
 
       - run: |
           git config user.name hpcflow-actions
@@ -58,8 +57,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10"]
-        os: [ubuntu-18.04]
+        python-version:
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "3.10"
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -84,11 +90,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install
+          poetry install --without dev,pyinstaller
 
       - name: Run tests
         run: |
-          poetry run python -m pytest --verbose --exitfirst -k "not task_schema and not task_template and not resolve_elements and not input_value and not action"
+          poetry run python -m pytest --verbose --exitfirst
 
   test-CentOS:
     needs: pre-commit
@@ -97,11 +103,12 @@ jobs:
       image: aplowman/centos7-poetry
     steps:
       - uses: actions/checkout@v2
-        with:          
+        with:
           ref: ${{ github.ref }}
 
       - name: Set ownership
         run: |
+          # see: https://github.com/actions/runner/issues/2033#issuecomment-1204205989
           # this is to fix GIT not liking owner of the checkout dir
           chown -R $(id -u):$(id -g) $PWD
 
@@ -115,8 +122,8 @@ jobs:
           key: venv-CentOS-test-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install dependencies
-        run: poetry install
+        run: poetry install --without dev,pyinstaller
 
       - name: Run tests
         run: |
-          poetry run python -m pytest --verbose --exitfirst -k "not task_schema and not task_template and not resolve_elements and not input_value and not action"
+          poetry run python -m pytest --verbose --exitfirst
