@@ -2,11 +2,11 @@ name: release
 concurrency: release
 
 env:
-  PYTHON_VERSION_BUMP: 3.9
+  PYTHON_VERSION_BUMP: "3.10"
   PYTHON_VERSION_BUILD_EXES: "3.10"
-  PYTHON_VERSION_RELEASE: 3.9
-  PYTHON_VERSION_BUILD_DOCS: 3.9
-  PYTHON_VERSION_UPDATE_WEB: 3.9
+  PYTHON_VERSION_RELEASE: "3.10"
+  PYTHON_VERSION_BUILD_DOCS: "3.10"
+  PYTHON_VERSION_UPDATE_WEB: "3.10"
 
 on:
   pull_request_target:
@@ -181,7 +181,7 @@ jobs:
         run: poetry config virtualenvs.in-project true
 
       - name: Install dependencies
-        run: poetry install --no-dev --extras "pyinstaller"
+        run: poetry install --without dev
 
       - name: Build with pyinstaller (non Windows)
         if: "!contains(matrix.os, 'windows')"
@@ -235,9 +235,9 @@ jobs:
           echo ${{ executable_name }}_vers_expected
           [ "${{ executable_name }}_vers" = "${{ executable_name }}_vers_expected" ]
 
-      - name: Basic CLI checks
+      - name: Run test suite on the frozen app
         run: |
-          {{ pyinstaller_dir }}/dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} config get --all
+          {{ pyinstaller_dir }}/dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} test
 
   build-executables-linux:
     runs-on: ubuntu-latest
@@ -251,6 +251,7 @@ jobs:
 
       - name: Set ownership
         run: |
+          # see: https://github.com/actions/runner/issues/2033#issuecomment-1204205989
           # this is to fix GIT not liking owner of the checkout dir
           chown -R $(id -u):$(id -g) $PWD
 
@@ -264,7 +265,7 @@ jobs:
           key: {% raw %}venv-build-CentOS-${{ hashFiles('**/poetry.lock') }}{% endraw %}
 
       - name: Install dependencies
-        run: poetry install --no-dev --extras "pyinstaller"
+        run: poetry install --without dev
 
       - name: Build with pyinstaller for CentOS
         working-directory: pyinstaller
@@ -298,9 +299,9 @@ jobs:
           echo ${{ executable_name }}_vers_expected
           [ "${{ executable_name }}_vers" = "${{ executable_name }}_vers_expected" ]
 
-      - name: Basic CLI checks
+      - name: Run test suite on the frozen app
         run: |
-          {{ pyinstaller_dir }}/dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }{% endraw %}}-linux config get --all
+          {{ pyinstaller_dir }}/dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }{% endraw %}}-linux test
 
   release-github-PyPI:
     needs: [bump-version, build-executables, build-executables-linux]
@@ -329,7 +330,7 @@ jobs:
         run: poetry config virtualenvs.in-project true
 
       - name: Install dependencies
-        run: poetry install
+        run: poetry install --without dev,pyinstaller
 
       - name: Build (for PyPI)
         run: |
@@ -434,7 +435,7 @@ jobs:
         run: poetry config virtualenvs.in-project true
 
       - name: Install dependencies
-        run: poetry install
+        run: poetry install --without test,pyinstaller
 
       - name: Build documentation with Sphinx
         run: |

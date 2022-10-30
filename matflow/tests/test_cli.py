@@ -4,7 +4,7 @@ from click.testing import CliRunner
 from hpcflow import __version__ as hpcflow_version
 
 from matflow import __version__ as matflow_version
-from matflow.cli import MatFlow
+from matflow.api import MatFlow
 
 
 def test_version():
