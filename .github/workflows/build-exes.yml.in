@@ -27,16 +27,16 @@ jobs:
 
     runs-on: {% raw %}${{ matrix.os }}{% endraw %}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0 # get all history and tags
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: {% raw %}${{ env.PYTHON_VERSION_BUILD_EXES }}{% endraw %}
 
       - name: Cache the virtualenv
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./.venv
           key: {% raw %}venv-build-${{ matrix.os }}-${{ hashFiles('**/poetry.lock') }}{% endraw %}
@@ -81,19 +81,19 @@ jobs:
         run: ./make.ps1 -ExeName "{{ executable_name }}-{% raw %}${{ env.vers }}-${{ matrix.executable_os }}" -LogLevel ${{ github.event.inputs.logLevel }}{% endraw %}
 
       - name: Upload executable artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: {{ executable_name }}-{% raw %}${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %}
           path: {{ pyinstaller_dir }}/dist/{{ executable_name }}-{% raw %}${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %}
 
       - name: Upload spec file
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: {{ executable_name }}-{% raw %}${{ env.vers }}-${{ matrix.executable_os }}{% endraw %}.spec
           path: {{ pyinstaller_dir }}/{{ executable_name }}-{% raw %}${{ env.vers }}-${{ matrix.executable_os }}{% endraw %}.spec
 
       - name: Upload build directory
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: {{ executable_name }}-{% raw %}${{ env.vers }}-${{ matrix.executable_os }}{% endraw %}-build
           path: {{ pyinstaller_dir }}/build/{{ executable_name }}-{% raw %}${{ env.vers }}-${{ matrix.executable_os }}{% endraw %}
@@ -131,7 +131,7 @@ jobs:
     container:
       image: aplowman/centos7-poetry
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0 # get all history and tags
 
@@ -145,7 +145,7 @@ jobs:
         run: poetry config virtualenvs.in-project true
 
       - name: Cache the virtualenv
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./.venv
           key: {% raw %}venv-build-CentOS-${{ hashFiles('**/poetry.lock') }}{% endraw %}
@@ -167,19 +167,19 @@ jobs:
         run: ./make.sh {{ executable_name }}-{% raw %}${{ env.vers }}-linux ${{ github.event.inputs.logLevel }}{% endraw %}
 
       - name: Upload executable artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: {{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux
           path: {{ pyinstaller_dir }}/dist/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux
 
       - name: Upload spec file
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: {{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux.spec
           path: {{ pyinstaller_dir }}/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux.spec
 
       - name: Upload build directory
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: {{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux-build
           path: {{ pyinstaller_dir }}/build/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux
