@@ -32,7 +32,7 @@ jobs:
     outputs:
       new_tag_name: ${{ steps.get_new_tag.outputs.new_tag_name }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0 # get all history and tags
           ref: ${{ github.event.pull_request.base.ref }}
@@ -42,7 +42,7 @@ jobs:
           git config user.name hpcflow-actions
           git config user.email hpcflow-actions@users.noreply.github.com
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION_BUMP }}
 
@@ -139,7 +139,7 @@ jobs:
           ./git-chglog --template .chglog/RELEASE.tpl.md --output CHANGELOG_increment.md ${{ env.new_tag }}
           cat CHANGELOG_increment.md
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: CHANGELOG_increment
           path: CHANGELOG_increment.md
@@ -160,16 +160,16 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.base.ref }} # otherwise we get the ref when the workflow started (missing above commit)
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION_BUILD_EXES }}
 
       - name: Cache the virtualenv
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./.venv
           key: venv-build-${{ matrix.os }}-${{ hashFiles('**/poetry.lock') }}
@@ -194,19 +194,19 @@ jobs:
         run: ./make.ps1 -ExeName "matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}" -LogLevel INFO
 
       - name: Upload executable artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
           path: pyinstaller/dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
 
       - name: Upload spec file
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}.spec
           path: pyinstaller/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}.spec
 
       - name: Upload build directory
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-build
           path: pyinstaller/build/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}
@@ -245,7 +245,7 @@ jobs:
     container:
       image: aplowman/centos7-poetry
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.base.ref }} # otherwise we get the ref when the workflow started (missing above commit)
 
@@ -259,7 +259,7 @@ jobs:
         run: poetry config virtualenvs.in-project true
 
       - name: Cache the virtualenv
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./.venv
           key: venv-build-CentOS-${{ hashFiles('**/poetry.lock') }}
@@ -272,19 +272,19 @@ jobs:
         run: ./make.sh matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux INFO
 
       - name: Upload executable artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux
           path: pyinstaller/dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux
 
       - name: Upload spec file
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux.spec
           path: pyinstaller/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux.spec
 
       - name: Upload build directory
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux-build
           path: pyinstaller/build/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux
@@ -309,16 +309,16 @@ jobs:
     outputs:
       binary_download_links: ${{ steps.get_binary_download_links.outputs.binary_download_links }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.base.ref }} # otherwise we get the ref when the workflow started (missing above commit)
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION_RELEASE }}
 
       - name: Cache the virtualenv
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./.venv
           key: venv-release-${{ hashFiles('**/poetry.lock') }}
@@ -338,7 +338,7 @@ jobs:
 
       - run: mkdir release-artifacts
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         id: download_executables
         with:
           path: release-artifacts
@@ -386,7 +386,7 @@ jobs:
     needs: release-github-PyPI
     runs-on: ubuntu-18.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0 # get all history and tags
           ref: ${{ github.event.pull_request.base.ref }} # otherwise we get the ref when the workflow started (missing above commit)
@@ -396,7 +396,7 @@ jobs:
           git config user.name hpcflow-actions
           git config user.email hpcflow-actions@users.noreply.github.com
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION_BUILD_DOCS }}
 
@@ -423,7 +423,7 @@ jobs:
           fi
 
       - name: Cache the virtualenv
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./.venv
           key: venv-release-${{ matrix.os }}-${{ hashFiles('**/poetry.lock') }}
@@ -444,7 +444,7 @@ jobs:
           poetry run make html
 
       - name: Upload documentation artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: docs_html
           path: docs/build/html
@@ -453,11 +453,11 @@ jobs:
     needs: [bump-version, release-github-PyPI, build-documentation]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION_UPDATE_WEB }}
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           repository: hpcflow/docs.matflow.io
           token: ${{ secrets.HPCFLOW_ACTIONS_TOKEN }}
@@ -467,7 +467,7 @@ jobs:
           git config user.email hpcflow-actions@users.noreply.github.com
 
       - name: Download documentation artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: docs_html
           path: docs/${{ needs.bump-version.outputs.new_tag_name }}
