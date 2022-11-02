@@ -1,4 +1,14 @@
 
+<a name="v0.3.0a7"></a>
+## [v0.3.0a7](https://github.com/hpcflow/matflow-new/compare/v0.3.0a6...v0.3.0a7) - 2022.11.02
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+* **GHA:** Update workflow files
+* **GHA:** Update workflow template files.
+
+
 <a name="v0.3.0a6"></a>
 ## [v0.3.0a6](https://github.com/hpcflow/matflow-new/compare/v0.3.0a5...v0.3.0a6) - 2022.10.30
 
