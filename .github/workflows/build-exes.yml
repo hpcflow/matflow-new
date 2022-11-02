@@ -27,16 +27,16 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0 # get all history and tags
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION_BUILD_EXES }}
 
       - name: Cache the virtualenv
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./.venv
           key: venv-build-${{ matrix.os }}-${{ hashFiles('**/poetry.lock') }}
@@ -81,19 +81,19 @@ jobs:
         run: ./make.ps1 -ExeName "matflow-${{ env.vers }}-${{ matrix.executable_os }}" -LogLevel ${{ github.event.inputs.logLevel }}
 
       - name: Upload executable artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
           path: pyinstaller/dist/matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
 
       - name: Upload spec file
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: matflow-${{ env.vers }}-${{ matrix.executable_os }}.spec
           path: pyinstaller/matflow-${{ env.vers }}-${{ matrix.executable_os }}.spec
 
       - name: Upload build directory
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: matflow-${{ env.vers }}-${{ matrix.executable_os }}-build
           path: pyinstaller/build/matflow-${{ env.vers }}-${{ matrix.executable_os }}
@@ -131,7 +131,7 @@ jobs:
     container:
       image: aplowman/centos7-poetry
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0 # get all history and tags
 
@@ -145,7 +145,7 @@ jobs:
         run: poetry config virtualenvs.in-project true
 
       - name: Cache the virtualenv
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./.venv
           key: venv-build-CentOS-${{ hashFiles('**/poetry.lock') }}
@@ -167,19 +167,19 @@ jobs:
         run: ./make.sh matflow-${{ env.vers }}-linux ${{ github.event.inputs.logLevel }}
 
       - name: Upload executable artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: matflow-${{ env.vers }}-linux
           path: pyinstaller/dist/matflow-${{ env.vers }}-linux
 
       - name: Upload spec file
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: matflow-${{ env.vers }}-linux.spec
           path: pyinstaller/matflow-${{ env.vers }}-linux.spec
 
       - name: Upload build directory
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: matflow-${{ env.vers }}-linux-build
           path: pyinstaller/build/matflow-${{ env.vers }}-linux
