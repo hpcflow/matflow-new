@@ -18,26 +18,36 @@ MatFlow = App(
     config_options=config_options,
 )
 
-TaskSchema = MatFlow.TaskSchema
-Task = MatFlow.Task
-WorkflowTask = MatFlow.WorkflowTask
-Workflow = MatFlow.Workflow
-WorkflowTemplate = MatFlow.WorkflowTemplate
 Action = MatFlow.Action
+ActionEnvironment = MatFlow.ActionEnvironment
 ActionScope = MatFlow.ActionScope
 ActionScopeType = MatFlow.ActionScopeType
-Environment = MatFlow.Environment
-InputFile = MatFlow.InputFile
-InputSource = MatFlow.InputSource
-InputSourceType = MatFlow.InputSourceType
-InputSourceMode = MatFlow.InputSourceMode
-InputValue = MatFlow.InputValue
 Command = MatFlow.Command
-ActionEnvironment = MatFlow.ActionEnvironment
+Environment = MatFlow.Environment
+Executable = MatFlow.Executable
+ExecutableInstance = MatFlow.ExecutableInstance
+ExecutablesList = MatFlow.ExecutablesList
+FileSpec = MatFlow.FileSpec
+InputFile = MatFlow.InputFile
+InputFileGenerator = MatFlow.InputFileGenerator
+InputSource = MatFlow.InputSource
+InputSourceMode = MatFlow.InputSourceMode
+InputSourceType = MatFlow.InputSourceType
+InputValue = MatFlow.InputValue
 Parameter = MatFlow.Parameter
+ResourceList = MatFlow.ResourceList
+ResourceSpec = MatFlow.ResourceSpec
+SchemaInput = MatFlow.SchemaInput
+SchemaOutput = MatFlow.SchemaOutput
+Task = MatFlow.Task
+TaskObjective = MatFlow.TaskObjective
+TaskSchema = MatFlow.TaskSchema
+TaskSourceType = MatFlow.TaskSourceType
 ValueSequence = MatFlow.ValueSequence
+Workflow = MatFlow.Workflow
+WorkflowTask = MatFlow.WorkflowTask
+WorkflowTemplate = MatFlow.WorkflowTemplate
 ZarrEncodable = MatFlow.ZarrEncodable
-
 
 # temporarily used just to check correct inclusion of numpy in built exes:
 a = np.random.random((10, 10))
