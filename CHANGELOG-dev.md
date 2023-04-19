@@ -1,4 +1,17 @@
 
+<a name="v0.3.0a8"></a>
+## [v0.3.0a8](https://github.com/hpcflow/matflow-new/compare/v0.3.0a7...v0.3.0a8) - 2023.04.19
+
+### ✨ Features
+
+* Add compress scripts for onefile builds
+
+### 👷 Build changes
+
+* Updated gha workflows
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a7"></a>
 ## [v0.3.0a7](https://github.com/hpcflow/matflow-new/compare/v0.3.0a6...v0.3.0a7) - 2022.11.02
 
