@@ -175,48 +175,42 @@ jobs:
           key: venv-build-${{ matrix.os }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install poetry
-        run: python -m pip install poetry==1.2.2
+        run: python -m pip install poetry==1.4
 
       - name: Configure poetry
-        run: poetry config virtualenvs.in-project true
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry config installer.modern-installation false
 
       - name: Install dependencies
         run: poetry install --without dev
 
-      - name: Build with pyinstaller (non Windows)
+      - name: Build with pyinstaller (non-Windows, file)
         if: "!contains(matrix.os, 'windows')"
         working-directory: pyinstaller
-        run: ./make.sh matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }} INFO
+        run: ./make.sh matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }} INFO 'onefile'
+        
+      - name: Build with pyinstaller (non-Windows, folder)
+        if: "!contains(matrix.os, 'windows')"
+        working-directory: pyinstaller
+        run: ./make.sh matflow-${{ needs.bump-version.outputs.new_tag_name}}-${{ matrix.executable_os }}-dir INFO 'onedir'
 
-      - name: Build with pyinstaller (Windows)
+      - name: Build with pyinstaller (Windows, file)
         if: contains(matrix.os, 'windows')
         working-directory: pyinstaller
-        run: ./make.ps1 -ExeName "matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}" -LogLevel INFO
+        run: ./make.ps1 -ExeName 'matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}' -LogLevel INFO -BuildType 'onefile'
 
-      - name: Upload executable artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
-          path: pyinstaller/dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
+      - name: Build with pyinstaller (Windows, folder)
+        if: contains(matrix.os, 'windows')
+        working-directory: pyinstaller
+        run: ./make.ps1 -ExeName 'matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir' -LogLevel INFO -BuildType 'onedir'
 
-      - name: Upload spec file
-        uses: actions/upload-artifact@v3
-        with:
-          name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}.spec
-          path: pyinstaller/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}.spec
-
-      - name: Upload build directory
-        uses: actions/upload-artifact@v3
-        with:
-          name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-build
-          path: pyinstaller/build/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}
-
-      - name: Version check (windows)
+      - name: Version check (windows, file)
         if: contains(matrix.os, 'windows')
         run: |
           $tag = "${{ needs.bump-version.outputs.new_tag_name }}"
           $tagNoV = $tag.trim('v')
-          $matflow_vers = pyinstaller/dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version
+          $matflow_vers = pyinstaller/dist/onefile/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version
           $matflow_vers_expected = "matflow, version $tagNoV"
           echo $matflow_vers
           echo "$matflow_vers_expected"
@@ -224,20 +218,70 @@ jobs:
             exit 1
           }
 
-      - name: Version check (non-windows)
+      - name: Version check (windows, folder)
+        if: contains(matrix.os, 'windows')
+        run: |
+          $tag = "${{ needs.bump-version.outputs.new_tag_name }}"
+          $tagNoV = $tag.trim('v')
+          $matflow_vers = pyinstaller/dist/onedir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir${{ matrix.executable_ext }}  --version
+          $matflow_vers_expected = "matflow, version $tagNoV"
+          echo $matflow_vers
+          echo "$matflow_vers_expected"
+          if ($matflow_vers -ne $matflow_vers_expected) {
+            exit 1
+          }
+
+      - name: Version check (non-windows, file)
         if: "!contains(matrix.os, 'windows')"
         run: |
           tag=${{ needs.bump-version.outputs.new_tag_name }}
           tagNoV=${tag:1}
-          matflow_vers=$(pyinstaller/dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version)
+          matflow_vers=$(pyinstaller/dist/onefile/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version)
           matflow_vers_expected="matflow, version $tagNoV"
           echo $matflow_vers
           echo $matflow_vers_expected
           [ "$matflow_vers" = "$matflow_vers_expected" ]
 
-      - name: Run test suite on the frozen app
+      - name: Version check (non-windows, folder)
+        if: "!contains(matrix.os, 'windows')"
         run: |
-          pyinstaller/dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} test
+          tag=${{ needs.bump-version.outputs.new_tag_name }}
+          tagNoV=${tag:1}
+          matflow_vers=$(pyinstaller/dist/onedir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir${{ matrix.executable_ext }} --version)
+          matflow_vers_expected="matflow, version $tagNoV"
+          echo $matflow_vers
+          echo $matflow_vers_expected
+          [ "$matflow_vers" = "$matflow_vers_expected" ]
+
+      - name: Run test suite on the frozen app (file)
+        run: |
+          pyinstaller/dist/onefile/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} test
+
+      - name: Run test suite on the frozen app (folder)
+        run: |
+          pyinstaller/dist/onedir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir${{ matrix.executable_ext }} test
+
+      - name: Compress folder (windows, folder)
+        if: contains(matrix.os, 'windows')
+        working-directory: pyinstaller
+        run: ./compress.ps1 -ExeName 'matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir' -BuildType 'onedir'
+
+      - name: Compress folder (non-windows, folder)
+        if: "!contains(matrix.os, 'windows')" 
+        working-directory: pyinstaller
+        run: ./compress.sh matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir 'onedir'
+          
+      - name: Upload executable artifact (file)
+        uses: actions/upload-artifact@v3
+        with:
+          name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
+          path: pyinstaller/dist/onefile/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
+
+      - name: Upload executable artifact (compressed folder)
+        uses: actions/upload-artifact@v3
+        with:
+          name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir.zip
+          path: pyinstaller/dist/onedir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir.zip
 
   build-executables-linux:
     runs-on: ubuntu-latest
@@ -256,7 +300,8 @@ jobs:
           chown -R $(id -u):$(id -g) $PWD
 
       - name: Configure poetry
-        run: poetry config virtualenvs.in-project true
+        run: |
+          poetry config virtualenvs.in-project true
 
       - name: Cache the virtualenv
         uses: actions/cache@v3
@@ -267,41 +312,57 @@ jobs:
       - name: Install dependencies
         run: poetry install --without dev
 
-      - name: Build with pyinstaller for CentOS
+      - name: Build with pyinstaller for CentOS (file)
         working-directory: pyinstaller
-        run: ./make.sh matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux INFO
+        run: ./make.sh matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux INFO onefile
 
-      - name: Upload executable artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux
-          path: pyinstaller/dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux
+      - name: Build with pyinstaller for CentOS (folder)
+        working-directory: pyinstaller
+        run: ./make.sh matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux-dir INFO onedir
 
-      - name: Upload spec file
-        uses: actions/upload-artifact@v3
-        with:
-          name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux.spec
-          path: pyinstaller/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux.spec
-
-      - name: Upload build directory
-        uses: actions/upload-artifact@v3
-        with:
-          name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux-build
-          path: pyinstaller/build/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux
-
-      - name: Version check
+      - name: Version check (file)
         run: |
           tag=${{ needs.bump-version.outputs.new_tag_name }}
           tagNoV=${tag:1}
-          matflow_vers=$(pyinstaller/dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux --version)
+          matflow_vers=$(pyinstaller/dist/onefile/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux --version)
           matflow_vers_expected="matflow, version $tagNoV"
           echo $matflow_vers
           echo $matflow_vers_expected
           [ "$matflow_vers" = "$matflow_vers_expected" ]
 
-      - name: Run test suite on the frozen app
+      - name: Version check (folder)
         run: |
-          pyinstaller/dist/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux test
+          tag=${{ needs.bump-version.outputs.new_tag_name }}
+          tagNoV=${tag:1}
+          matflow_vers=$(pyinstaller/dist/onedir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux-dir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux-dir --version)
+          matflow_vers_expected="matflow, version $tagNoV"
+          echo $matflow_vers
+          echo $matflow_vers_expected
+          [ "$matflow_vers" = "$matflow_vers_expected" ]
+
+      - name: Run test suite on the frozen app (file)
+        run: |
+          pyinstaller/dist/onefile/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux test
+
+      - name: Run test suite on the frozen app (folder)
+        run: |
+          pyinstaller/dist/onedir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux-dir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux-dir test
+
+      - name: Compress folder (folder)
+        working-directory: pyinstaller
+        run: ./compress.sh matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux-dir 'onedir'
+
+      - name: Upload executable artifact (file)
+        uses: actions/upload-artifact@v3
+        with:
+          name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux
+          path: pyinstaller/dist/onefile/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux
+
+      - name: Upload executable artifact (compressed folder)
+        uses: actions/upload-artifact@v3
+        with:
+          name: matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux-dir.zip
+          path: pyinstaller/dist/onedir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux-dir.zip
 
   release-github-PyPI:
     needs: [bump-version, build-executables, build-executables-linux]
@@ -324,10 +385,12 @@ jobs:
           key: venv-release-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install poetry
-        run: python -m pip install poetry==1.2.2
+        run: python -m pip install poetry==1.4
 
       - name: Configure poetry
-        run: poetry config virtualenvs.in-project true
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry config installer.modern-installation false
 
       - name: Install dependencies
         run: poetry install --without dev,pyinstaller
@@ -356,6 +419,9 @@ jobs:
             **/matflow-${{ needs.bump-version.outputs.new_tag_name }}-win.exe
             **/matflow-${{ needs.bump-version.outputs.new_tag_name }}-macOS
             **/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux
+            **/matflow-${{ needs.bump-version.outputs.new_tag_name }}-win-dir.zip
+            **/matflow-${{ needs.bump-version.outputs.new_tag_name }}-macOS-dir.zip
+            **/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux-dir.zip
           prerelease: ${{ github.event.pull_request.base.ref == 'develop' }}
 
       - name: Release info
@@ -364,7 +430,7 @@ jobs:
           binaryYaml=$(python3 -c "
           from pathlib import Path
           out_yaml = ''
-          for i in ['win.exe', 'macOS', 'linux']:
+          for i in ['win.exe', 'macOS', 'linux', 'win-dir.zip', 'macOS-dir.zip', 'linux-dir.zip']:
             exe_name = 'matflow-${{ needs.bump-version.outputs.new_tag_name }}-' + i
             url = 'https://github.com/hpcflow/matflow-new/releases/download/${{ needs.bump-version.outputs.new_tag_name }}/' + exe_name
             out_yaml += exe_name + ': ' + url + '\n'
@@ -429,10 +495,11 @@ jobs:
           key: venv-release-${{ matrix.os }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install poetry
-        run: curl -sSL https://install.python-poetry.org | python3 -
+        run: python -m pip install poetry==1.4
 
       - name: Configure poetry
         run: poetry config virtualenvs.in-project true
+             poetry config installer.modern-installation false
 
       - name: Install dependencies
         run: poetry install --without test,pyinstaller
