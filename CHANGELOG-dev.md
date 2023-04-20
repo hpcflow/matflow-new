@@ -1,4 +1,16 @@
 
+<a name="v0.3.0a9"></a>
+## [v0.3.0a9](https://github.com/hpcflow/matflow-new/compare/v0.3.0a8...v0.3.0a9) - 2023.04.20
+
+### ✨ Features
+
+* Update ubuntu runner for build documentation
+
+### 🐛 Bug Fixes
+
+* fix typo in Configure Poetry in Release WF
+
+
 <a name="v0.3.0a8"></a>
 ## [v0.3.0a8](https://github.com/hpcflow/matflow-new/compare/v0.3.0a7...v0.3.0a8) - 2023.04.19
 
