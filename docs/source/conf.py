@@ -99,13 +99,20 @@ with Path("released_binaries.yml") as fh:
 
 # Generate install/index.rst file programmatically, including binary download links:
 
-EXE_PLAT_LOOKUP = {"win.exe": "Windows", "macOS": "macOS", "linux": "Linux"}
+EXE_PLAT_LOOKUP = {
+    "win.exe": "Windows executable",
+    "macOS": "macOS executable",
+    "linux": "Linux executable",
+    "win-dir.zip": "Windows folder",
+    "linux-dir.zip": "Linux folder",
+    "macOS-dir.zip": "macOS folder",
+}
 
 get_links_table = (
     '<table class="binary-downloads-table">\n'
     + indent(
         text="\n".join(
-            f'<tr><td>{EXE_PLAT_LOOKUP[exe_name.split("-")[-1]]}</td><td><a href="{link}">{exe_name}</a></td></tr>'
+            f'<tr><td>{EXE_PLAT_LOOKUP["-".join(exe_name.split("-")[2:])]}</td><td><a href="{link}">{exe_name}</a></td></tr>'
             for exe_name, link in sorted(bins_dat.items())
         ),
         prefix="  ",
@@ -122,16 +129,57 @@ install_index = f"""
 Installation
 ############
 
-There are two methods to using MatFlow: via a binary executable file or via a Python package. 
-Both methods allow the design and execution of workflows. If you want to use MatFlow on a 
-cluster, using the binary executable file is recommended. If you want to design and explore
-your workflows using the Python API, then you need the Python package. You can use both simultaneously if you wish!
-
-********************************
-Download binaries (v{release})
-********************************
-
 Release notes: `on GitHub <https://github.com/hpcflow/matflow-new/releases/tag/v{release}>`_
+
+There are two ways of using MatFlow:
+ * MatFlow CLI (Command Line Interface)
+ * The MatFlow Python package
+
+Both of these options allow workflows to be designed and executed. MatFlow CLI
+is recommended for beginners and strongly recommended if you want to 
+run MatFlow on a cluster. The MatFlow Python package allows workflows to be
+designed and explored via the Python API and is recommended for users 
+comfortable working with Python. If you are interested in contributing to 
+the development of MatFlow, the Python package is the place to start.
+
+MatFlow CLI and the MatFlow Python package can both be used simultaneously.
+
+*******************************
+MatFlow CLI
+*******************************
+
+Install script (v{release})
+===========================t
+
+MatFlow CLI can be installed on macOS, Linux or Windows through a terminal
+or shell prompt.
+
+**macOS:** Open a terminal, paste the command shown below and press enter.
+
+```bash
+(touch tmp.sh && curl -fsSL https://raw.githubusercontent.com/hpcflow/install-scripts/main/src/install-matflow.sh > tmp.sh && bash tmp.sh --prerelease --path --onefile) ; rm tmp.sh
+```
+
+**Linux:** Open a shell prompt, paste the command shown below and press enter.
+
+```bash
+(touch tmp.sh && curl -fsSL https://raw.githubusercontent.com/hpcflow/install-scripts/main/src/install-matflow.sh > tmp.sh && bash tmp.sh --prerelease --path --onefile) ; rm tmp.sh
+```
+
+**Windows:** Open a Powershell terminal, paste the command shown below and 
+press enter.
+
+```bash
+& $([scriptblock]::Create((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/hpcflow/install-scripts/main/src/install-matflow.ps1'))) -PreRelease -OneFile
+```
+
+Download binaries (v{release})
+===============================
+
+Binaries are available in two formats:
+
+  * A single executable file containing everything.
+  * A folder containing an executable and supporting files.
 
 Click below to download the MatFlow binary for your platform (other binary releases are available by using the version switcher in the top-right corner):
 
@@ -140,8 +188,11 @@ Click below to download the MatFlow binary for your platform (other binary relea
 {indent(get_links_table, '   ')}
 
 **************************
-Install the Python package
+The MatFlow Python package
 **************************
+
+Using pip
+==========================
 
 Use pip to install the Python package from PyPI::
 
