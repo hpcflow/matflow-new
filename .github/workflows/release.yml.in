@@ -450,7 +450,7 @@ jobs:
 
   build-documentation:
     needs: release-github-PyPI
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
