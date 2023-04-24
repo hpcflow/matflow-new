@@ -149,7 +149,7 @@ MatFlow CLI
 *******************************
 
 Install script (v{release})
-===========================t
+============================
 
 MatFlow CLI can be installed on macOS, Linux or Windows through a terminal
 or shell prompt.
