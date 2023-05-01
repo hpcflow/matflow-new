@@ -1,4 +1,64 @@
 
+<a name="v0.3.0a11"></a>
+## [v0.3.0a11](https://github.com/hpcflow/matflow-new/compare/v0.3.0a10...v0.3.0a11) - 2023.05.01
+
+### ♻ Code Refactoring
+
+* add api imports
+
+### 🐛 Bug Fixes
+
+* hpcflow api use
+
+### 👷 Build changes
+
+* update deps
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a10"></a>
+## [v0.3.0a10](https://github.com/hpcflow/matflow-new/compare/v0.3.0a9...v0.3.0a10) - 2023.04.20
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a9"></a>
+## [v0.3.0a9](https://github.com/hpcflow/matflow-new/compare/v0.3.0a8...v0.3.0a9) - 2023.04.20
+
+### ✨ Features
+
+* Update ubuntu runner for build documentation
+
+### 🐛 Bug Fixes
+
+* fix typo in Configure Poetry in Release WF
+
+
+<a name="v0.3.0a8"></a>
+## [v0.3.0a8](https://github.com/hpcflow/matflow-new/compare/v0.3.0a7...v0.3.0a8) - 2023.04.19
+
+### ✨ Features
+
+* Add compress scripts for onefile builds
+
+### 👷 Build changes
+
+* Updated gha workflows
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a7"></a>
+## [v0.3.0a7](https://github.com/hpcflow/matflow-new/compare/v0.3.0a6...v0.3.0a7) - 2022.11.02
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+* **GHA:** Update workflow files
+* **GHA:** Update workflow template files.
+
+
 <a name="v0.3.0a6"></a>
 ## [v0.3.0a6](https://github.com/hpcflow/matflow-new/compare/v0.3.0a5...v0.3.0a6) - 2022.10.30
 

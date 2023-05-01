@@ -30,7 +30,7 @@ jobs:
           git config user.name {{ bot_account_name }}
           git config user.email {{ bot_account_email }}
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: {% raw %}${{ env.PYTHON_VERSION_PRE_COMMIT }}{% endraw %}
 
@@ -69,21 +69,22 @@ jobs:
 
     runs-on: {% raw %}${{ matrix.os }}{% endraw %}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: {% raw %}${{ github.ref }}{% endraw %}
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: {% raw %}${{ matrix.python-version }}{% endraw %}
 
       - name: Install and configure poetry
         run: |
-          python -m pip install poetry
+          python -m pip install poetry==1.4
           poetry config virtualenvs.in-project true
+          poetry config installer.modern-installation false
 
       - name: Cache the virtualenv
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./.venv
           key: {% raw %}${{ runner.os }}-test-${{ matrix.python-version }}-venv-${{ hashFiles('**/poetry.lock') }}{% endraw %}
@@ -102,7 +103,7 @@ jobs:
     container:
       image: aplowman/centos7-poetry
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: {% raw %}${{ github.ref }}{% endraw %}
 
@@ -116,7 +117,7 @@ jobs:
         run: poetry config virtualenvs.in-project true
 
       - name: Cache the virtualenv
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./.venv
           key: {% raw %}venv-CentOS-test-${{ hashFiles('**/poetry.lock') }}{% endraw %}

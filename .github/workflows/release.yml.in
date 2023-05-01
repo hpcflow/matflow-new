@@ -32,7 +32,7 @@ jobs:
     outputs:
       new_tag_name: {% raw %}${{ steps.get_new_tag.outputs.new_tag_name }}{% endraw %}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0 # get all history and tags
           ref: {% raw %}${{ github.event.pull_request.base.ref }}{% endraw %}
@@ -42,7 +42,7 @@ jobs:
           git config user.name {{ bot_account_name }}
           git config user.email {{ bot_account_email }}
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: {% raw %}${{ env.PYTHON_VERSION_BUMP }}{% endraw %}
 
@@ -139,7 +139,7 @@ jobs:
           {% raw %}./git-chglog --template .chglog/RELEASE.tpl.md --output CHANGELOG_increment.md ${{ env.new_tag }}{% endraw %}
           cat CHANGELOG_increment.md
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: CHANGELOG_increment
           path: CHANGELOG_increment.md
@@ -160,63 +160,57 @@ jobs:
 
     runs-on: {% raw %}${{ matrix.os }}{% endraw %}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: {% raw %}${{ github.event.pull_request.base.ref }}{% endraw %} # otherwise we get the ref when the workflow started (missing above commit)
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: {% raw %}${{ env.PYTHON_VERSION_BUILD_EXES }}{% endraw %}
 
       - name: Cache the virtualenv
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./.venv
           key: {% raw %}venv-build-${{ matrix.os }}-${{ hashFiles('**/poetry.lock') }}{% endraw %}
 
       - name: Install poetry
-        run: python -m pip install poetry==1.2.2
+        run: python -m pip install poetry==1.4
 
       - name: Configure poetry
-        run: poetry config virtualenvs.in-project true
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry config installer.modern-installation false
 
       - name: Install dependencies
         run: poetry install --without dev
 
-      - name: Build with pyinstaller (non Windows)
+      - name: Build with pyinstaller (non-Windows, file)
         if: "!contains(matrix.os, 'windows')"
         working-directory: {{ pyinstaller_dir }}
-        run: ./make.sh {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }} INFO{% endraw %}
+        run: ./make.sh {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }} INFO 'onefile'{% endraw %}
+        
+      - name: Build with pyinstaller (non-Windows, folder)
+        if: "!contains(matrix.os, 'windows')"
+        working-directory: {{ pyinstaller_dir }}
+        run: ./make.sh {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name}}-${{ matrix.executable_os }}-dir INFO 'onedir'{% endraw %}
 
-      - name: Build with pyinstaller (Windows)
+      - name: Build with pyinstaller (Windows, file)
         if: contains(matrix.os, 'windows')
         working-directory: {{ pyinstaller_dir }}
-        run: ./make.ps1 -ExeName "{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}" -LogLevel INFO{% endraw %}
+        run: ./make.ps1 -ExeName '{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}' -LogLevel INFO -BuildType 'onefile'{% endraw %}
 
-      - name: Upload executable artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %}
-          path: {{ pyinstaller_dir }}/dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %}
+      - name: Build with pyinstaller (Windows, folder)
+        if: contains(matrix.os, 'windows')
+        working-directory: {{ pyinstaller_dir }}
+        run: ./make.ps1 -ExeName '{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir' -LogLevel INFO -BuildType 'onedir'{% endraw %}
 
-      - name: Upload spec file
-        uses: actions/upload-artifact@v2
-        with:
-          name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %}.spec
-          path: {{ pyinstaller_dir }}/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %}.spec
-
-      - name: Upload build directory
-        uses: actions/upload-artifact@v2
-        with:
-          name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %}-build
-          path: {{ pyinstaller_dir }}/build/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %}
-
-      - name: Version check (windows)
+      - name: Version check (windows, file)
         if: contains(matrix.os, 'windows')
         run: |
           $tag = "{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}"
           $tagNoV = $tag.trim('v')
-          ${{ executable_name }}_vers = {{ pyinstaller_dir }}/dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} --version
+          ${{ executable_name }}_vers = {{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} --version
           ${{ executable_name }}_vers_expected = "{{ executable_name }}, version $tagNoV"
           echo ${{ executable_name }}_vers
           echo "${{ executable_name }}_vers_expected"
@@ -224,20 +218,70 @@ jobs:
             exit 1
           }
 
-      - name: Version check (non-windows)
+      - name: Version check (windows, folder)
+        if: contains(matrix.os, 'windows')
+        run: |
+          $tag = "{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}"
+          $tagNoV = $tag.trim('v')
+          ${{ executable_name }}_vers = {{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir/{% endraw %}{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir${{ matrix.executable_ext }} {% endraw %} --version
+          ${{ executable_name }}_vers_expected = "{{ executable_name }}, version $tagNoV"
+          echo ${{ executable_name }}_vers
+          echo "${{ executable_name }}_vers_expected"
+          if (${{ executable_name }}_vers -ne ${{ executable_name }}_vers_expected) {
+            exit 1
+          }
+
+      - name: Version check (non-windows, file)
         if: "!contains(matrix.os, 'windows')"
         run: |
           tag={% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}
           tagNoV=${tag:1}
-          {{ executable_name }}_vers=$({{ pyinstaller_dir }}/dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} --version)
+          {{ executable_name }}_vers=$({{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} --version)
           {{ executable_name }}_vers_expected="{{ executable_name }}, version $tagNoV"
           echo ${{ executable_name }}_vers
           echo ${{ executable_name }}_vers_expected
           [ "${{ executable_name }}_vers" = "${{ executable_name }}_vers_expected" ]
 
-      - name: Run test suite on the frozen app
+      - name: Version check (non-windows, folder)
+        if: "!contains(matrix.os, 'windows')"
         run: |
-          {{ pyinstaller_dir }}/dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} test
+          tag={% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}
+          tagNoV=${tag:1}
+          {{ executable_name }}_vers=$({{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir/{% endraw %}{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir${{ matrix.executable_ext }}{% endraw %} --version)
+          {{ executable_name }}_vers_expected="{{ executable_name }}, version $tagNoV"
+          echo ${{ executable_name }}_vers
+          echo ${{ executable_name }}_vers_expected
+          [ "${{ executable_name }}_vers" = "${{ executable_name }}_vers_expected" ]
+
+      - name: Run test suite on the frozen app (file)
+        run: |
+          {{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} test
+
+      - name: Run test suite on the frozen app (folder)
+        run: |
+          {{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir/{% endraw %}{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir${{ matrix.executable_ext }}{% endraw %} test
+
+      - name: Compress folder (windows, folder)
+        if: contains(matrix.os, 'windows')
+        working-directory: {{ pyinstaller_dir }}
+        run: ./compress.ps1 -ExeName '{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir' -BuildType 'onedir'{% endraw %}
+
+      - name: Compress folder (non-windows, folder)
+        if: "!contains(matrix.os, 'windows')" 
+        working-directory: {{ pyinstaller_dir }}
+        run: ./compress.sh {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir 'onedir'{% endraw %}
+          
+      - name: Upload executable artifact (file)
+        uses: actions/upload-artifact@v3
+        with:
+          name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %}
+          path: {{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %}
+
+      - name: Upload executable artifact (compressed folder)
+        uses: actions/upload-artifact@v3
+        with:
+          name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %}-dir.zip
+          path: {{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %}-dir.zip
 
   build-executables-linux:
     runs-on: ubuntu-latest
@@ -245,7 +289,7 @@ jobs:
     container:
       image: aplowman/centos7-poetry
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: {% raw %}${{ github.event.pull_request.base.ref }}{% endraw %} # otherwise we get the ref when the workflow started (missing above commit)
 
@@ -256,10 +300,11 @@ jobs:
           chown -R $(id -u):$(id -g) $PWD
 
       - name: Configure poetry
-        run: poetry config virtualenvs.in-project true
+        run: |
+          poetry config virtualenvs.in-project true
 
       - name: Cache the virtualenv
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./.venv
           key: {% raw %}venv-build-CentOS-${{ hashFiles('**/poetry.lock') }}{% endraw %}
@@ -267,41 +312,57 @@ jobs:
       - name: Install dependencies
         run: poetry install --without dev
 
-      - name: Build with pyinstaller for CentOS
+      - name: Build with pyinstaller for CentOS (file)
         working-directory: pyinstaller
-        run: ./make.sh {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-linux INFO{% endraw %}
+        run: ./make.sh {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-linux INFO onefile{% endraw %}
 
-      - name: Upload executable artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux
-          path: {{ pyinstaller_dir }}/dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux
+      - name: Build with pyinstaller for CentOS (folder)
+        working-directory: pyinstaller
+        run: ./make.sh {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-linux-dir INFO onedir{% endraw %}
 
-      - name: Upload spec file
-        uses: actions/upload-artifact@v2
-        with:
-          name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux.spec
-          path: {{ pyinstaller_dir }}/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux.spec
-
-      - name: Upload build directory
-        uses: actions/upload-artifact@v2
-        with:
-          name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux-build
-          path: {{ pyinstaller_dir }}/build/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux
-
-      - name: Version check
+      - name: Version check (file)
         run: |
           tag={% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}
           tagNoV=${tag:1}
-          {{ executable_name }}_vers=$({{ pyinstaller_dir }}/dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux --version)
+          {{ executable_name }}_vers=$({{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux --version)
           {{ executable_name }}_vers_expected="{{ executable_name }}, version $tagNoV"
           echo ${{ executable_name }}_vers
           echo ${{ executable_name }}_vers_expected
           [ "${{ executable_name }}_vers" = "${{ executable_name }}_vers_expected" ]
 
-      - name: Run test suite on the frozen app
+      - name: Version check (folder)
         run: |
-          {{ pyinstaller_dir }}/dist/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }{% endraw %}}-linux test
+          tag={% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}
+          tagNoV=${tag:1}
+          {{ executable_name }}_vers=$({{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux-dir/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux-dir --version)
+          {{ executable_name }}_vers_expected="{{ executable_name }}, version $tagNoV"
+          echo ${{ executable_name }}_vers
+          echo ${{ executable_name }}_vers_expected
+          [ "${{ executable_name }}_vers" = "${{ executable_name }}_vers_expected" ]
+
+      - name: Run test suite on the frozen app (file)
+        run: |
+          {{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }{% endraw %}}-linux test
+
+      - name: Run test suite on the frozen app (folder)
+        run: |
+          {{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }{% endraw %}}-linux-dir/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }{% endraw %}}-linux-dir test
+
+      - name: Compress folder (folder)
+        working-directory: {{ pyinstaller_dir }}
+        run: ./compress.sh {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-linux-dir 'onedir'{% endraw %}
+
+      - name: Upload executable artifact (file)
+        uses: actions/upload-artifact@v3
+        with:
+          name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux
+          path: {{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux
+
+      - name: Upload executable artifact (compressed folder)
+        uses: actions/upload-artifact@v3
+        with:
+          name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux-dir.zip
+          path: {{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux-dir.zip
 
   release-github-PyPI:
     needs: [bump-version, build-executables, build-executables-linux]
@@ -309,25 +370,27 @@ jobs:
     outputs:
       binary_download_links: {% raw %}${{ steps.get_binary_download_links.outputs.binary_download_links }}{% endraw %}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: {% raw %}${{ github.event.pull_request.base.ref }}{% endraw %} # otherwise we get the ref when the workflow started (missing above commit)
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: {% raw %}${{ env.PYTHON_VERSION_RELEASE }}{% endraw %}
 
       - name: Cache the virtualenv
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./.venv
           key: {% raw %}venv-release-${{ hashFiles('**/poetry.lock') }}{% endraw %}
 
       - name: Install poetry
-        run: python -m pip install poetry==1.2.2
+        run: python -m pip install poetry==1.4
 
       - name: Configure poetry
-        run: poetry config virtualenvs.in-project true
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry config installer.modern-installation false
 
       - name: Install dependencies
         run: poetry install --without dev,pyinstaller
@@ -338,7 +401,7 @@ jobs:
 
       - run: mkdir release-artifacts
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         id: download_executables
         with:
           path: release-artifacts
@@ -356,6 +419,9 @@ jobs:
             **/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-win.exe
             **/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-macOS
             **/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux
+            **/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-win-dir.zip
+            **/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-macOS-dir.zip
+            **/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux-dir.zip
           prerelease: {{ '${{' }} github.event.pull_request.base.ref == '{{ pre_release_branch }}' {{ '}}' }}
 
       - name: Release info
@@ -364,7 +430,7 @@ jobs:
           binaryYaml=$(python3 -c "
           from pathlib import Path
           out_yaml = ''
-          for i in ['win.exe', 'macOS', 'linux']:
+          for i in ['win.exe', 'macOS', 'linux', 'win-dir.zip', 'macOS-dir.zip', 'linux-dir.zip']:
             exe_name = '{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-' + i
             url = 'https://github.com/{{ org }}/{{ repo }}/releases/download/{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}/' + exe_name
             out_yaml += exe_name + ': ' + url + '\n'
@@ -384,9 +450,9 @@ jobs:
 
   build-documentation:
     needs: release-github-PyPI
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0 # get all history and tags
           ref: {% raw %}${{ github.event.pull_request.base.ref }}{% endraw %} # otherwise we get the ref when the workflow started (missing above commit)
@@ -396,7 +462,7 @@ jobs:
           git config user.name {{ bot_account_name }}
           git config user.email {{ bot_account_email }}
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: {% raw %}${{ env.PYTHON_VERSION_BUILD_DOCS }}{% endraw %}
 
@@ -423,16 +489,18 @@ jobs:
           fi
 
       - name: Cache the virtualenv
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./.venv
           key: {% raw %}venv-release-${{ matrix.os }}-${{ hashFiles('**/poetry.lock') }}{% endraw %}
 
       - name: Install poetry
-        run: curl -sSL https://install.python-poetry.org | python3 -
+        run: python -m pip install poetry==1.4
 
       - name: Configure poetry
-        run: poetry config virtualenvs.in-project true
+        run: |
+             poetry config virtualenvs.in-project true
+             poetry config installer.modern-installation false
 
       - name: Install dependencies
         run: poetry install --without test,pyinstaller
@@ -444,7 +512,7 @@ jobs:
           poetry run make html
 
       - name: Upload documentation artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: docs_html
           path: docs/build/html
@@ -453,11 +521,11 @@ jobs:
     needs: [bump-version, release-github-PyPI, build-documentation]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: {% raw %}${{ env.PYTHON_VERSION_UPDATE_WEB }}{% endraw %}
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           repository: {{ website_source_org }}/{{ website_source_repo }}
           token: {{ '${{' }} secrets.{{ website_source_token_name }} {{ '}}' }}
@@ -467,7 +535,7 @@ jobs:
           git config user.email {{ bot_account_email }}
 
       - name: Download documentation artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: docs_html
           path: {% raw %}docs/${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}
