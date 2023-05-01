@@ -1,4 +1,14 @@
 
+<a name="v0.3.0a12"></a>
+## [v0.3.0a12](https://github.com/hpcflow/matflow-new/compare/v0.3.0a11...v0.3.0a12) - 2023.05.01
+
+### 🐛 Bug Fixes
+
+* **pyi:** hook datas typo
+* **pyi:** data package
+* **pyi:** hidden import
+
+
 <a name="v0.3.0a11"></a>
 ## [v0.3.0a11](https://github.com/hpcflow/matflow-new/compare/v0.3.0a10...v0.3.0a11) - 2023.05.01
 
