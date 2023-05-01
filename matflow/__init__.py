@@ -2,6 +2,7 @@ import numpy as np
 from hpcflow.sdk import App, ConfigOptions
 
 from matflow._version import __version__
+from matflow.parameters import Orientations
 
 config_options = ConfigOptions(
     directory_env_var="MATFLOW_CONFIG_DIR",
@@ -11,10 +12,13 @@ config_options = ConfigOptions(
     sentry_env="main" if "a" in __version__ else "develop",
 )
 
+template_components = App.load_builtin_template_component_data("matflow.data")
+
 MatFlow = App(
     name="matflow",
     version=__version__,
     description="Materials science workflow manager",
+    template_components=template_components,
     config_options=config_options,
 )
 
@@ -31,7 +35,6 @@ FileSpec = MatFlow.FileSpec
 InputFile = MatFlow.InputFile
 InputFileGenerator = MatFlow.InputFileGenerator
 InputSource = MatFlow.InputSource
-InputSourceMode = MatFlow.InputSourceMode
 InputSourceType = MatFlow.InputSourceType
 InputValue = MatFlow.InputValue
 Parameter = MatFlow.Parameter
@@ -47,7 +50,3 @@ ValueSequence = MatFlow.ValueSequence
 Workflow = MatFlow.Workflow
 WorkflowTask = MatFlow.WorkflowTask
 WorkflowTemplate = MatFlow.WorkflowTemplate
-ZarrEncodable = MatFlow.ZarrEncodable
-
-# temporarily used just to check correct inclusion of numpy in built exes:
-a = np.random.random((10, 10))

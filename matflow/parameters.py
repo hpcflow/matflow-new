@@ -5,7 +5,7 @@ from typing import Optional
 
 import numpy as np
 
-from hpcflow.sdk.core.zarr_io import ZarrEncodable
+from hpcflow.sdk.core.parameters import ParameterValue
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ class OrientationFormat(enum.Enum):
 
 
 @dataclass
-class Orientations(ZarrEncodable):
+class Orientations(ParameterValue):
 
     # i.e. InputValue(parameter=Parameter(typ='orientations'), value=...)
     _typ = "orientations"
@@ -49,3 +49,38 @@ class Orientations(ZarrEncodable):
 
     # def to_json_like(self, dct=None, shared_data=None, exclude=None, _depth=0):
     #     return
+
+    @classmethod
+    def from_random(cls, number):
+        return cls(
+            data=cls.quat_sample_random(number),
+            ori_format="quaternion",
+        )
+
+    @staticmethod
+    def quat_sample_random(number):
+        """Generate random uniformly distributed unit quaternions.
+        Parameters
+        ----------
+        number : int
+            How many quaternions to generate.
+        Returns
+        -------
+        quats : ndarray of shape (number, 4)
+        References
+        ----------
+        https://stackoverflow.com/a/44031492/5042280
+        http://planning.cs.uiuc.edu/node198.html
+        """
+
+        rand_nums = np.random.random((number, 3))
+        quats = np.array(
+            [
+                np.sqrt(1 - rand_nums[:, 0]) * np.sin(2 * np.pi * rand_nums[:, 1]),
+                np.sqrt(1 - rand_nums[:, 0]) * np.cos(2 * np.pi * rand_nums[:, 1]),
+                np.sqrt(rand_nums[:, 0]) * np.sin(2 * np.pi * rand_nums[:, 2]),
+                np.sqrt(rand_nums[:, 0]) * np.cos(2 * np.pi * rand_nums[:, 2]),
+            ]
+        ).T
+
+        return quats

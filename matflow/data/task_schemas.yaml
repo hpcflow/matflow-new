@@ -1,54 +1,186 @@
-parameters:
-  - type: number_atoms
-  - type: box
-  - type: atoms
-  - type: empirical_potential
-  - type: optimised_atoms
+- objective: test_t1_bash
+  inputs:
+    - parameter: p1
+  outputs:
+    - parameter: p2
+  actions:
+    - environments:
+        - scope:
+            type: any
+          environment: null_env
+      commands:
+        - command: echo "$((<<parameter:p1>> + 100))"
+          stdout: <<parameter:p2>>
 
-command_files:
-  - label: lammps_atoms_file
-    name:
-      name: atoms.lammps
-  - label: lammps_input_script
-    name:
-      name: in.lammps
-  - label: lammps_dump_files
-    name:
-      name: (dump.\d+.txt)
-      is_regex: true
+- objective: test_t1_ps
+  inputs:
+    - parameter: p1
+  outputs:
+    - parameter: p2
+  actions:
+    - environments:
+        - scope:
+            type: any
+          environment: null_env
+      commands:
+        - command: Write-Host ((<<parameter:p1>> + 100))
+          stdout: <<parameter:p2>>
 
-task_schemas:
-  - objective: prepare_atoms_box
-    inputs:
-      - parameter: number_atoms
-    outputs:
-      - parameter: box
-      - parameter: atoms
-    actions:
-      - environments:
-          main: lammps_parse_env
-        commands:
-          - command: doSomething
-  - objective: optimise_atoms
-    method: empirical_potential
-    inputs:
-      - parameter: box
-      - parameter: atoms
-      - parameter: empirical_potential
-    outputs:
-      - parameter: optimised_atoms
-    actions:
-      - environments:
-          main: lammps_env
-          processing: lammps_parse_env
-        input_files:
-          lammps_atoms_file:
-            from_inputs: [box, atoms]
-          lammps_input_script:
-            from_inputs: [empirical_potential]
-        outputs:
-          optimised_atoms:
-            from_files: [lammps_dump_files]
-        commands:
-          - command: <<executable:lammps>>
-            stdin: <<lammps_input_script>>
+# - objective: prepare_atoms_box
+#   inputs:
+#     - parameter: number_atoms
+#   outputs:
+#     - parameter: box
+#     - parameter: atoms
+#   actions:
+#     - environments:
+#         main: lammps_parse_env
+#       commands:
+#         - command: doSomething
+
+# - objective: optimise_atoms
+#   method: empirical_potential
+#   inputs:
+#     - parameter: box
+#     - parameter: atoms
+#     - parameter: empirical_potential
+#   outputs:
+#     - parameter: optimised_atoms
+#   actions:
+#     - environments:
+#         main: lammps_env
+#         processing: lammps_parse_env
+#       input_files:
+#         lammps_atoms_file:
+#           from_inputs: [box, atoms]
+#         lammps_input_script:
+#           from_inputs: [empirical_potential]
+#       outputs:
+#         optimised_atoms:
+#           from_files: [lammps_dump_files]
+#       commands:
+#         - command: <<executable:lammps>>
+#           stdin: <<lammps_input_script>>
+
+# - objective: generate_microstructure_seeds
+#   inputs:
+#     - parameter: num_seeds
+#   outputs:
+#     - parameter: microstructure_seeds
+#   actions:
+#     - environments:
+#         - scope:
+#             type: any
+#           environment: damask_parse_env
+#       commands:
+#         - command: <<executable:python>> <<script>> ??
+
+- version: v2
+  objective: prepare_atoms_box
+  inputs:
+    - parameter: number_atoms
+  outputs:
+    - parameter: box
+    - parameter: atoms
+  actions:
+    - environments:
+        - scope:
+            type: main
+          environment:
+            name: lammps_parse_env
+            # lammps_version: 1.2 # a specifier
+        - scope:
+            type: input_file_generator
+          environment: lammps_parse_env
+        - scope:
+            type: output_file_parser
+          environment: lammps_parse_env
+      commands:
+        - command: doSomething <<parameter:number_atoms>>
+      output_file_parsers:
+        box:
+          from_files: [t1_outfile_1]
+        atoms:
+          from_files: [t1_outfile_1]
+
+- version: v1
+  objective: prepare_atoms_box
+  inputs:
+    - parameter: number_atoms
+  outputs:
+    - parameter: box
+    - parameter: atoms
+  actions:
+    - environments:
+        - scope:
+            type: main
+          environment: lammps_parse_env
+        - scope:
+            type: input_file_generator
+          environment: lammps_parse_env
+        - scope:
+            type: output_file_parser
+          environment: lammps_parse_env
+      commands:
+        - command: doSomething <<parameter:number_atoms>>
+      output_file_parsers:
+        box:
+          from_files: [t1_outfile_1]
+        atoms:
+          from_files: [t1_outfile_1]
+
+- objective: optimise_atoms
+  method: empirical_potential
+  inputs:
+    - parameter: box
+    - parameter: atoms
+    - parameter: empirical_potential
+  outputs:
+    - parameter: optimised_atoms
+  actions:
+    - environments:
+        - scope:
+            type: main
+          environment:
+            name: lammps_env
+            # lammps_version: 1.2
+        - scope:
+            type: processing
+          environment: lammps_parse_env
+      input_file_generators:
+        lammps_atoms_file:
+          from_inputs: [box, atoms]
+        lammps_input_script:
+          from_inputs: [empirical_potential]
+      output_file_parsers:
+        optimised_atoms:
+          from_files: [lammps_dump_files]
+      commands:
+        - command: <<executable:lammps>>
+          stdin: <<lammps_input_script>>
+# - objective: simulate_RVE_loading
+#   method: CP_FFT
+#   inputs:
+#     - parameter: material
+#     - parameter: load_case
+#     - paramater: RVE
+#   outputs:
+#     - parameter: RVE_response
+#   actions:
+#     - environments:
+#         - scope:
+#             type: any
+#           environment:
+#             name: damask_env
+#       input_file_generators:
+#         damask_load_file:
+#           from_inputs: [load_case]
+#         damask_material_file:
+#           from_inputs: [material]
+#         damask_geom_file:
+#           from_inputs: [material, RVE]
+#       output_file_parsers:
+#         RVE_response:
+#           from_files: [damask_hdf5_file, damask_stdout]
+#       commands:
+#         - command: DAMASK_grid --load <<input_file:damask_load_file>> --geom <<input_file:damask_geom_file>>
