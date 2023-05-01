@@ -1,5 +1,6 @@
 from PyInstaller.utils.hooks import collect_data_files
 
+hiddenimports = ["matflow.data"]
 datas = collect_data_files("matflow.data")
 datas = collect_data_files(
     "matflow.tests",
