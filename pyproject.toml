@@ -8,10 +8,6 @@ readme = "README.md"
 packages = [
     { include = "matflow" }
 ]
-include = [
-    "matflow/data/task_schemas.yaml",
-    "matflow/data/environments.yaml"
-]
 
 [tool.poetry.dependencies]
 python = ">=3.7,<3.11"
