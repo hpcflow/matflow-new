@@ -8,3 +8,6 @@
   name:
     name: (dump.\d+.txt)
     is_regex: true
+- label: t1_outfile_1
+  name:
+    name: t1_outfile_1.txt

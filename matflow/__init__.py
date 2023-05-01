@@ -2,6 +2,7 @@ import numpy as np
 from hpcflow.sdk import App, ConfigOptions
 
 from matflow._version import __version__
+from matflow.parameters import Orientations
 
 config_options = ConfigOptions(
     directory_env_var="MATFLOW_CONFIG_DIR",
@@ -11,33 +12,41 @@ config_options = ConfigOptions(
     sentry_env="main" if "a" in __version__ else "develop",
 )
 
+template_components = App.load_builtin_template_component_data("matflow.data")
+
 MatFlow = App(
     name="matflow",
     version=__version__,
     description="Materials science workflow manager",
+    template_components=template_components,
     config_options=config_options,
 )
 
-TaskSchema = MatFlow.TaskSchema
-Task = MatFlow.Task
-WorkflowTask = MatFlow.WorkflowTask
-Workflow = MatFlow.Workflow
-WorkflowTemplate = MatFlow.WorkflowTemplate
 Action = MatFlow.Action
+ActionEnvironment = MatFlow.ActionEnvironment
 ActionScope = MatFlow.ActionScope
 ActionScopeType = MatFlow.ActionScopeType
+Command = MatFlow.Command
 Environment = MatFlow.Environment
+Executable = MatFlow.Executable
+ExecutableInstance = MatFlow.ExecutableInstance
+ExecutablesList = MatFlow.ExecutablesList
+FileSpec = MatFlow.FileSpec
 InputFile = MatFlow.InputFile
+InputFileGenerator = MatFlow.InputFileGenerator
 InputSource = MatFlow.InputSource
 InputSourceType = MatFlow.InputSourceType
-InputSourceMode = MatFlow.InputSourceMode
 InputValue = MatFlow.InputValue
-Command = MatFlow.Command
-ActionEnvironment = MatFlow.ActionEnvironment
 Parameter = MatFlow.Parameter
+ResourceList = MatFlow.ResourceList
+ResourceSpec = MatFlow.ResourceSpec
+SchemaInput = MatFlow.SchemaInput
+SchemaOutput = MatFlow.SchemaOutput
+Task = MatFlow.Task
+TaskObjective = MatFlow.TaskObjective
+TaskSchema = MatFlow.TaskSchema
+TaskSourceType = MatFlow.TaskSourceType
 ValueSequence = MatFlow.ValueSequence
-ZarrEncodable = MatFlow.ZarrEncodable
-
-
-# temporarily used just to check correct inclusion of numpy in built exes:
-a = np.random.random((10, 10))
+Workflow = MatFlow.Workflow
+WorkflowTask = MatFlow.WorkflowTask
+WorkflowTemplate = MatFlow.WorkflowTemplate
