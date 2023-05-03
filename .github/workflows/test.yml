@@ -58,10 +58,10 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
+          - "3.11"
         os:
           - ubuntu-latest
           - macos-latest
@@ -101,7 +101,7 @@ jobs:
     needs: pre-commit
     runs-on: ubuntu-latest
     container:
-      image: aplowman/centos7-poetry
+      image: ghcr.io/hpcflow/centos7-poetry:latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -114,7 +114,9 @@ jobs:
           chown -R $(id -u):$(id -g) $PWD
 
       - name: Configure poetry
-        run: poetry config virtualenvs.in-project true
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry config installer.modern-installation false
 
       - name: Cache the virtualenv
         uses: actions/cache@v3
