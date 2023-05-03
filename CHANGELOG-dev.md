@@ -1,4 +1,12 @@
 
+<a name="v0.3.0a13"></a>
+## [v0.3.0a13](https://github.com/hpcflow/matflow-new/compare/v0.3.0a12...v0.3.0a13) - 2023.05.03
+
+### 👷 Build changes
+
+* update pyproject.toml, poetry.lock
+
+
 <a name="v0.3.0a12"></a>
 ## [v0.3.0a12](https://github.com/hpcflow/matflow-new/compare/v0.3.0a11...v0.3.0a12) - 2023.05.01
 
