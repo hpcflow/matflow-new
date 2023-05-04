@@ -1,4 +1,16 @@
 
+<a name="v0.3.0a14"></a>
+## [v0.3.0a14](https://github.com/hpcflow/matflow-new/compare/v0.3.0a13...v0.3.0a14) - 2023.05.04
+
+### 🐛 Bug Fixes
+
+* change default config dir so it does not conflict with old install
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a13"></a>
 ## [v0.3.0a13](https://github.com/hpcflow/matflow-new/compare/v0.3.0a12...v0.3.0a13) - 2023.05.03
 
