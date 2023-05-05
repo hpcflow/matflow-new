@@ -11,6 +11,19 @@ def format_1D_masked_array(arr, fill_symbol="x"):
     ]
 
 
+def format_2D_masked_array(arr, fill_symbol="x"):
+    out = []
+    for x in arr:
+        sub = []
+        for i in x:
+            val = (
+                i.item() if not isinstance(i, np.ma.core.MaskedConstant) else fill_symbol
+            )
+            sub.append(val)
+        out.append(sub)
+    return out
+
+
 def masked_array_from_list(arr, fill_value="x"):
     """Generate a (masked) array from a 1D list whose elements may contain a fill value."""
 
@@ -100,7 +113,7 @@ def write_load(path, load_case):
             )
             raise ValueError(msg)
 
-        bc_mech[dg_arr_sym] = format_1D_masked_array(dg_arr.flat)
+        bc_mech[dg_arr_sym] = format_2D_masked_array(dg_arr)
 
     else:
         if isinstance(stress_arr, np.ma.core.MaskedArray):
@@ -124,8 +137,8 @@ def write_load(path, load_case):
                     msg = "Specify all or no values for each row of " "`vel_grad`"
                     raise ValueError(msg)
 
-            bc_mech[dg_arr_sym] = format_1D_masked_array(dg_arr.flat)
-            bc_mech[stress_arr_sym] = format_1D_masked_array(stress_arr.flat)
+            bc_mech[dg_arr_sym] = format_2D_masked_array(dg_arr)
+            bc_mech[stress_arr_sym] = format_2D_masked_array(stress_arr)
 
         else:
             if dg_arr is not None:
@@ -135,7 +148,7 @@ def write_load(path, load_case):
                 )
                 raise ValueError(msg)
 
-            bc_mech[stress_arr_sym] = format_1D_masked_array(stress_arr.flat)
+            bc_mech[stress_arr_sym] = format_2D_masked_array(stress_arr)
 
         load_step["discretization"] = {
             "t": total_time,
@@ -145,6 +158,7 @@ def write_load(path, load_case):
 
         load_steps.append(load_step)
 
+    print(f"{bc_mech=}")
     load_data = {"solver": solver, "loadstep": load_steps}
 
     yaml = YAML()

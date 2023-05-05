@@ -63,13 +63,14 @@
     - parameter: load_case
     - parameter: homogenization
     - parameter: phase
-  outputs:
-    - parameter: volume_element_response
   actions:
     - environments:
         - scope:
-            type: any
+            type: processing
           environment: damask_parse_env
+        - scope:
+            type: main
+          environment: damask_env
       input_file_generators:
         - input_file: damask_geom_file
           from_inputs: [volume_element]
@@ -81,8 +82,7 @@
           from_inputs: [volume_element, homogenization, phase]
           script: damask/write_material.py
       commands:
-        - command: Write-Output (100 + 100)
-          stdout: <<parameter:volume_element_response>>
+        - command: <<executable:damask_grid>> --load load.yaml --geom geom.vti
 
 # - objective: prepare_atoms_box
 #   inputs:
