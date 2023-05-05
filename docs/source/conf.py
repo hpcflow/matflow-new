@@ -166,7 +166,7 @@ or shell prompt.
 
     (touch tmp.sh && curl -fsSL https://raw.githubusercontent.com/hpcflow/install-scripts/main/src/install-matflow.sh > tmp.sh && bash tmp.sh --prerelease --path --onefile) ; rm tmp.sh
 
-Note that if you're installing on CSF3 or CSF4 using this method, the proxy
+Note that if you are installing MatFlow CLI on CSF3 or CSF4 using this method, the proxy
 module should be loaded first. To do this, paste the command shown below
 into a the shell prompt and press enter.
 
