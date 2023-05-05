@@ -1,3 +1,14 @@
+- type: size
+- type: grid_size
+- type: phase_label
+- type: num_grains
+- type: microstructure_seeds
+- type: volume_element
+- type: homog_label
+- type: volume_element_response
+- type: load_case
+- type: homogenization
+- type: phase
 - type: p1
 - type: p2
 - type: p3

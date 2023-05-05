@@ -7,3 +7,8 @@ datas += collect_data_files(
     include_py_files=True,
     excludes=("**/__pycache__",),
 )
+datas += collect_data_files(
+    "matflow.data.scripts",
+    include_py_files=True,
+    excludes=("**/__pycache__",),
+)

@@ -14,10 +14,11 @@ config_options = ConfigOptions(
 template_components = App.load_builtin_template_component_data("matflow.data")
 
 MatFlow = App(
-    name="matflow",
+    name="MatFlow",
     version=__version__,
     description="Materials science workflow manager",
     template_components=template_components,
+    scripts_dir="data.scripts",  # relative to root package
     config_options=config_options,
 )
 

@@ -10,7 +10,7 @@ from matflow.api import MatFlow
 def test_version():
     runner = CliRunner()
     result = runner.invoke(MatFlow.CLI, args="--version")
-    assert result.output.strip() == f"matflow, version {matflow_version}"
+    assert result.output.strip() == f"MatFlow, version {matflow_version}"
 
 
 def test_hpcflow_version():

@@ -26,6 +26,64 @@
         - command: Write-Host ((<<parameter:p1>> + 100))
           stdout: <<parameter:p2>>
 
+- objective: generate_microstructure_seeds
+  method: from_random
+  inputs:
+    - parameter: size
+    - parameter: num_grains
+    - parameter: phase_label
+  outputs:
+    - parameter: microstructure_seeds
+  actions:
+    - script: damask/seeds_from_random.py
+      environments:
+        - scope:
+            type: any
+          environment: damask_parse_env
+
+- objective: generate_volume_element
+  method: from_random_voronoi
+  inputs:
+    - parameter: microstructure_seeds
+    - parameter: grid_size
+    - parameter: homog_label
+    - parameter: grid_size
+  outputs:
+    - parameter: volume_element
+  actions:
+    - script: damask/generate_volume_element_random_voronoi.py
+      environments:
+        - scope:
+            type: any
+          environment: damask_parse_env
+
+- objective: simulate_VE_loading
+  inputs:
+    - parameter: volume_element
+    - parameter: load_case
+    - parameter: homogenization
+    - parameter: phase
+  actions:
+    - environments:
+        - scope:
+            type: processing
+          environment: damask_parse_env
+        - scope:
+            type: main
+          environment: damask_env
+      input_file_generators:
+        - input_file: damask_geom_file
+          from_inputs: [volume_element]
+          script: damask/write_geom.py
+        - input_file: damask_load_file
+          from_inputs: [load_case]
+          script: damask/write_load.py
+        - input_file: damask_material_file
+          from_inputs: [volume_element, homogenization, phase]
+          script: damask/write_material.py
+      commands:
+        - command: <<executable:damask_grid>> --load load.yaml --geom geom.vti
+
 # - objective: prepare_atoms_box
 #   inputs:
 #     - parameter: number_atoms
