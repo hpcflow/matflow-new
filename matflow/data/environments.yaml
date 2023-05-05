@@ -1,27 +1,27 @@
 - name: null_env
 
-# - name: damask_parse_env
-#   setup: |
-#     micromamba activate matflow_damask_parse_env
-#   executables:
-#     - label: python
-#       instances:
-#         - command: python
-#           num_cores: 1
-#           parallel_mode: null
+- name: damask_parse_env
+  setup: |
+    micromamba activate matflow_damask_parse_env
+  executables:
+    - label: python
+      instances:
+        - command: python
+          num_cores: 1
+          parallel_mode: null
 
-# - name: damask_env
-#   setup: |
-#     module load mpi/intel-18.0/openmpi/4.1.0
-#     IMG_PATH=/mnt/eps01-rds/jf01-home01/shared/software/DAMASK-docker-images/damask-grid_3.0.0-alpha7.sif
-#   executables:
-#     - label: damask_grid
-#       instances:
-#         - command: mpirun -n $NSLOTS singularity run $IMG_PATH
-#           num_cores:
-#             start: 2
-#             stop: 32
-#           parallel_mode: null
+- name: damask_env
+  setup: |
+    module load mpi/intel-18.0/openmpi/4.1.0
+    IMG_PATH=/mnt/eps01-rds/jf01-home01/shared/software/DAMASK-docker-images/damask-grid_3.0.0-alpha7.sif
+  executables:
+    - label: damask_grid
+      instances:
+        - command: mpirun -n $NSLOTS singularity run $IMG_PATH
+          num_cores:
+            start: 2
+            stop: 32
+          parallel_mode: null
 
 - name: lammps_parse_env
   setup: |
