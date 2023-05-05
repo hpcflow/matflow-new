@@ -1,4 +1,12 @@
 
+<a name="v0.3.0a17"></a>
+## [v0.3.0a17](https://github.com/hpcflow/matflow-new/compare/v0.3.0a16...v0.3.0a17) - 2023.05.05
+
+### 🐛 Bug Fixes
+
+* **gha:** version check
+
+
 <a name="v0.3.0a16"></a>
 ## [v0.3.0a16](https://github.com/hpcflow/matflow-new/compare/v0.3.0a15...v0.3.0a16) - 2023.05.05
 
