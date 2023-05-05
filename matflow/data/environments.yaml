@@ -1,5 +1,15 @@
 - name: null_env
 
+- name: damask_parse_env
+  setup: |
+    micromamba activate matflow_damask_parse_env
+  executables:
+    - label: python
+      instances:
+        - command: python
+          num_cores: 1
+          parallel_mode: null
+
 - name: lammps_parse_env
   setup: |
     conda activate lammps_parse_env

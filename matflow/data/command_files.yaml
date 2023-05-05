@@ -1,3 +1,12 @@
+- label: damask_geom_file
+  name:
+    name: geom.vti
+- label: damask_load_file
+  name:
+    name: load.yaml
+- label: damask_material_file
+  name:
+    name: material.yaml
 - label: lammps_atoms_file
   name:
     name: atoms.lammps
