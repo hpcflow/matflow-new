@@ -18,6 +18,7 @@ MatFlow = App(
     version=__version__,
     description="Materials science workflow manager",
     template_components=template_components,
+    scripts_dir="data.scripts",  # relative to root package
     config_options=config_options,
 )
 
