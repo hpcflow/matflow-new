@@ -1,4 +1,19 @@
 
+<a name="v0.3.0a16"></a>
+## [v0.3.0a16](https://github.com/hpcflow/matflow-new/compare/v0.3.0a15...v0.3.0a16) - 2023.05.05
+
+### ✨ Features
+
+* start damask support
+* capitalise app name
+
+### 🐛 Bug Fixes
+
+* bump deps
+* write load case bug
+* scripts dir
+
+
 <a name="v0.3.0a15"></a>
 ## [v0.3.0a15](https://github.com/hpcflow/matflow-new/compare/v0.3.0a14...v0.3.0a15) - 2023.05.05
 
