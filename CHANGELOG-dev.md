@@ -1,4 +1,16 @@
 
+<a name="v0.3.0a18"></a>
+## [v0.3.0a18](https://github.com/hpcflow/matflow-new/compare/v0.3.0a17...v0.3.0a18) - 2023.05.05
+
+### 🐛 Bug Fixes
+
+* hard code damask env for now
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a17"></a>
 ## [v0.3.0a17](https://github.com/hpcflow/matflow-new/compare/v0.3.0a16...v0.3.0a17) - 2023.05.05
 
