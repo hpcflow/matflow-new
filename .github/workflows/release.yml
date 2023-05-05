@@ -189,7 +189,7 @@ jobs:
         if: "!contains(matrix.os, 'windows')"
         working-directory: pyinstaller
         run: ./make.sh matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }} INFO 'onefile'
-        
+
       - name: Build with pyinstaller (non-Windows, folder)
         if: "!contains(matrix.os, 'windows')"
         working-directory: pyinstaller
@@ -211,7 +211,7 @@ jobs:
           $tag = "${{ needs.bump-version.outputs.new_tag_name }}"
           $tagNoV = $tag.trim('v')
           $matflow_vers = pyinstaller/dist/onefile/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version
-          $matflow_vers_expected = "matflow, version $tagNoV"
+          $matflow_vers_expected = "MatFlow, version $tagNoV"
           echo $matflow_vers
           echo "$matflow_vers_expected"
           if ($matflow_vers -ne $matflow_vers_expected) {
@@ -224,7 +224,7 @@ jobs:
           $tag = "${{ needs.bump-version.outputs.new_tag_name }}"
           $tagNoV = $tag.trim('v')
           $matflow_vers = pyinstaller/dist/onedir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir${{ matrix.executable_ext }}  --version
-          $matflow_vers_expected = "matflow, version $tagNoV"
+          $matflow_vers_expected = "MatFlow, version $tagNoV"
           echo $matflow_vers
           echo "$matflow_vers_expected"
           if ($matflow_vers -ne $matflow_vers_expected) {
@@ -237,7 +237,7 @@ jobs:
           tag=${{ needs.bump-version.outputs.new_tag_name }}
           tagNoV=${tag:1}
           matflow_vers=$(pyinstaller/dist/onefile/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} --version)
-          matflow_vers_expected="matflow, version $tagNoV"
+          matflow_vers_expected="MatFlow, version $tagNoV"
           echo $matflow_vers
           echo $matflow_vers_expected
           [ "$matflow_vers" = "$matflow_vers_expected" ]
@@ -248,7 +248,7 @@ jobs:
           tag=${{ needs.bump-version.outputs.new_tag_name }}
           tagNoV=${tag:1}
           matflow_vers=$(pyinstaller/dist/onedir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir${{ matrix.executable_ext }} --version)
-          matflow_vers_expected="matflow, version $tagNoV"
+          matflow_vers_expected="MatFlow, version $tagNoV"
           echo $matflow_vers
           echo $matflow_vers_expected
           [ "$matflow_vers" = "$matflow_vers_expected" ]
@@ -267,10 +267,10 @@ jobs:
         run: ./compress.ps1 -ExeName 'matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir' -BuildType 'onedir'
 
       - name: Compress folder (non-windows, folder)
-        if: "!contains(matrix.os, 'windows')" 
+        if: "!contains(matrix.os, 'windows')"
         working-directory: pyinstaller
         run: ./compress.sh matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir 'onedir'
-          
+
       - name: Upload executable artifact (file)
         uses: actions/upload-artifact@v3
         with:
@@ -326,7 +326,7 @@ jobs:
           tag=${{ needs.bump-version.outputs.new_tag_name }}
           tagNoV=${tag:1}
           matflow_vers=$(pyinstaller/dist/onefile/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux --version)
-          matflow_vers_expected="matflow, version $tagNoV"
+          matflow_vers_expected="MatFlow, version $tagNoV"
           echo $matflow_vers
           echo $matflow_vers_expected
           [ "$matflow_vers" = "$matflow_vers_expected" ]
@@ -336,7 +336,7 @@ jobs:
           tag=${{ needs.bump-version.outputs.new_tag_name }}
           tagNoV=${tag:1}
           matflow_vers=$(pyinstaller/dist/onedir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux-dir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux-dir --version)
-          matflow_vers_expected="matflow, version $tagNoV"
+          matflow_vers_expected="MatFlow, version $tagNoV"
           echo $matflow_vers
           echo $matflow_vers_expected
           [ "$matflow_vers" = "$matflow_vers_expected" ]
@@ -500,8 +500,8 @@ jobs:
 
       - name: Configure poetry
         run: |
-             poetry config virtualenvs.in-project true
-             poetry config installer.modern-installation false
+          poetry config virtualenvs.in-project true
+          poetry config installer.modern-installation false
 
       - name: Install dependencies
         run: poetry install --without test,pyinstaller
