@@ -1,8 +1,17 @@
-from hpcflow.sdk import App, ConfigOptions
+from hpcflow.sdk import app as sdk_app
+from hpcflow.sdk.config import ConfigOptions
 
 from matflow._version import __version__
-from matflow.parameters import Orientations
+from matflow.param_classes import *
 
+# provide access to app attributes:
+__getattr__ = sdk_app.get_app_attribute
+
+# ensure docs/help can see dynamically loaded attributes:
+__all__ = sdk_app.get_app_module_all()
+__dir__ = sdk_app.get_app_module_dir()
+
+# set app-level config options:
 config_options = ConfigOptions(
     directory_env_var="MATFLOW_CONFIG_DIR",
     default_directory="~/.matflow-new",
@@ -11,42 +20,16 @@ config_options = ConfigOptions(
     sentry_env="main" if "a" in __version__ else "develop",
 )
 
-template_components = App.load_builtin_template_component_data("matflow.data")
+# load built in template components:
+template_components = sdk_app.App.load_builtin_template_component_data("matflow.data")
 
-MatFlow = App(
+# initialise the App object:
+app: sdk_app.App = sdk_app.App(
     name="MatFlow",
     version=__version__,
+    module=__name__,
     description="Materials science workflow manager",
     template_components=template_components,
     scripts_dir="data.scripts",  # relative to root package
     config_options=config_options,
-)
-
-Action = MatFlow.Action
-ActionEnvironment = MatFlow.ActionEnvironment
-ActionScope = MatFlow.ActionScope
-ActionScopeType = MatFlow.ActionScopeType
-Command = MatFlow.Command
-Environment = MatFlow.Environment
-Executable = MatFlow.Executable
-ExecutableInstance = MatFlow.ExecutableInstance
-ExecutablesList = MatFlow.ExecutablesList
-FileSpec = MatFlow.FileSpec
-InputFile = MatFlow.InputFile
-InputFileGenerator = MatFlow.InputFileGenerator
-InputSource = MatFlow.InputSource
-InputSourceType = MatFlow.InputSourceType
-InputValue = MatFlow.InputValue
-Parameter = MatFlow.Parameter
-ResourceList = MatFlow.ResourceList
-ResourceSpec = MatFlow.ResourceSpec
-SchemaInput = MatFlow.SchemaInput
-SchemaOutput = MatFlow.SchemaOutput
-Task = MatFlow.Task
-TaskObjective = MatFlow.TaskObjective
-TaskSchema = MatFlow.TaskSchema
-TaskSourceType = MatFlow.TaskSourceType
-ValueSequence = MatFlow.ValueSequence
-Workflow = MatFlow.Workflow
-WorkflowTask = MatFlow.WorkflowTask
-WorkflowTemplate = MatFlow.WorkflowTemplate
+)  #: |app|

@@ -39,18 +39,23 @@ release = __version__
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.intersphinx",
     "sphinx_jinja",
     "sphinx_copybutton",
+    "sphinx_click",
 ]
 
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "hpcflow": ("https://hpcflow.github.io/docs/stable", None),
+}
+
+# see: https://stackoverflow.com/a/62613202/5042280 for autosummary strategy
+autosummary_generate = True
 autodoc_typehints = "description"
 
-# Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
-
-# List of patterns, relative to source directory, that match files and
-# directories to ignore when looking for source files.
-# This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
 
@@ -61,16 +66,27 @@ exclude_patterns = []
 #
 html_theme = "pydata_sphinx_theme"
 html_theme_options = {
-    "logo_link": "https://matflow.io",
-    "github_url": "https://github.com/hpcflow/matflow-new",
     "external_links": [],
     "switcher": {
         "json_url": "https://docs.matflow.io/switcher.json",
-        "url_template": "https://docs.matflow.io/v{version}/",
+        # "url_template": "https://docs.matflow.io/v{version}/",  # TODO: update switcher.json to include this url
         "version_match": __version__,
     },
-    "navbar_end": ["version-switcher", "navbar-icon-links.html"],
+    "navbar_end": ["theme-switcher", "navbar-icon-links", "version-switcher"],
     "use_edit_page_button": True,
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/hpcflow/matflow-new",
+            "icon": "fa-brands fa-square-github",
+            "type": "fontawesome",
+        },
+        {
+            "name": "PyPI",
+            "url": "https://pypi.org/project/matflow-new",
+            "icon": "fas fa-box",  # TODO: icon is smaller than in https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html ?
+        },
+    ],
 }
 
 html_context = {
@@ -91,6 +107,18 @@ html_static_path = ["_static"]
 html_css_files = ["css/custom.css"]
 
 text_newlines = "unix"
+
+
+# expose the app object repr as a string variable to be used in the docs:
+from matflow import app
+
+variables_to_export = ["app"]
+frozen_locals = dict(locals())
+rst_epilog = "\n".join(
+    map(lambda x: f".. |{x}| replace:: {frozen_locals[x]}", variables_to_export)
+)
+del frozen_locals
+
 
 # Get just-released binaries:
 yaml = YAML()

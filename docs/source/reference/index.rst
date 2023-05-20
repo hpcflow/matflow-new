@@ -1,15 +1,8 @@
-:orphan:
-
-.. _reference:
-
-##################
-API reference
-##################
-
-This guide is an overview and explains the important features;
-details are found in :ref:`reference`.
+Reference
+=========
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
-   matflow
+   API <api>
+   CLI <cli>   
