@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "matflow-new"
-version = "0.3.0a19"
+version = "0.3.0a20"
 description = "Computational workflows for materials science"
 authors = ["aplowman <adam.plowman@manchester.ac.uk>"]
 license = "MIT"
@@ -44,7 +44,7 @@ hook-dirs = "matflow.__pyinstaller:get_hook_dirs"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.3.0a19"
+version = "0.3.0a20"
 tag_format = "v$version"
 version_files = [ 
     "pyproject.toml:version",
