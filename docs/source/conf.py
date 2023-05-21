@@ -18,6 +18,7 @@ from pathlib import Path
 from textwrap import indent
 
 from ruamel.yaml import YAML
+import tomlkit
 
 from matflow import __version__
 
@@ -30,6 +31,8 @@ author = "MatFlow developers"
 # The full version, including alpha/beta/rc tags
 release = __version__
 
+with open("../../pyproject.toml") as fp:
+    dist_name = tomlkit.load(fp)["tool"]["poetry"]["name"]
 
 # -- General configuration ---------------------------------------------------
 
@@ -232,7 +235,7 @@ Using pip
 
 Use pip to install the Python package from PyPI::
 
-  pip install matflow=={release}
+  pip install {dist_name}=={release}
 
 """
 with Path("install/index.rst").open("w", newline="\n") as fh:
