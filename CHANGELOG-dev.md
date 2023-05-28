@@ -1,4 +1,18 @@
 
+<a name="v0.3.0a21"></a>
+## [v0.3.0a21](https://github.com/hpcflow/matflow-new/compare/v0.3.0a20...v0.3.0a21) - 2023.05.28
+
+### 🐛 Bug Fixes
+
+* pip install dist name
+* **GHA:** add app_name variable
+
+### 👷 Build changes
+
+* bump deps
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a20"></a>
 ## [v0.3.0a20](https://github.com/hpcflow/matflow-new/compare/v0.3.0a19...v0.3.0a20) - 2023.05.20
 
