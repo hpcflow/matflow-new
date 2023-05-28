@@ -4,5 +4,7 @@ Reference
 .. toctree::
    :maxdepth: 2
 
-   API <api>
-   CLI <cli>   
+   Python API <api>
+   Command-line interface <cli>
+   Template components <template_components>
+   Configuration file <config_file>

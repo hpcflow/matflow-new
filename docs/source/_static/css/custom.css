@@ -1,9 +1,58 @@
 table.binary-downloads-table td {
     border: 1px solid silver;
 }
+
 table.binary-downloads-table td {
     padding: 0.3rem 0.6rem;
 }
+
 table.binary-downloads-table td:first-child {
     text-align: center;
+}
+
+.valida-tree.node {
+    margin-left: 0.5rem;
+    border-left: 1px solid silver;
+    padding-left: 0.7rem;
+}
+
+.valida-tree.node.top-level-node {
+    margin-left: unset;
+    border-left: unset;
+    padding-left: unset;
+}
+
+.valida-tree.node-child {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.valida-tree.node-metadata {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.valida-tree.null-condition-path-elem {
+    font-style: italic;
+    color: gray;
+}
+
+.valida-tree.condition {
+    display: none;
+}
+
+.valida-tree.node h2,
+.valida-tree.node h3,
+.valida-tree.node h4,
+.valida-tree.node h5,
+.valida-tree.node h6 {
+    font-size: 1.3rem;
+    color: unset;
+    margin-bottom: 0.6rem;
+}
+
+.valida-tree.doc-example-name {
+    font-style: italic;
+    color: #888;
+    font-weight: 500;
 }

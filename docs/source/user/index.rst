@@ -1,15 +1,10 @@
-:orphan:
+User Guide
+##########
 
-.. _user:
-
-##################
-HPCFlow user guide
-##################
-
-This guide is an overview and explains the important features;
-details are found in :ref:`reference`.
+MatFlow is a computational workflow management package for materials science.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
 
-   whatis
+   How-to guides <how_to>
+   Tutorials <tutorials>

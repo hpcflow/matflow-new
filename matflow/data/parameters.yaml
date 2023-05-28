@@ -1,5 +1,30 @@
-- type: size
-- type: grid_size
+- type: VE_size
+  _validation:
+    - path: []
+      doc:
+        description: Size of the simulation box in each of the x, y(, z) directions.
+        examples:
+          - >
+            For a simulation box that is twice as long (i.e. elongated) in the y-direction
+            as in the x- and z-directions, use: `[1.0, 2.0, 1.0]`.
+      condition:
+        and:
+          - value.type.equal_to: list
+          - value.length.in: [2, 3]
+    - path: [{ "type": "list_value" }]
+      condition:
+        value.type.equal_to: float
+- type: VE_grid_size
+  _validation:
+    - path: []
+      doc: Number of simulation pixels (voxels) in each of the x, y(, z) directions.
+      condition:
+        and:
+          - value.type.equal_to: list
+          - value.length.in: [2, 3]
+    - path: [{ "type": "list_value" }]
+      condition:
+        value.type.equal_to: int
 - type: phase_label
 - type: num_grains
 - type: microstructure_seeds
