@@ -1,3 +1,9 @@
+.version-switcher__menu {
+    max-height: 80vh;
+    overflow-y: auto;
+    width: max-content;
+}
+
 table.binary-downloads-table td {
     border: 1px solid silver;
 }
