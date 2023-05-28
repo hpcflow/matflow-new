@@ -28,6 +28,7 @@ app: sdk_app.App = sdk_app.App(
     name="MatFlow",
     version=__version__,
     module=__name__,
+    docs_import_conv="mf",
     description="Materials science workflow manager",
     template_components=template_components,
     scripts_dir="data.scripts",  # relative to root package

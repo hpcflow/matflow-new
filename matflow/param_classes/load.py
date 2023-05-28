@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 
 import numpy as np
@@ -12,13 +14,13 @@ class LoadCase(ParameterValue):
 
     def __init__(
         self,
-        direction,
-        total_time,
-        num_increments,
-        def_grad_rate,
-        def_grad_aim,
-        stress,
-        dump_frequency,
+        direction: str,
+        total_time: float,
+        num_increments: int,
+        def_grad_rate: np.typing.ArrayLike,
+        def_grad_aim: np.typing.ArrayLike,
+        stress: np.typing.ArrayLike,
+        dump_frequency: int,
     ) -> None:
         self.direction = direction
         self.total_time = total_time
@@ -29,16 +31,20 @@ class LoadCase(ParameterValue):
         self.stress = stress
         self.dump_frequency = dump_frequency
 
+    @staticmethod
+    def helper_method(a):
+        pass
+
     @classmethod
     def uniaxial(
         cls,
-        total_time,
-        num_increments,
-        direction,
-        target_strain_rate=None,
-        target_strain=None,
-        dump_frequency=1,
-    ):
+        total_time: float,
+        num_increments: int,
+        direction: str,
+        target_strain_rate: float = None,
+        target_strain: float = None,
+        dump_frequency: int = 1,
+    ) -> LoadCase:
         # Validation:
         msg = "Specify either `target_strain_rate` or `target_strain`."
         if all([t is None for t in [target_strain_rate, target_strain]]):

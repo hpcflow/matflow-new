@@ -1,4 +1,4 @@
-{{ fullname | escape | underline}}
+{{ fullname | underline}}
 
 .. toctree::
    :includehidden:
@@ -63,7 +63,9 @@
    :template: custom-module-template.rst
    :recursive:
 {% for item in modules %}
+   {% if not item.startswith('matflow.data') %}
    {{ item }}
+   {% endif %}
 {%- endfor %}
 {% endif %}
 {% endblock %}

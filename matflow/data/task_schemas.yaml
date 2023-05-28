@@ -29,7 +29,7 @@
 - objective: generate_microstructure_seeds
   method: from_random
   inputs:
-    - parameter: size
+    - parameter: ve_size # TODO: fix capitalisation!
     - parameter: num_grains
     - parameter: phase_label
   outputs:
@@ -45,9 +45,8 @@
   method: from_random_voronoi
   inputs:
     - parameter: microstructure_seeds
-    - parameter: grid_size
+    - parameter: ve_grid_size
     - parameter: homog_label
-    - parameter: grid_size
   outputs:
     - parameter: volume_element
   actions:
@@ -161,31 +160,31 @@
         atoms:
           from_files: [t1_outfile_1]
 
-- version: v1
-  objective: prepare_atoms_box
-  inputs:
-    - parameter: number_atoms
-  outputs:
-    - parameter: box
-    - parameter: atoms
-  actions:
-    - environments:
-        - scope:
-            type: main
-          environment: lammps_parse_env
-        - scope:
-            type: input_file_generator
-          environment: lammps_parse_env
-        - scope:
-            type: output_file_parser
-          environment: lammps_parse_env
-      commands:
-        - command: doSomething <<parameter:number_atoms>>
-      output_file_parsers:
-        box:
-          from_files: [t1_outfile_1]
-        atoms:
-          from_files: [t1_outfile_1]
+# - version: v1
+#   objective: prepare_atoms_box
+#   inputs:
+#     - parameter: number_atoms
+#   outputs:
+#     - parameter: box
+#     - parameter: atoms
+#   actions:
+#     - environments:
+#         - scope:
+#             type: main
+#           environment: lammps_parse_env
+#         - scope:
+#             type: input_file_generator
+#           environment: lammps_parse_env
+#         - scope:
+#             type: output_file_parser
+#           environment: lammps_parse_env
+#       commands:
+#         - command: doSomething <<parameter:number_atoms>>
+#       output_file_parsers:
+#         box:
+#           from_files: [t1_outfile_1]
+#         atoms:
+#           from_files: [t1_outfile_1]
 
 - objective: optimise_atoms
   method: empirical_potential

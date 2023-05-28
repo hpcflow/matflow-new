@@ -13,4 +13,4 @@ def test_version():
 def test_hpcflow_version():
     runner = CliRunner()
     result = runner.invoke(matflow.app.cli, args="--hpcflow-version")
-    assert result.output.strip() == f"hpcflow, version {hpcflow_version}"
+    assert result.output.strip() == f"hpcFlow, version {hpcflow_version}"

@@ -10,10 +10,10 @@ Welcome to MatFlow's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   Install <install/index>
+   Install <installation>
    User Guide <user/index>
    Reference <reference/index>
-   Contribute <contribute/index>
+   Development <development/index>
 
 
 Indices and tables

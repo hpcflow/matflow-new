@@ -1,7 +1,7 @@
-CLI
-===
+Command-line interface
+======================
 
-Command line interface reference documentation.
+CLI reference documentation.
 
 .. click:: matflow.cli:cli
   :prog: matflow
