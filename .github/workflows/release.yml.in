@@ -211,7 +211,7 @@ jobs:
           $tag = "{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}"
           $tagNoV = $tag.trim('v')
           ${{ executable_name }}_vers = {{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} --version
-          ${{ executable_name }}_vers_expected = "{{ executable_name }}, version $tagNoV"
+          ${{ executable_name }}_vers_expected = "{{ app_name }}, version $tagNoV"
           echo ${{ executable_name }}_vers
           echo "${{ executable_name }}_vers_expected"
           if (${{ executable_name }}_vers -ne ${{ executable_name }}_vers_expected) {
@@ -224,7 +224,7 @@ jobs:
           $tag = "{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}"
           $tagNoV = $tag.trim('v')
           ${{ executable_name }}_vers = {{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir/{% endraw %}{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir${{ matrix.executable_ext }} {% endraw %} --version
-          ${{ executable_name }}_vers_expected = "{{ executable_name }}, version $tagNoV"
+          ${{ executable_name }}_vers_expected = "{{ app_name }}, version $tagNoV"
           echo ${{ executable_name }}_vers
           echo "${{ executable_name }}_vers_expected"
           if (${{ executable_name }}_vers -ne ${{ executable_name }}_vers_expected) {
@@ -237,7 +237,7 @@ jobs:
           tag={% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}
           tagNoV=${tag:1}
           {{ executable_name }}_vers=$({{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} --version)
-          {{ executable_name }}_vers_expected="{{ executable_name }}, version $tagNoV"
+          {{ executable_name }}_vers_expected="{{ app_name }}, version $tagNoV"
           echo ${{ executable_name }}_vers
           echo ${{ executable_name }}_vers_expected
           [ "${{ executable_name }}_vers" = "${{ executable_name }}_vers_expected" ]
@@ -248,7 +248,7 @@ jobs:
           tag={% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}
           tagNoV=${tag:1}
           {{ executable_name }}_vers=$({{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir/{% endraw %}{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir${{ matrix.executable_ext }}{% endraw %} --version)
-          {{ executable_name }}_vers_expected="{{ executable_name }}, version $tagNoV"
+          {{ executable_name }}_vers_expected="{{ app_name }}, version $tagNoV"
           echo ${{ executable_name }}_vers
           echo ${{ executable_name }}_vers_expected
           [ "${{ executable_name }}_vers" = "${{ executable_name }}_vers_expected" ]
@@ -326,7 +326,7 @@ jobs:
           tag={% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}
           tagNoV=${tag:1}
           {{ executable_name }}_vers=$({{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux --version)
-          {{ executable_name }}_vers_expected="{{ executable_name }}, version $tagNoV"
+          {{ executable_name }}_vers_expected="{{ app_name }}, version $tagNoV"
           echo ${{ executable_name }}_vers
           echo ${{ executable_name }}_vers_expected
           [ "${{ executable_name }}_vers" = "${{ executable_name }}_vers_expected" ]
@@ -336,7 +336,7 @@ jobs:
           tag={% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}
           tagNoV=${tag:1}
           {{ executable_name }}_vers=$({{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux-dir/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux-dir --version)
-          {{ executable_name }}_vers_expected="{{ executable_name }}, version $tagNoV"
+          {{ executable_name }}_vers_expected="{{ app_name }}, version $tagNoV"
           echo ${{ executable_name }}_vers
           echo ${{ executable_name }}_vers_expected
           [ "${{ executable_name }}_vers" = "${{ executable_name }}_vers_expected" ]
@@ -500,8 +500,8 @@ jobs:
 
       - name: Configure poetry
         run: |
-             poetry config virtualenvs.in-project true
-             poetry config installer.modern-installation false
+          poetry config virtualenvs.in-project true
+          poetry config installer.modern-installation false
 
       - name: Install dependencies
         run: poetry install --without test,pyinstaller

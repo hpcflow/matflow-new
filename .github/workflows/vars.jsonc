@@ -1,6 +1,7 @@
 {
     "org": "hpcflow",
     "repo": "matflow-new",
+    "app_name": "MatFlow",
     "version_file": "matflow/_version.py",
     "release_branch": "main",
     "pre_release_branch": "develop",
