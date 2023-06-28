@@ -2,6 +2,7 @@
 
 import copy
 from pathlib import Path
+import tempfile
 from typing import Type
 
 from ruamel.yaml import YAML
@@ -139,6 +140,18 @@ def generate_parameter_validation_schemas(app):
             jinja_contexts["first_ctx"]["tree_files"][param.typ] = str(full_path)
 
 
+def generate_dummy_environments(*env_names):
+    """Add environments to a temporary file and add that file to the config's environment
+    sources."""
+    dummy_envs = [{"name": i} for i in env_names]
+    tmp_dir = Path(tempfile.gettempdir())
+    tmp_envs_file = tmp_dir / "temp_envs.yml"
+    yaml = YAML()
+    with tmp_envs_file.open("wt") as fp:
+        yaml.dump(dummy_envs, fp)
+    app.config.append("environment_sources", str(tmp_envs_file))
+
+
 # -------- app-specific content START ----------------------------------------------------
 
 from matflow import __version__
@@ -158,6 +171,9 @@ switcher_JSON_URL = "https://docs.matflow.io/switcher.json"
 html_logo = "_static/images/logo-50dpi.png"
 
 additional_intersphinx = {"hpcflow": ("https://hpcflow.github.io/docs/stable", None)}
+
+# allow loading task schemas without these envs defined:
+generate_dummy_environments("damask_env", "damask_parse_env")
 
 # -------- app-specific content END ------------------------------------------------------
 # ----------------------------------------------------------------------------------------
