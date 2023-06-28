@@ -1,4 +1,17 @@
 
+<a name="v0.3.0a22"></a>
+## [v0.3.0a22](https://github.com/hpcflow/matflow-new/compare/v0.3.0a21...v0.3.0a22) - 2023.06.28
+
+### ✨ Features
+
+* flesh out simple damask workflow
+
+### 👷 Build changes
+
+* bump lock
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a21"></a>
 ## [v0.3.0a21](https://github.com/hpcflow/matflow-new/compare/v0.3.0a20...v0.3.0a21) - 2023.05.28
 
