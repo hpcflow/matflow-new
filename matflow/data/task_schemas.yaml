@@ -58,50 +58,50 @@
         - command: Write-Output ((<<parameter:p2>> + 100))
           stdout: <<parameter:p3>>
 
-- objective: dummy_task_1
-  inputs:
-    - parameter: p1
-    - parameter: p2
-  outputs:
-    - parameter: p3
-  actions:
-    - environments:
-        - scope:
-            type: any
-          environment: python_env
-      input_file_generators:
-        - input_file: t1_infile_1
-          from_inputs: [p2]
-          script: write_t1_infile_1.py
-      commands:
-        - command: >-
-            Set-Content -Path .\test.txt -Value "hello from ${pwd}; p1=<<parameter:p1>> p2=<<parameter:p2>> <<file:t1_infile_1>>"
-      output_file_parsers:
-        p3:
-          from_files: [t1_outfile_1]
-          script: read_t1_outfile_1.py
+# - objective: dummy_task_1
+#   inputs:
+#     - parameter: p1
+#     - parameter: p2
+#   outputs:
+#     - parameter: p3
+#   actions:
+#     - environments:
+#         - scope:
+#             type: any
+#           environment: python_env
+#       input_file_generators:
+#         - input_file: t1_infile_1
+#           from_inputs: [p2]
+#           script: write_t1_infile_1.py
+#       commands:
+#         - command: >-
+#             Set-Content -Path .\test.txt -Value "hello from ${pwd}; p1=<<parameter:p1>> p2=<<parameter:p2>> <<file:t1_infile_1>>"
+#       output_file_parsers:
+#         p3:
+#           from_files: [t1_outfile_1]
+#           script: read_t1_outfile_1.py
 
-- objective: file_modifying_task
-  inputs:
-    - parameter: p1
-  outputs:
-    - parameter: p2
-  actions:
-    - environments:
-        - scope:
-            type: any
-          environment: python_env
-      input_file_generators:
-        - input_file: my_file
-          from_inputs: [p1]
-          script: write_my_file.py
-      commands:
-        - command: >-
-            Add-Content -Path <<file:my_file>> -Value "modified file contents!"
-      output_file_parsers:
-        p2:
-          from_files: [my_file]
-          script: read_my_file.py
+# - objective: file_modifying_task
+#   inputs:
+#     - parameter: p1
+#   outputs:
+#     - parameter: p2
+#   actions:
+#     - environments:
+#         - scope:
+#             type: any
+#           environment: python_env
+#       input_file_generators:
+#         - input_file: my_file
+#           from_inputs: [p1]
+#           script: write_my_file.py
+#       commands:
+#         - command: >-
+#             Add-Content -Path <<file:my_file>> -Value "modified file contents!"
+#       output_file_parsers:
+#         p2:
+#           from_files: [my_file]
+#           script: read_my_file.py
 
 - objective: generate_microstructure_seeds
   method: from_random
