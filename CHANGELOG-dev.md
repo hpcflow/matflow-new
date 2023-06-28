@@ -1,4 +1,16 @@
 
+<a name="v0.3.0a23"></a>
+## [v0.3.0a23](https://github.com/hpcflow/matflow-new/compare/v0.3.0a22...v0.3.0a23) - 2023.06.28
+
+### 🐛 Bug Fixes
+
+* loading task schemas without defined envs
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a22"></a>
 ## [v0.3.0a22](https://github.com/hpcflow/matflow-new/compare/v0.3.0a21...v0.3.0a22) - 2023.06.28
 
