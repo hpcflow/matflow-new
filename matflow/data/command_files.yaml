@@ -7,6 +7,15 @@
 - label: damask_material_file
   name:
     name: material.yaml
+- label: damask_stdout_file
+  name:
+    name: stdout.log
+- label: damask_stderr_file
+  name:
+    name: stderr.log
+- label: damask_hdf5_file
+  name:
+    name: geom_load.hdf5
 - label: lammps_atoms_file
   name:
     name: atoms.lammps
@@ -20,3 +29,9 @@
 - label: t1_outfile_1
   name:
     name: t1_outfile_1.txt
+- label: t1_infile_1
+  name:
+    name: t1_infile_1.txt
+- label: my_file
+  name:
+    name: my_file.txt

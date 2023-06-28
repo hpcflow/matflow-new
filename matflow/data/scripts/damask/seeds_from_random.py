@@ -4,14 +4,14 @@ import numpy as np
 
 
 def seeds_from_random(
-    size,
+    VE_size,
     num_grains,
     phase_label,
     orientation_coordinate_system=None,
 ):
 
-    size = np.array(size)
-    position = seeds.from_random(size, num_grains)
+    VE_size = np.array(VE_size)
+    position = seeds.from_random(VE_size, num_grains)
     rotation = Rotation.from_random(shape=(num_grains,))
     out = {
         "microstructure_seeds": {
@@ -27,7 +27,7 @@ def seeds_from_random(
                 },
                 "P": -1,
             },
-            "size": size,
+            "size": VE_size,
             "random_seed": None,
             "phase_labels": [phase_label],
         }

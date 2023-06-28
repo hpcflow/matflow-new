@@ -6,11 +6,11 @@ from damask_parse.utils import validate_volume_element, validate_orientations
 
 def generate_volume_element_random_voronoi(
     microstructure_seeds,
-    grid_size,
+    VE_grid_size,
     homog_label,
 ):
     grid_obj = Grid.from_Voronoi_tessellation(
-        cells=np.array(grid_size),
+        cells=np.array(VE_grid_size),
         size=np.array(microstructure_seeds["size"]),
         seeds=np.array(microstructure_seeds["position"]),
         periodic=True,
