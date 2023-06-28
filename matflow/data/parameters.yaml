@@ -14,6 +14,7 @@
     - path: [{ "type": "list_value" }]
       condition:
         value.type.equal_to: float
+
 - type: VE_grid_size
   _validation:
     - path: []
@@ -30,10 +31,14 @@
 - type: microstructure_seeds
 - type: volume_element
 - type: homog_label
-- type: volume_element_response
+- type: VE_response
+- type: VE_response_data
 - type: load_case
 - type: homogenization
-- type: phase
+- type: damask_phases
+- type: damask_log
+- type: damask_post_processing
+- type: damask_post_processing_result
 - type: p1
 - type: p2
 - type: p3
