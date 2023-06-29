@@ -861,13 +861,13 @@ tqdm = ["tqdm"]
 
 [[package]]
 name = "hpcflow-new2"
-version = "0.2.0a52"
+version = "0.2.0a54"
 description = "Computational workflow management"
 optional = false
 python-versions = ">=3.8,<3.12"
 files = [
-    {file = "hpcflow_new2-0.2.0a52-py3-none-any.whl", hash = "sha256:f9d7dd0e1782e046bac7acbf0b33c770717489700af557065a384125c63b365d"},
-    {file = "hpcflow_new2-0.2.0a52.tar.gz", hash = "sha256:25ecb894ed338bbae9d1cc4b4e9031d4f3a33cc867fdaf6bdb6904b9ad5b0ab2"},
+    {file = "hpcflow_new2-0.2.0a54-py3-none-any.whl", hash = "sha256:44eb1cc5ad1c559d26bae6da1c6538cc6fb94220a7202d642327518a9e6db50c"},
+    {file = "hpcflow_new2-0.2.0a54.tar.gz", hash = "sha256:89302a86f23d101f058c4c17eb64593008d181758c5f81e7787b166e386bf386"},
 ]
 
 [package.dependencies]
@@ -2949,4 +2949,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.12"
-content-hash = "f5942bcf8d83c9613018061996e5a68fa80ec110be58635765ef0043b8962460"
+content-hash = "a181b723fede68291e6b202647796d14c81cafaa7aab2f575a158ac665cb257c"
