@@ -2,11 +2,11 @@ name: release
 concurrency: release
 
 env:
-  PYTHON_VERSION_BUMP: "3.10"
-  PYTHON_VERSION_BUILD_EXES: "3.10"
-  PYTHON_VERSION_RELEASE: "3.10"
-  PYTHON_VERSION_BUILD_DOCS: "3.10"
-  PYTHON_VERSION_UPDATE_WEB: "3.10"
+  PYTHON_VERSION_BUMP: "3.11"
+  PYTHON_VERSION_BUILD_EXES: "3.11"
+  PYTHON_VERSION_RELEASE: "3.11"
+  PYTHON_VERSION_BUILD_DOCS: "3.11"
+  PYTHON_VERSION_UPDATE_WEB: "3.11"
 
 on:
   pull_request_target:
@@ -91,7 +91,7 @@ jobs:
           NEW_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
           echo "NEW_TAG is: $NEW_TAG"
           echo "new_tag=$NEW_TAG" >> $GITHUB_ENV
-          echo "::set-output name=new_tag_name::$NEW_TAG"
+          echo "new_tag_name=$NEW_TAG" >> $GITHUB_OUTPUT
 
       - name: Generate CHANGELOG (stable release)
         if: github.event.pull_request.base.ref == '{{ release_branch }}'
@@ -437,11 +437,11 @@ jobs:
             out_yaml += exe_name + ': ' + url + '\n'
           print(out_yaml)
           ")
-          # escape new lines:
-          binaryYaml="${binaryYaml//'%'/'%25'}"
-          binaryYaml="${binaryYaml//$'\n'/'%0A'}"
-          binaryYaml="${binaryYaml//$'\r'/'%0D'}"
-          echo "::set-output name=binary_download_links::$binaryYaml"
+          # Save multiline output
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "binary_download_links<<$EOF" >> $GITHUB_OUTPUT
+          echo "$binaryYaml" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
 
       - name: Publish (to {{ PYPI_URL }})
         run: |
