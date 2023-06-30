@@ -48,18 +48,14 @@
                 & $([scriptblock]::Create((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/hpcflow/install-scripts/main/src/install-{{ app_package_name }}.ps1'))) -PreRelease -OneFile
 
     .. admonition:: What does this script do?
-        :class: note
+        :class: note dropdown
         
         The above command downloads a script from the {{ app_name }} GitHub repository and runs it. The script does the following:
 
         #. It downloads the latest prerelease version of {{ app_name }} packaged up into a single executable.
-        #. The file is placed in an accessible location. The location depends on the operating system. In Linux it is
-            ``/.local/share/matflow``. In macOS it is ``~/Library/Application Support/matflow``. In Windows it is
-            ``Username\AppData\Local\matflow``
-        #. A symbolic link (Linux/macOS) or an alias pointing to the file is created. This allows {{ app_name }} to be run
-            by entering a simple command.
-        #. A command is added to ``.bashrc``/``.zshrc`` (linux/macOS) or the Powershell profile (Windows) that allows {{ app_name }}
-            to be run from any folder.
+        #. The file is placed in an accessible location. The location depends on the operating system. In Linux it is ``/.local/share/matflow``. In macOS it is ``~/Library/Application Support/matflow``. In Windows it is ``Username\AppData\Local\matflow``.
+        #. A symbolic link (Linux/macOS) or an alias pointing to the file is created. This allows {{ app_name }} to be run by entering a simple command.
+        #. A command is added to ``.bashrc``/``.zshrc`` (linux/macOS) or the Powershell profile (Windows) that allows {{ app_name }} to be run from any folder.
 
         If the script detects that the version of {{ app_name }} it is trying to install is already there, it will stop running
         and exit.

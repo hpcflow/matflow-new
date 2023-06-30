@@ -25,6 +25,7 @@ On the target machine:
 * Unpack the environment:
   
   .. code-block:: bash
+    
       mkdir matflow_damask_parse_v3a7_env
       tar -xzf matflow_damask_parse_v3a7_env.tar.gz -C matflow_damask_parse_v3a7_env
 
