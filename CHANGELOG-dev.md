@@ -1,4 +1,20 @@
 
+<a name="v0.3.0a27"></a>
+## [v0.3.0a27](https://github.com/hpcflow/matflow-new/compare/v0.3.0a26...v0.3.0a27) - 2023.06.30
+
+### ✨ Features
+
+* add viz to damask task
+
+### 🐛 Bug Fixes
+
+* bump deps
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a26"></a>
 ## [v0.3.0a26](https://github.com/hpcflow/matflow-new/compare/v0.3.0a25...v0.3.0a26) - 2023.06.30
 
