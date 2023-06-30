@@ -39,6 +39,8 @@
 - type: damask_log
 - type: damask_post_processing
 - type: damask_post_processing_result
+- type: damask_viz
+- type: damask_viz_result
 - type: p1
 - type: p2
 - type: p3
