@@ -1,4 +1,61 @@
 
+<a name="v0.3.0a26"></a>
+## [v0.3.0a26](https://github.com/hpcflow/matflow-new/compare/v0.3.0a25...v0.3.0a26) - 2023.06.30
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a25"></a>
+## [v0.3.0a25](https://github.com/hpcflow/matflow-new/compare/v0.3.0a24...v0.3.0a25) - 2023.06.29
+
+### 🐛 Bug Fixes
+
+* bump hpcflow
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a24"></a>
+## [v0.3.0a24](https://github.com/hpcflow/matflow-new/compare/v0.3.0a23...v0.3.0a24) - 2023.06.29
+
+### 🐛 Bug Fixes
+
+* version bump for hpcflow
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a23"></a>
+## [v0.3.0a23](https://github.com/hpcflow/matflow-new/compare/v0.3.0a22...v0.3.0a23) - 2023.06.28
+
+### 🐛 Bug Fixes
+
+* loading task schemas without defined envs
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a22"></a>
+## [v0.3.0a22](https://github.com/hpcflow/matflow-new/compare/v0.3.0a21...v0.3.0a22) - 2023.06.28
+
+### ✨ Features
+
+* flesh out simple damask workflow
+
+### 👷 Build changes
+
+* bump lock
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a21"></a>
 ## [v0.3.0a21](https://github.com/hpcflow/matflow-new/compare/v0.3.0a20...v0.3.0a21) - 2023.05.28
 
