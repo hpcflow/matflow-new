@@ -142,10 +142,12 @@
     - parameter: damask_phases
     - parameter: damask_post_processing
     - parameter: VE_response_data
+    - parameter: damask_viz
   outputs:
     - parameter: damask_log
     - parameter: damask_post_processing_result
     - parameter: VE_response
+    - parameter: damask_viz_result
   actions:
     - environments:
         - scope:
@@ -183,6 +185,13 @@
           save_files: false
           script: damask/extract_damask_HDF5.py
           inputs: [VE_response_data]
+        damask_viz_result:
+          from_files: [damask_hdf5_file]
+          save_files: [damask_viz_files]
+          clean_up: [damask_viz_files]
+          inputs: [damask_viz]
+          outputs: [VE_response]
+          script: damask/viz_damask_HDF5.py
 # - objective: prepare_atoms_box
 #   inputs:
 #     - parameter: number_atoms
