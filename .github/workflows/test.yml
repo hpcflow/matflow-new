@@ -4,7 +4,7 @@ concurrency:
   ci-${{ format('{0}github.head_ref', 'refs/heads') || github.ref }}
 
 env:
-  PYTHON_VERSION_PRE_COMMIT: "3.10"
+  PYTHON_VERSION_PRE_COMMIT: "3.11"
 
 on:
   workflow_dispatch: # manual invocation
