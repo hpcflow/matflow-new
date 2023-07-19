@@ -94,14 +94,14 @@
 #       input_file_generators:
 #         - input_file: t1_infile_1
 #           from_inputs: [p2]
-#           script: write_t1_infile_1.py
+#           script: <<script:write_t1_infile_1.py>>
 #       commands:
 #         - command: >-
 #             Set-Content -Path .\test.txt -Value "hello from ${pwd}; p1=<<parameter:p1>> p2=<<parameter:p2>> <<file:t1_infile_1>>"
 #       output_file_parsers:
 #         p3:
 #           from_files: [t1_outfile_1]
-#           script: read_t1_outfile_1.py
+#           script: <<script:read_t1_outfile_1.py>>
 
 # - objective: file_modifying_task
 #   inputs:
@@ -116,14 +116,14 @@
 #       input_file_generators:
 #         - input_file: my_file
 #           from_inputs: [p1]
-#           script: write_my_file.py
+#           script: <<script:write_my_file.py>>
 #       commands:
 #         - command: >-
 #             Add-Content -Path <<file:my_file>> -Value "modified file contents!"
 #       output_file_parsers:
 #         p2:
 #           from_files: [my_file]
-#           script: read_my_file.py
+#           script: <<script:read_my_file.py>>
 
 - objective: generate_microstructure_seeds
   method: from_random
@@ -134,7 +134,10 @@
   outputs:
     - parameter: microstructure_seeds
   actions:
-    - script: damask/seeds_from_random.py
+    - script: <<script:damask/seeds_from_random.py>>
+      script_data_in: direct
+      script_data_out: direct
+      script_exe: python_script
       environments:
         - scope:
             type: any
@@ -153,7 +156,10 @@
   outputs:
     - parameter: volume_element
   actions:
-    - script: damask/generate_volume_element_random_voronoi.py
+    - script: <<script:damask/generate_volume_element_random_voronoi.py>>
+      script_data_in: direct
+      script_data_out: direct
+      script_exe: python_script
       environments:
         - scope:
             type: any
@@ -174,10 +180,18 @@
   outputs:
     - parameter: orientations
   actions:
-    - script: mtex/sample_texture_CTF.m
+    
+    - script: <<script:mtex/sample_texture_CTF.m>>
+      script_exe: compile_mtex
+      environments:
+        - scope:
+            type: any
+          environment: matlab_env
+    
+    - script: sample_texture_CTF
       script_data_in: json
       script_data_out: hdf5
-      script_exe: matlab
+      script_exe: run_compiled_mtex
       environments:
         - scope:
             type: any
@@ -189,7 +203,7 @@
   outputs:
     - parameter: orientations
   actions:
-    - script: main_script_test.py
+    - script: <<script:main_script_test.py>>
       script_data_in: json
       script_data_out: hdf5
       script_exe: python
@@ -224,13 +238,13 @@
       input_file_generators:
         - input_file: damask_geom_file
           from_inputs: [volume_element]
-          script: damask/write_geom.py
+          script: <<script:damask/write_geom.py>>
         - input_file: damask_load_file
           from_inputs: [load_case]
-          script: damask/write_load.py
+          script: <<script:damask/write_load.py>>
         - input_file: damask_material_file
           from_inputs: [volume_element, homogenization, damask_phases]
-          script: damask/write_material.py
+          script: <<script:damask/write_material.py>>
       abortable: true
       commands:
         - command: <<executable:damask_grid>> --load load.yaml --geom geom.vti
@@ -239,16 +253,16 @@
       output_file_parsers:
         damask_log:
           from_files: [damask_stdout_file]
-          script: damask/read_log.py
+          script: <<script:damask/read_log.py>>
         damask_post_processing_result:
           from_files: [damask_hdf5_file]
           save_files: false
-          script: damask/process_damask_HDF5.py
+          script: <<script:damask/process_damask_HDF5.py>>
           inputs: [damask_post_processing]
         VE_response:
           from_files: [damask_hdf5_file]
           save_files: false
-          script: damask/extract_damask_HDF5.py
+          script: <<script:damask/extract_damask_HDF5.py>>
           inputs: [VE_response_data]
         damask_viz_result:
           from_files: [damask_hdf5_file]
@@ -256,7 +270,7 @@
           clean_up: [damask_viz_files]
           inputs: [damask_viz]
           outputs: [VE_response]
-          script: damask/viz_damask_HDF5.py
+          script: <<script:damask/viz_damask_HDF5.py>>
 # - objective: prepare_atoms_box
 #   inputs:
 #     - parameter: number_atoms
