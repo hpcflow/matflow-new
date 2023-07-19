@@ -173,7 +173,7 @@ html_logo = "_static/images/logo-50dpi.png"
 additional_intersphinx = {"hpcflow": ("https://hpcflow.github.io/docs/stable", None)}
 
 # allow loading task schemas without these envs defined:
-generate_dummy_environments("damask_env", "damask_parse_env")
+generate_dummy_environments("python_env", "matlab_env", "damask_env", "damask_parse_env")
 
 # -------- app-specific content END ------------------------------------------------------
 # ----------------------------------------------------------------------------------------

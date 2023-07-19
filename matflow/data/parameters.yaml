@@ -58,3 +58,4 @@
 - type: atoms
 - type: empirical_potential
 - type: optimised_atoms
+- type: compile
