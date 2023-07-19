@@ -149,10 +149,8 @@
     - parameter: microstructure_seeds
     - parameter: VE_grid_size
     - parameter: homog_label
-    # - parameter: orientations
-    #   default:
-    #     orientations::from_random:
-    #       number: <<microstructure_seeds.length>>
+    - parameter: orientations
+      default_value: null
   outputs:
     - parameter: volume_element
   actions:

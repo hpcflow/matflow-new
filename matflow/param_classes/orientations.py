@@ -46,8 +46,8 @@ class UnitCellAlignment(ParameterValue):
 
     @classmethod
     def from_hex_convention_DAMASK(cls):
-        # TODO: wrong
-        return cls(x=LatticeDirection.a, y=LatticeDirection.b, z=LatticeDirection.c)
+        # TODO: check!
+        return cls(x=LatticeDirection.a, y=LatticeDirection.b_star, z=LatticeDirection.c)
 
     @classmethod
     def from_hex_convention_MTEX(cls):
@@ -128,7 +128,7 @@ class Orientations(ParameterValue):
     def from_random(cls, number):
         return cls(
             data=cls.quat_sample_random(number),
-            unit_cell_alignment=UnitCellAlignment.from_convention_DAMASK(),
+            unit_cell_alignment=UnitCellAlignment.from_hex_convention_DAMASK(),
             representation=OrientationRepresentation.QUATERNION,
         )
 

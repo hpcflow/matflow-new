@@ -8,6 +8,7 @@ def generate_volume_element_random_voronoi(
     microstructure_seeds,
     VE_grid_size,
     homog_label,
+    orientations,
 ):
     grid_obj = Grid.from_Voronoi_tessellation(
         cells=np.array(VE_grid_size),
@@ -15,7 +16,32 @@ def generate_volume_element_random_voronoi(
         seeds=np.array(microstructure_seeds["position"]),
         periodic=True,
     )
-    oris = copy.deepcopy(microstructure_seeds["orientations"])
+    # TODO: this needs some more thought.
+
+    if orientations is None:
+        oris = copy.deepcopy(microstructure_seeds["orientations"])
+
+    else:
+        # see `LatticeDirection` enum:
+        align_lookup = {
+            "a": "a",
+            "b": "b",
+            "c": "c",
+            "a_star": "a*",
+            "b_star": "b*",
+            "c_star": "c*",
+        }
+        unit_cell_alignment = {
+            "x": align_lookup[orientations.unit_cell_alignment.x.name],
+            "y": align_lookup[orientations.unit_cell_alignment.y.name],
+            "z": align_lookup[orientations.unit_cell_alignment.z.name],
+        }
+        oris = {
+            "type": "quat",
+            "quaternions": np.array(orientations.data),
+            "quat_component_ordering": "scalar-vector",
+            "unit_cell_alignment": unit_cell_alignment,
+        }
     oris = validate_orientations(oris)
 
     num_grains = len(microstructure_seeds["position"])
