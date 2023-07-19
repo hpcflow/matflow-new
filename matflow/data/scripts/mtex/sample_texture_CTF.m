@@ -1,4 +1,4 @@
-function ori_data = sample_texture_CTF(inputs_JSON_path, outputs_HDF5_path)
+function sample_texture_CTF(inputs_JSON_path, outputs_HDF5_path)
 
     all_args = jsondecode(fileread(inputs_JSON_path));
 
@@ -12,7 +12,7 @@ function ori_data = sample_texture_CTF(inputs_JSON_path, outputs_HDF5_path)
     EBSD_orientations = get_EBSD_orientations_from_CTF_file(CTFFilePath, referenceFrameTransformation, specimenSym, phase, rotation);
     ODF = calcDensity(EBSD_orientations);
     orientations = calcOrientations(ODF, numOrientations);
-    ori_data = export_orientations_HDF5(orientations, outputs_HDF5_path);
+    export_orientations_HDF5(orientations, outputs_HDF5_path);
 
 end
 
@@ -70,7 +70,7 @@ function alignment = prepare_crystal_alignment(crystalSym)
 
 end
 
-function ori_data = export_orientations_HDF5(orientations, fileName)
+function export_orientations_HDF5(orientations, fileName)
     alignment = prepare_crystal_alignment(orientations.CS);
     ori_data = [orientations.a, orientations.b, orientations.c, orientations.d];
     ori_data = ori_data';
