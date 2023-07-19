@@ -30,6 +30,13 @@
 - type: num_grains
 - type: microstructure_seeds
 - type: volume_element
+- type: CTF_file_path
+- type: specimen_symmetry
+- type: EBSD_phase
+- type: EBSD_reference_frame_transformation
+- type: EBSD_rotation
+- type: num_orientations
+- type: orientations
 - type: homog_label
 - type: VE_response
 - type: VE_response_data

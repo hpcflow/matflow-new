@@ -12,7 +12,15 @@
       commands:
         - command: echo "$((<<parameter:p1>> + 100))"
           stdout: <<parameter:p2>>
-        - command: sleep 10
+        - command: |
+            count=0
+            while [ $count -le 100 ]
+            do
+                echo "count: $count; sleeping..."
+                echo "This message goes to stderr" 1>&2
+                ((count++))
+                sleep 1
+            done
 
 - objective: test_t1_ps
   inputs:
@@ -23,9 +31,23 @@
     - environments:
         - scope:
             type: any
-          environment: null_env
+          environment: python_env # null_env
+      abortable: true
       commands:
-        - command: Write-Output ((<<parameter:p1>> + 100))
+        - command: |
+            & {
+              $count = 0
+              while ($true) {
+                Write-Host "count: $count; sleeping..."
+                $count++
+                if ($count -ge <<parameter:p1>>) {
+                  break
+                }
+                Start-Sleep 1
+              }
+              Write-Output ((<<parameter:p1>> + 100))
+            }
+            <<executable:python>> --version
           stdout: <<parameter:p2>>
 
 - objective: test_t2_bash
@@ -124,6 +146,10 @@
     - parameter: microstructure_seeds
     - parameter: VE_grid_size
     - parameter: homog_label
+    # - parameter: orientations
+    #   default:
+    #     orientations::from_random:
+    #       number: <<microstructure_seeds.length>>
   outputs:
     - parameter: volume_element
   actions:
@@ -132,6 +158,45 @@
         - scope:
             type: any
           environment: damask_parse_env
+
+- objective: sample_texture
+  method: from_CTF_file
+  implementation: mtex
+  inputs:
+    - parameter: CTF_file_path
+    - parameter: specimen_symmetry
+    - parameter: EBSD_phase
+    - parameter: num_orientations
+    - parameter: EBSD_reference_frame_transformation
+      default_value: euler_to_spatial # or "spatial_to_euler" or null
+    - parameter: EBSD_rotation # dict with keys "euler_angles_deg" list optional "keep_XY" bool, or "keep_euler" bool
+      default_value: null
+  outputs:
+    - parameter: orientations
+  actions:
+    - script: mtex/sample_texture_CTF.m
+      script_data_in: json
+      script_data_out: hdf5
+      script_exe: matlab
+      environments:
+        - scope:
+            type: any
+          environment: matlab_env
+
+- objective: generate_orientations
+  inputs:
+    - parameter: num_orientations
+  outputs:
+    - parameter: orientations
+  actions:
+    - script: main_script_test.py
+      script_data_in: json
+      script_data_out: hdf5
+      script_exe: python
+      environments:
+        - scope:
+            type: any
+          environment: python_env
 
 - objective: simulate_VE_loading
   implementation: damask
