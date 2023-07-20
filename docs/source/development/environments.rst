@@ -1,6 +1,51 @@
 Environments
 ############
 
+`matlab_env`
+~~~~~~~~~~~
+
+Example environment definition (non-compiled script)
+----------------------------------------------------
+
+* MTEX tasks have a `compile` input parameter, which is `False` by default. When `compile` is `False`, the `run_mtex` executable must be defined in the `matlab_env`, as shown below.
+* The MATLAB `-batch` switch is used, and is documented here for `Windows <https://uk.mathworks.com/help/matlab/ref/matlabwindows.html>`_, `MacOS <https://uk.mathworks.com/help/matlab/ref/matlabmacos.html>`_, and `Linux <https://uk.mathworks.com/help/matlab/ref/matlablinux.html>`_.
+* So far, this is tested only on Windows.
+
+.. code-block:: yaml
+
+    - name: matlab_env
+      executables:
+        - label: run_mtex
+          instances:
+            - command: matlab -batch "<<script_name_no_ext>> <<args>>"
+              num_cores: 1
+              parallel_mode: null
+
+Example environment definition (compiled script)
+----------------------------------------------------
+
+* MTEX tasks have a `compile` input parameter, which is `False` by default. When `compile` is `True`, both the `compile_mtex` and `run_compiled_mtex` executables must be defined in the `matlab_env`, as shown below.
+* So far, this is tested only on Linux.
+
+.. code-block:: yaml
+
+  - name: matlab_env
+    setup: |
+      # set up commands (e.g. `module load ...`)
+    executables:
+      - label: compile_mtex
+        instances:
+          - command: compile-mtex <<script_name>> <<args>> # steps to compile the script
+            num_cores: 1
+            parallel_mode: null
+
+      - label: run_compiled_mtex
+        instances:
+          - command: ./run_<<script_name>>.sh $MATLAB_HOME <<args>>
+            num_cores: 1
+            parallel_mode: null
+
+
 `damask_parse`
 ~~~~~~~~~~~~~~
 

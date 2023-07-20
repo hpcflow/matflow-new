@@ -3,35 +3,118 @@ import enum
 from typing import Optional
 
 import numpy as np
+import zarr
+
 from hpcflow.sdk.core.parameters import ParameterValue
 
 
+class OrientationRepresentation(enum.Enum):
+
+    QUATERNION = 0
+    EULER = 1
+
+
+class LatticeDirection(enum.Enum):
+    # real-space directions:
+    a = 0
+    b = 1
+    c = 2
+
+    # reciprocal-space directions
+    a_star = 3
+    b_star = 4
+    c_star = 5
+
+
 @dataclass
-class OrientationFormat(enum.Enum):
+class UnitCellAlignment(ParameterValue):
 
-    # i.e. InputValue(parameter=Parameter(typ='orientations'), path=('ori_format',), value=...)
+    _typ = "unit_cell_alignment"
 
-    QUATERNION = 1
-    EULER = 2
+    x: Optional[LatticeDirection] = None
+    y: Optional[LatticeDirection] = None
+    z: Optional[LatticeDirection] = None
+
+    def __post_init__(self):
+        # assume enum values:
+        if not isinstance(self.x, LatticeDirection):
+            self.x = LatticeDirection(int(self.x))
+        if not isinstance(self.y, LatticeDirection):
+            self.y = LatticeDirection(int(self.y))
+        if not isinstance(self.z, LatticeDirection):
+            self.z = LatticeDirection(int(self.z))
+
+    @classmethod
+    def from_hex_convention_DAMASK(cls):
+        # TODO: check!
+        return cls(x=LatticeDirection.a, y=LatticeDirection.b_star, z=LatticeDirection.c)
+
+    @classmethod
+    def from_hex_convention_MTEX(cls):
+        """Generate a unit cell alignment from MTEX's default convention for hexagonal
+        symmetry.
+
+        Tested using this command in MTEX: `crystalSymmetry("hexagonal").alignment`
+
+        """
+        return cls(
+            x=LatticeDirection.a_star,
+            y=LatticeDirection.b,
+            z=LatticeDirection.c_star,
+        )
 
 
 @dataclass
 class Orientations(ParameterValue):
 
-    # i.e. InputValue(parameter=Parameter(typ='orientations'), value=...)
     _typ = "orientations"
 
-    # _sub_parameters = (
-    #     SubParameter(path=("ori_format",), is_enum=True, class_obj=OrientationFormat),
-    # )
-
     data: np.ndarray
-    ori_format: Optional[OrientationFormat] = None
+    unit_cell_alignment: UnitCellAlignment
+    representation: Optional[OrientationRepresentation] = None
 
     def __post_init__(self):
+        if not isinstance(self.representation, OrientationRepresentation):
+            # assume we have stored to value of the enum:
+            self.representation = OrientationRepresentation(int(self.representation))
+
+        if not isinstance(self.unit_cell_alignment, UnitCellAlignment):
+            self.unit_cell_alignment = UnitCellAlignment(**self.unit_cell_alignment)
+
+    @classmethod
+    def save_from_HDF5_group(cls, group, param_id: int, workflow):
+        """Save orientation data from an HDF5 group to a persistent workflow.
+
+        We avoid loading the data into memory all at once by firstly generating an
+        `Orientations` object with a small data array, and then copying from the HDF5
+        group directly into the newly created Zarr group.
+
+        """
+
+        obj = cls(
+            data=np.array([0]),
+            representation=group.attrs.get("representation"),
+            unit_cell_alignment=dict(
+                zip(("x", "y", "z"), group.attrs.get("unit_cell_alignment"))
+            ),
+        )
+        workflow.set_parameter_value(param_id=param_id, value=obj, commit=True)
+
+        # now replace placeholder data with correct data:
+        zarr_grp, dataset_name = workflow._store._get_array_group_and_dataset(
+            mode="r+",
+            param_id=param_id,
+            data_path=["data"],
+        )
+        zarr.copy(
+            source=group["data"],
+            dest=zarr_grp,
+            name=dataset_name,
+            if_exists="replace",
+        )
+
+    def dump_to_HDF5_group(self, HDF5_group):
         pass
-        # if not isinstance(self.ori_format, OrientationFormat):
-        #     self.ori_format = getattr(OrientationFormat, self.ori_format.upper())
 
     @classmethod
     def from_JSON_like(cls, data, ori_format):
@@ -45,19 +128,23 @@ class Orientations(ParameterValue):
     def from_random(cls, number):
         return cls(
             data=cls.quat_sample_random(number),
-            ori_format="quaternion",
+            unit_cell_alignment=UnitCellAlignment.from_hex_convention_DAMASK(),
+            representation=OrientationRepresentation.QUATERNION,
         )
 
     @staticmethod
     def quat_sample_random(number):
         """Generate random uniformly distributed unit quaternions.
+
         Parameters
         ----------
         number : int
             How many quaternions to generate.
+
         Returns
         -------
         quats : ndarray of shape (number, 4)
+
         References
         ----------
         https://stackoverflow.com/a/44031492/5042280
