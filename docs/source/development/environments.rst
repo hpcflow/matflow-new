@@ -35,7 +35,7 @@ Example environment definition (compiled script)
     executables:
       - label: compile_mtex
         instances:
-          - command: compile-mtex <<script_name>> <<args>>
+          - command: compile-mtex <<script_name>> <<args>> # steps to compile the script
             num_cores: 1
             parallel_mode: null
 
