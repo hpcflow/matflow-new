@@ -1,4 +1,25 @@
 
+<a name="v0.3.0a34"></a>
+## [v0.3.0a34](https://github.com/hpcflow/matflow-new/compare/v0.3.0a33...v0.3.0a34) - 2023.07.20
+
+### ✨ Features
+
+* bump hpcflow
+* add orientations parameter to generate_volume_element_random_voronoi
+* support non-compiled MTEX scripts as well as compiled scripts
+* update task schemas to reflect upstream changes
+* add sample_texture task
+
+### 🐛 Bug Fixes
+
+* no need to return ori_data in sample_texture_CTF.m
+
+### 👷 Build changes
+
+* merge from develop
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a33"></a>
 ## [v0.3.0a33](https://github.com/hpcflow/matflow-new/compare/v0.3.0a32...v0.3.0a33) - 2023.07.18
 
