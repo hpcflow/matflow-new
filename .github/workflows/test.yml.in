@@ -5,6 +5,7 @@ concurrency:
 
 env:
   PYTHON_VERSION_PRE_COMMIT: "3.11"
+  POETRY_VERSION: "1.4"
 
 on:
   workflow_dispatch: # manual invocation
@@ -79,7 +80,7 @@ jobs:
 
       - name: Install and configure poetry
         run: |
-          python -m pip install poetry==1.4
+          python -m pip install poetry=={% raw %}${{ env.POETRY_VERSION }}{% endraw %}
           poetry config virtualenvs.in-project true
           poetry config installer.modern-installation false
 

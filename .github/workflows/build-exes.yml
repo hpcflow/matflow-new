@@ -2,30 +2,45 @@ name: build-exes
 
 env:
   PYTHON_VERSION_BUILD_EXES: "3.11"
+  POETRY_VERSION: "1.4"
 
 on:
   workflow_dispatch:
     inputs:
+      build_linux:
+        description: "Build executables for linux?"
+        required: true
+        type: boolean
+        default: true
+      build_macos:
+        description: "Build executables for macOS?"
+        required: true
+        type: boolean
+        default: true
+      build_windows:
+        description: "Build executables for Windows?"
+        required: true
+        type: boolean
+        default: true
+      build_onedir:
+        description: "Build one-dir?"
+        required: true
+        type: boolean
+        default: true
+      build_onefile:
+        description: "Build one-file?"
+        required: true
+        type: boolean
+        default: true
       logLevel:
         description: "PyInstaller log level"
         required: true
         default: "INFO"
 
 jobs:
-  build-executables:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows-latest, macos-latest]
-        include:
-          - os: windows-latest
-            executable_ext: .exe
-            executable_os: win
-          - os: macos-latest
-            executable_ext: ""
-            executable_os: macOS
-
-    runs-on: ${{ matrix.os }}
+  build-windows-executables:
+    if: github.event.inputs.build_windows == 'true'
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -39,10 +54,10 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ./.venv
-          key: venv-build-${{ matrix.os }}-${{ hashFiles('**/poetry.lock') }}
+          key: venv-build-windows-latest-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install poetry
-        run: python -m pip install poetry==1.4
+        run: python -m pip install poetry==${{ env.POETRY_VERSION }}
 
       - name: Configure poetry
         run: |
@@ -52,18 +67,7 @@ jobs:
       - name: Install dependencies
         run: poetry install --without dev
 
-      - name: Get exectuable version name (non Windows)
-        if: "!contains(matrix.os, 'windows')"
-        run: |
-          CUR_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
-          echo "CUR_TAG is: $CUR_TAG"
-          echo "cur_tag=$CUR_TAG" >> $GITHUB_ENV
-          vers=$(git describe --tags)
-          echo "vers is: $vers"
-          echo "vers=$vers" >> $GITHUB_ENV
-
-      - name: Get exectuable version name (Windows)
-        if: contains(matrix.os, 'windows')
+      - name: Get exectuable version name
         run: |
           $CUR_TAG = $(git describe --tags $(git rev-list --tags --max-count=1))
           echo "CUR_TAG is: $CUR_TAG"
@@ -72,59 +76,144 @@ jobs:
           echo "vers is: $vers"
           echo "vers=$vers" >> $env:GITHUB_ENV
 
-      - name: Build with pyinstaller (non Windows, file)
-        if: "!contains(matrix.os, 'windows')"
+      - name: Build with pyinstaller for Windows (file)
+        if: github.event.inputs.build_onefile == 'true'
         working-directory: pyinstaller
-        run: ./make.sh matflow-${{ env.vers }}-${{ matrix.executable_os }} ${{ github.event.inputs.logLevel }} 'onefile'
+        run: ./make.ps1 -ExeName "matflow-${{ env.vers }}-win" -LogLevel ${{ github.event.inputs.logLevel }} -BuildType 'onefile'
 
-      - name: Build with pyinstaller (non Windows, folder)
-        if: "!contains(matrix.os, 'windows')"
+      - name: Build with pyinstaller for Windows (folder)
+        if: github.event.inputs.build_onedir == 'true'
         working-directory: pyinstaller
-        run: ./make.sh matflow-${{ env.vers }}-${{ matrix.executable_os }}-dir ${{ github.event.inputs.logLevel }} 'onedir'
-
-      - name: Build with pyinstaller (Windows, file)
-        if: contains(matrix.os, 'windows')
-        working-directory: pyinstaller
-        run: ./make.ps1 -ExeName "matflow-${{ env.vers }}-${{ matrix.executable_os }}" -LogLevel ${{ github.event.inputs.logLevel }} -BuildType 'onefile'
-
-      - name: Build with pyinstaller (Windows, folder)
-        if: contains(matrix.os, 'windows')
-        working-directory: pyinstaller
-        run: ./make.ps1 -ExeName "matflow-${{ env.vers }}-${{ matrix.executable_os }}-dir" -LogLevel ${{ github.event.inputs.logLevel }} -BuildType 'onedir'
+        run: ./make.ps1 -ExeName "matflow-${{ env.vers }}-win-dir" -LogLevel ${{ github.event.inputs.logLevel }} -BuildType 'onedir'
 
       - name: Upload executable artifact (file)
+        if:  github.event.inputs.build_onefile == 'true'
         uses: actions/upload-artifact@v3
         with:
-          name: matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
-          path: pyinstaller/dist/onefile/matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}
+          name: matflow-${{ env.vers }}-win.exe
+          path: pyinstaller/dist/onefile/matflow-${{ env.vers }}-win.exe
 
       - name: Upload executable artifact (folder)
+        if:  github.event.inputs.build_onedir == 'true'
         uses: actions/upload-artifact@v3
         with:
-          name: matflow-${{ env.vers }}-${{ matrix.executable_os }}-dir
-          path: pyinstaller/dist/onedir/matflow-${{ env.vers }}-${{ matrix.executable_os }}-dir
+          name: matflow-${{ env.vers }}-win-dir
+          path: pyinstaller/dist/onedir/matflow-${{ env.vers }}-win-dir
 
       - name: Upload spec file
+        if:  ((github.event.inputs.build_onefile == 'true') || (github.event.inputs.build_onedir == 'true'))
         uses: actions/upload-artifact@v3
         with:
-          name: matflow-${{ env.vers }}-${{ matrix.executable_os }}.spec
-          path: pyinstaller/matflow-${{ env.vers }}-${{ matrix.executable_os }}.spec
+          name: matflow-${{ env.vers }}-win.spec
+          path: pyinstaller/matflow-${{ env.vers }}-win.spec
 
       - name: Upload build directory
+        if:  ((github.event.inputs.build_onefile == 'true') || (github.event.inputs.build_onedir == 'true'))
         uses: actions/upload-artifact@v3
         with:
-          name: matflow-${{ env.vers }}-${{ matrix.executable_os }}-build
-          path: pyinstaller/build/matflow-${{ env.vers }}-${{ matrix.executable_os }}
+          name: matflow-${{ env.vers }}-win-build
+          path: pyinstaller/build/matflow-${{ env.vers }}-win
 
       - name: Run test suite on the frozen app (file)
+        if:  github.event.inputs.build_onefile == 'true'
         run: |
-          pyinstaller/dist/onefile/matflow-${{ env.vers }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} test
+          pyinstaller/dist/onefile/matflow-${{ env.vers }}-win.exe test
 
       - name: Run test suite on the frozen app (folder)
+        if:  github.event.inputs.build_onedir == 'true'
         run: |
-          pyinstaller/dist/onedir/matflow-${{ env.vers }}-${{ matrix.executable_os }}-dir/matflow-${{ env.vers }}-${{ matrix.executable_os }}-dir${{ matrix.executable_ext }} test
+          pyinstaller/dist/onedir/matflow-${{ env.vers }}-win-dir/matflow-${{ env.vers }}-win-dir.exe test
+
+
+  build-macos-executables:
+    if: github.event.inputs.build_macos == 'true'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # get all history and tags
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION_BUILD_EXES }}
+
+      - name: Cache the virtualenv
+        uses: actions/cache@v3
+        with:
+          path: ./.venv
+          key: venv-build-macos-latest-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install poetry
+        run: python -m pip install poetry==${{ env.POETRY_VERSION }}
+
+      - name: Configure poetry
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry config installer.modern-installation false
+
+      - name: Install dependencies
+        run: poetry install --without dev
+
+      - name: Get exectuable version name
+        run: |
+          CUR_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "CUR_TAG is: $CUR_TAG"
+          echo "cur_tag=$CUR_TAG" >> $GITHUB_ENV
+          vers=$(git describe --tags)
+          echo "vers is: $vers"
+          echo "vers=$vers" >> $GITHUB_ENV
+
+      - name: Build with pyinstaller for macOS (file)
+        if: github.event.inputs.build_onefile == 'true'
+        working-directory: pyinstaller
+        run: ./make.sh matflow-${{ env.vers }}-macOS ${{ github.event.inputs.logLevel }} 'onefile'
+
+      - name: Build with pyinstaller for macOS (folder)
+        if: github.event.inputs.build_onedir == 'true'
+        working-directory: pyinstaller
+        run: ./make.sh matflow-${{ env.vers }}-macOS-dir ${{ github.event.inputs.logLevel }} 'onedir'
+
+      - name: Upload executable artifact (file)
+        if:  github.event.inputs.build_onefile == 'true'
+        uses: actions/upload-artifact@v3
+        with:
+          name: matflow-${{ env.vers }}-macOS
+          path: pyinstaller/dist/onefile/matflow-${{ env.vers }}-macOS
+
+      - name: Upload executable artifact (folder)
+        if:  github.event.inputs.build_onedir == 'true'
+        uses: actions/upload-artifact@v3
+        with:
+          name: matflow-${{ env.vers }}-macOS-dir
+          path: pyinstaller/dist/onedir/matflow-${{ env.vers }}-macOS-dir
+
+      - name: Upload spec file
+        if:  ((github.event.inputs.build_onefile == 'true') || (github.event.inputs.build_onedir == 'true'))
+        uses: actions/upload-artifact@v3
+        with:
+          name: matflow-${{ env.vers }}-macOS.spec
+          path: pyinstaller/matflow-${{ env.vers }}-macOS.spec
+
+      - name: Upload build directory
+        if:  ((github.event.inputs.build_onefile == 'true') || (github.event.inputs.build_onedir == 'true'))
+        uses: actions/upload-artifact@v3
+        with:
+          name: matflow-${{ env.vers }}-macOS-build
+          path: pyinstaller/build/matflow-${{ env.vers }}-macOS
+
+      - name: Run test suite on the frozen app (file)
+        if:  github.event.inputs.build_onefile == 'true'
+        run: |
+          pyinstaller/dist/onefile/matflow-${{ env.vers }}-macOS test
+
+      - name: Run test suite on the frozen app (folder)
+        if:  github.event.inputs.build_onedir == 'true'
+        run: |
+          pyinstaller/dist/onedir/matflow-${{ env.vers }}-macOS-dir/matflow-${{ env.vers }}-macOS-dir test
+
 
   build-executables-linux:
+    if: github.event.inputs.build_linux == 'true'
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/hpcflow/centos7-poetry:latest
@@ -163,41 +252,49 @@ jobs:
           echo "vers=$vers" >> $GITHUB_ENV
 
       - name: Build with pyinstaller for CentOS (file)
+        if: github.event.inputs.build_onefile == 'true'
         working-directory: pyinstaller
         run: ./make.sh matflow-${{ env.vers }}-linux ${{ github.event.inputs.logLevel }} onefile
 
       - name: Build with pyinstaller for CentOS (folder)
+        if: github.event.inputs.build_onedir == 'true'
         working-directory: pyinstaller
         run: ./make.sh matflow-${{ env.vers }}-linux-dir ${{ github.event.inputs.logLevel }} onedir
 
       - name: Upload executable artifact (file)
+        if: github.event.inputs.build_onefile == 'true'
         uses: actions/upload-artifact@v3
         with:
           name: matflow-${{ env.vers }}-linux
           path: pyinstaller/dist/onefile/matflow-${{ env.vers }}-linux
 
       - name: Upload executable artifact (folder)
+        if: github.event.inputs.build_onedir == 'true'
         uses: actions/upload-artifact@v3
         with:
           name: matflow-${{ env.vers }}-linux-dir
           path: pyinstaller/dist/onedir/matflow-${{ env.vers }}-linux-dir
 
       - name: Upload spec file
+        if:  ((github.event.inputs.build_onefile == 'true') || (github.event.inputs.build_onedir == 'true'))
         uses: actions/upload-artifact@v3
         with:
           name: matflow-${{ env.vers }}-linux.spec
           path: pyinstaller/matflow-${{ env.vers }}-linux.spec
 
       - name: Upload build directory
+        if:  ((github.event.inputs.build_onefile == 'true') || (github.event.inputs.build_onedir == 'true'))
         uses: actions/upload-artifact@v3
         with:
           name: matflow-${{ env.vers }}-linux-build
           path: pyinstaller/build/matflow-${{ env.vers }}-linux
 
       - name: Run test suite on the frozen app (file)
+        if: github.event.inputs.build_onefile == 'true'
         run: |
           pyinstaller/dist/onefile/matflow-${{ env.vers }}-linux test
 
       - name: Run test suite on the frozen app (folder)
+        if: github.event.inputs.build_onedir == 'true'
         run: |
           pyinstaller/dist/onedir/matflow-${{ env.vers }}-linux-dir/matflow-${{ env.vers }}-linux-dir test

@@ -3,6 +3,9 @@ concurrency:
   | # e.g. don't run simultaneously on the same branch (since we may commit to that branch)
   ci-${{ format('{0}github.head_ref', 'refs/heads') || github.ref }}
 
+env:
+  POETRY_VERSION: "1.4"
+
 on:
   workflow_dispatch: # manual invocation
 
@@ -31,7 +34,7 @@ jobs:
 
       - name: Install and configure poetry
         run: |
-          python -m pip install poetry==1.4
+          python -m pip install poetry==${{ env.POETRY_VERSION }}
           poetry config virtualenvs.in-project true
           poetry config installer.modern-installation false
 
