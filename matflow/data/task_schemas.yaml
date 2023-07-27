@@ -144,7 +144,7 @@
           environment: damask_parse_env
 
 - objective: generate_volume_element
-  method: from_random_voronoi
+  method: from_voronoi
   inputs:
     - parameter: microstructure_seeds
     - parameter: VE_grid_size
@@ -154,7 +154,7 @@
   outputs:
     - parameter: volume_element
   actions:
-    - script: <<script:damask/generate_volume_element_random_voronoi.py>>
+    - script: <<script:damask/generate_volume_element_voronoi.py>>
       script_data_in: direct
       script_data_out: direct
       script_exe: python_script
