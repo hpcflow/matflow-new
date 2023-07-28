@@ -59,3 +59,5 @@
 - type: empirical_potential
 - type: optimised_atoms
 - type: compile
+- type: dump_path
+- type: yield_point # vol-avg equivalent plastic strain

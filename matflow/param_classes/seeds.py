@@ -67,7 +67,8 @@ class MicrostructureSeeds(ParameterValue):
         data = []
         with Path(path).open("rt") as fh:
             for idx, line in enumerate(fh):
-                if idx < start_index:
+                line = line.strip()
+                if not line or idx < start_index:
                     continue
                 elif len(data) < number if number is not None else True:
                     data.append([float(i) for i in line.split(delimiter)])
