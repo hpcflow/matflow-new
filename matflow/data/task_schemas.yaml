@@ -47,7 +47,7 @@
               }
               Write-Output ((<<parameter:p1>> + 100))
             }
-            <<executable:python>> --version
+            <<executable:python_script>> --version
           stdout: <<parameter:p2>>
 
 - objective: test_t2_bash
@@ -144,7 +144,7 @@
           environment: damask_parse_env
 
 - objective: generate_volume_element
-  method: from_random_voronoi
+  method: from_voronoi
   inputs:
     - parameter: microstructure_seeds
     - parameter: VE_grid_size
@@ -154,7 +154,7 @@
   outputs:
     - parameter: volume_element
   actions:
-    - script: <<script:damask/generate_volume_element_random_voronoi.py>>
+    - script: <<script:damask/generate_volume_element_voronoi.py>>
       script_data_in: direct
       script_data_out: direct
       script_exe: python_script
@@ -230,7 +230,7 @@
     - script: <<script:main_script_test.py>>
       script_data_in: json
       script_data_out: hdf5
-      script_exe: python
+      script_exe: python_script
       environments:
         - scope:
             type: any
@@ -295,6 +295,22 @@
           inputs: [damask_viz]
           outputs: [VE_response]
           script: <<script:damask/viz_damask_HDF5.py>>
+
+- objective: dump_all_yield_stresses
+  inputs:
+    - parameter: VE_response
+      group: all_simulations
+    - parameter: yield_point
+    - parameter: dump_path
+  actions:
+    - environments:
+        - scope:
+            type: any
+          environment: damask_parse_env
+      script: <<script:damask/dump_all_yield_stresses.py>>
+      script_data_in: direct
+      script_data_out: direct
+      script_exe: python_script
 # - objective: prepare_atoms_box
 #   inputs:
 #     - parameter: number_atoms
@@ -342,7 +358,7 @@
 #             type: any
 #           environment: damask_parse_env
 #       commands:
-#         - command: <<executable:python>> <<script>> ??
+#         - command: <<executable:python_script>> <<script>> ??
 
 # - version: v2
 #   objective: prepare_atoms_box

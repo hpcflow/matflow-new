@@ -925,14 +925,14 @@ numpy = ">=1.17.3"
 
 [[package]]
 name = "hpcflow-new2"
-version = "0.2.0a66"
+version = "0.2.0a69"
 description = "Computational workflow management"
 category = "main"
 optional = false
-python-versions = ">=3.8,<3.12"
+python-versions = ">=3.8,<3.13"
 files = [
-    {file = "hpcflow_new2-0.2.0a66-py3-none-any.whl", hash = "sha256:6649da5fb0471ca7c7f65901287a94fdeddff6f3e6fbda37e37b3284f4f40c9f"},
-    {file = "hpcflow_new2-0.2.0a66.tar.gz", hash = "sha256:4d7d49a19a41d83064bd8bdf5d93874c74b2adf711458cfa6ca134511cd0e6e0"},
+    {file = "hpcflow_new2-0.2.0a69-py3-none-any.whl", hash = "sha256:7e757d7b386cf7e569e1fdb5577e3eb84ab96f648a9bcbc4dd55341c6be5ff24"},
+    {file = "hpcflow_new2-0.2.0a69.tar.gz", hash = "sha256:127228e111c5fec34814a5c05d80a5759b29134c10f9c1b223eda7ab36afd684"},
 ]
 
 [package.dependencies]
@@ -950,7 +950,7 @@ rich = ">=13.4.2,<14.0.0"
 "ruamel.yaml" = ">=0.17.20,<0.18.0"
 sentry-sdk = ">=1.5.8,<2.0.0"
 termcolor = ">=1.1.0,<2.0.0"
-valida = ">=0.7.0,<0.8.0"
+valida = ">=0.7.1,<0.8.0"
 watchdog = ">=2.1.9,<3.0.0"
 zarr = ">=2.14.2,<3.0.0"
 
@@ -3163,4 +3163,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.12"
-content-hash = "63b2d1323c816a4ff99b8b3d59a3768218ba7e54ea15cfd3d52e2d5a34acdf72"
+content-hash = "9e7efbcd4e15d5f648b1ca0fc48a6e6cabb9c89f9964c8af01f0b1115961a100"

@@ -4,7 +4,7 @@ from damask import Grid
 from damask_parse.utils import validate_volume_element, validate_orientations
 
 
-def generate_volume_element_random_voronoi(
+def generate_volume_element_voronoi(
     microstructure_seeds,
     VE_grid_size,
     homog_label,
@@ -12,40 +12,54 @@ def generate_volume_element_random_voronoi(
 ):
     grid_obj = Grid.from_Voronoi_tessellation(
         cells=np.array(VE_grid_size),
-        size=np.array(microstructure_seeds["size"]),
-        seeds=np.array(microstructure_seeds["position"]),
+        size=np.array(microstructure_seeds.box_size),
+        seeds=np.array(microstructure_seeds.position),
         periodic=True,
     )
     # TODO: this needs some more thought.
 
     if orientations is None:
-        oris = copy.deepcopy(microstructure_seeds["orientations"])
+        oris = copy.deepcopy(microstructure_seeds.orientations)
 
     else:
         # see `LatticeDirection` enum:
         align_lookup = {
-            "a": "a",
-            "b": "b",
-            "c": "c",
-            "a_star": "a*",
-            "b_star": "b*",
-            "c_star": "c*",
+            "A": "a",
+            "B": "b",
+            "C": "c",
+            "A_STAR": "a*",
+            "B_STAR": "b*",
+            "C_STAR": "c*",
         }
         unit_cell_alignment = {
             "x": align_lookup[orientations.unit_cell_alignment.x.name],
             "y": align_lookup[orientations.unit_cell_alignment.y.name],
             "z": align_lookup[orientations.unit_cell_alignment.z.name],
         }
+        type_lookup = {
+            "QUATERNION": "quat",
+            "EULER": "euler",
+        }
+        type_ = type_lookup[orientations.representation.type.name]
         oris = {
-            "type": "quat",
-            "quaternions": np.array(orientations.data),
-            "quat_component_ordering": "scalar-vector",
+            "type": type_,
             "unit_cell_alignment": unit_cell_alignment,
         }
+
+        if type_ == "quat":
+            quat_order = orientations.representation.quat_order.name.lower().replace(
+                "_", "-"
+            )
+            oris["quaternions"] = np.array(orientations.data)
+            oris["quat_component_ordering"] = quat_order
+        elif type_ == "euler":
+            oris["euler_angles"] = np.array(orientations.data)
+            oris["euler_degrees"] = orientations.representation.euler_is_degrees
+
     oris = validate_orientations(oris)
 
-    num_grains = len(microstructure_seeds["position"])
-    const_phase_lab = np.array(microstructure_seeds["phase_labels"])[
+    num_grains = len(microstructure_seeds.position)
+    const_phase_lab = np.array([microstructure_seeds.phase_label])[
         np.zeros(num_grains, dtype=int)
     ]
 
