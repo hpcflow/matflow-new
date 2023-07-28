@@ -1,4 +1,23 @@
 
+<a name="v0.3.0a37"></a>
+## [v0.3.0a37](https://github.com/hpcflow/matflow-new/compare/v0.3.0a36...v0.3.0a37) - 2023.07.28
+
+### ♻ Code Refactoring
+
+* rename generate_volume_element from_random_voronoi method to from_voronoi
+
+### ✨ Features
+
+* bump hpcflow for groups
+* add task dump_all_yield_stresses
+* add MicrostructureSeeds parameter class
+* refine Orientations
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a36"></a>
 ## [v0.3.0a36](https://github.com/hpcflow/matflow-new/compare/v0.3.0a35...v0.3.0a36) - 2023.07.27
 
