@@ -19,42 +19,39 @@ def generate_volume_element_voronoi(
     # TODO: this needs some more thought.
 
     if orientations is None:
-        oris = copy.deepcopy(microstructure_seeds.orientations)
+        orientations = microstructure_seeds.orientations
 
-    else:
-        # see `LatticeDirection` enum:
-        align_lookup = {
-            "A": "a",
-            "B": "b",
-            "C": "c",
-            "A_STAR": "a*",
-            "B_STAR": "b*",
-            "C_STAR": "c*",
-        }
-        unit_cell_alignment = {
-            "x": align_lookup[orientations.unit_cell_alignment.x.name],
-            "y": align_lookup[orientations.unit_cell_alignment.y.name],
-            "z": align_lookup[orientations.unit_cell_alignment.z.name],
-        }
-        type_lookup = {
-            "QUATERNION": "quat",
-            "EULER": "euler",
-        }
-        type_ = type_lookup[orientations.representation.type.name]
-        oris = {
-            "type": type_,
-            "unit_cell_alignment": unit_cell_alignment,
-        }
+    # see `LatticeDirection` enum:
+    align_lookup = {
+        "A": "a",
+        "B": "b",
+        "C": "c",
+        "A_STAR": "a*",
+        "B_STAR": "b*",
+        "C_STAR": "c*",
+    }
+    unit_cell_alignment = {
+        "x": align_lookup[orientations.unit_cell_alignment.x.name],
+        "y": align_lookup[orientations.unit_cell_alignment.y.name],
+        "z": align_lookup[orientations.unit_cell_alignment.z.name],
+    }
+    type_lookup = {
+        "QUATERNION": "quat",
+        "EULER": "euler",
+    }
+    type_ = type_lookup[orientations.representation.type.name]
+    oris = {
+        "type": type_,
+        "unit_cell_alignment": unit_cell_alignment,
+    }
 
-        if type_ == "quat":
-            quat_order = orientations.representation.quat_order.name.lower().replace(
-                "_", "-"
-            )
-            oris["quaternions"] = np.array(orientations.data)
-            oris["quat_component_ordering"] = quat_order
-        elif type_ == "euler":
-            oris["euler_angles"] = np.array(orientations.data)
-            oris["euler_degrees"] = orientations.representation.euler_is_degrees
+    if type_ == "quat":
+        quat_order = orientations.representation.quat_order.name.lower().replace("_", "-")
+        oris["quaternions"] = np.array(orientations.data)
+        oris["quat_component_ordering"] = quat_order
+    elif type_ == "euler":
+        oris["euler_angles"] = np.array(orientations.data)
+        oris["euler_degrees"] = orientations.representation.euler_is_degrees
 
     oris = validate_orientations(oris)
 

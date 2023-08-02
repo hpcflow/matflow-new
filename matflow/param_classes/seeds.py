@@ -21,10 +21,13 @@ class MicrostructureSeeds(ParameterValue):
     def __post_init__(self):
         self.box_size = np.asarray(self.box_size)
         self.position = np.asarray(self.position)
+        if self.orientations and not isinstance(self.orientations, Orientations):
+            self.orientations = Orientations(**self.orientations)
 
     @classmethod
     def from_JSON_like(cls, position, orientations=None, **kwargs):
         """For custom initialisation via YAML or JSON."""
+        # TODO: is this needed?
         if orientations:
             orientations = Orientations.from_JSON_like(**orientations)
         return cls(position=np.asarray(position), orientations=orientations, **kwargs)
