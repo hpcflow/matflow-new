@@ -1,4 +1,25 @@
 
+<a name="v0.3.0a38"></a>
+## [v0.3.0a38](https://github.com/hpcflow/matflow-new/compare/v0.3.0a37...v0.3.0a38) - 2023.08.03
+
+### ✨ Features
+
+* initial support of fit yield function workflow
+
+### 🐛 Bug Fixes
+
+* bump hpcflow
+* fit_yield_function script, cast zarr arrays to numpy
+* update gitignore
+* make OrientationRepresentation store-encodable and fix matlab hdf5 orientation export
+* flesh out LoadCase and add LoadStep class
+* use Orientations-compatible dict in MicrostructureSeeds object
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a37"></a>
 ## [v0.3.0a37](https://github.com/hpcflow/matflow-new/compare/v0.3.0a36...v0.3.0a37) - 2023.07.28
 
