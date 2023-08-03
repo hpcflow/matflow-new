@@ -5,18 +5,8 @@ from typing import Optional
 
 import numpy as np
 import zarr
-
 from hpcflow.sdk.core.parameters import ParameterValue
-
-
-def get_enum_by_name_or_val(cls, key):
-    """Retrieve an enum by name or value, assuming uppercase names and integer values."""
-    if key is None or isinstance(key, cls):
-        return key
-    elif isinstance(key, (int, float)):
-        return cls(int(key))  # retrieve by value
-    else:
-        return getattr(cls, key.upper())  # retrieve by name
+from hpcflow.sdk.core.utils import get_enum_by_name_or_val
 
 
 class EulerDefinition(enum.Enum):
@@ -53,7 +43,7 @@ class OrientationRepresentationType(enum.Enum):
 
 
 @dataclass
-class OrientationRepresentation:
+class OrientationRepresentation(ParameterValue):
 
     type: OrientationRepresentationType
     euler_definition: Optional[EulerDefinition] = None
@@ -148,9 +138,14 @@ class Orientations(ParameterValue):
 
         """
 
+        repr_type = int(group.attrs.get("representation_type")[0])
+        repr_quat_order = int(group.attrs.get("representation_quat_order")[0])
         obj = cls(
             data=np.array([0]),
-            representation=group.attrs.get("representation"),
+            representation=OrientationRepresentation(
+                type=repr_type,
+                quat_order=repr_quat_order,
+            ),
             unit_cell_alignment=dict(
                 zip(("x", "y", "z"), group.attrs.get("unit_cell_alignment"))
             ),

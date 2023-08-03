@@ -76,6 +76,7 @@ function export_orientations_HDF5(orientations, fileName)
     ori_data = ori_data';
     h5create(fileName, '/orientations/data', size(ori_data));
     h5write(fileName, '/orientations/data', ori_data);
-    h5writeatt(fileName, '/orientations', 'representation', 0);
+    h5writeatt(fileName, '/orientations', 'representation_type', 0);
+    h5writeatt(fileName, '/orientations', 'representation_quat_order', 0);
     h5writeatt(fileName, '/orientations', 'unit_cell_alignment', alignment);
 end
