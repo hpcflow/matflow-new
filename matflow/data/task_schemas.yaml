@@ -236,6 +236,21 @@
             type: any
           environment: python_env
 
+- objective: define_p1
+  inputs:
+    - parameter: p1
+
+- objective: define_load_case
+  inputs:
+    - parameter: load_case
+
+# - objective: define_orientations
+#   inputs:
+#     - parameter: orientations
+#       accept_multiple: true
+#       labels:
+#         oris_1: {}
+
 - objective: simulate_VE_loading
   implementation: damask
   inputs:
@@ -308,6 +323,34 @@
             type: any
           environment: damask_parse_env
       script: <<script:damask/dump_all_yield_stresses.py>>
+      script_data_in: direct
+      script_data_out: direct
+      script_exe: python_script
+
+- objective: fit_yield_function
+  inputs:
+    - parameter: yield_function_name
+    - parameter: yield_point_criteria
+    - parameter: VE_response
+      multiple: true
+      labels:
+        uniaxial: {}
+        multiaxial:
+          group: multiaxial_load_cases
+    - parameter: fit_yield_fixed_parameters
+      default_value: null
+    - parameter: fit_yield_initial_parameters
+      default_value: null
+    - parameter: fit_yield_opt_parameters
+      default_value: null
+  outputs:
+    - parameter: fitted_yield_functions
+  actions:
+    - environments:
+        - scope:
+            type: any
+          environment: formable_env
+      script: <<script:formable/fit_yield_function.py>>
       script_data_in: direct
       script_data_out: direct
       script_exe: python_script
