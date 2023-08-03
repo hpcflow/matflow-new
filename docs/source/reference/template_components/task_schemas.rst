@@ -13,8 +13,7 @@ Task schemas
 
    * :ref:`reference/template_components/parameters:{{ inp.parameter.typ }}`
      
-     * Propagation mode: :data:`{{ inp.propagation_mode.name.lower() }} <matflow.ParameterPropagationMode.{{ inp.propagation_mode.name.upper() }}>`
-     * Default value: {{ inp.default_value }}
+     * Labels: {{ inp.labels }}
 
    {% endfor %}
 
