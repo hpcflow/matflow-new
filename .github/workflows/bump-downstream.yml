@@ -1,0 +1,62 @@
+name: bump-downstream
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["release"]
+    types:
+      - completed
+
+env:
+  PYTHON_VERSION_MAKE_PRs: "3.11"
+  POETRY_VERSION: "1.4"
+
+jobs:
+  create-matflow-pull-request:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout MatFlow
+        uses: actions/checkout@v3
+        with:
+          repository: hpcflow/matflow-new
+          fetch-depth: 0 # get all history and tags
+          token: ${{ secrets.HPCFLOW_ACTIONS_TOKEN }}
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION_MAKE_PRs }}
+      
+      - name: Install poetry
+        run: python -m pip install poetry==${{ env.POETRY_VERSION }}
+      
+      - name: Configure poetry
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry config installer.modern-installation false
+
+      - name: Install dependencies
+        run: |
+          poetry install
+
+      - name: Checkout branch
+        run: |
+          git checkout bump/hpcflow
+          git merge develop
+
+      - name: Remove and re-add hpcflow
+        run: |
+          poetry remove hpcflow-new2
+          poetry add hpcflow-new2
+
+      - name: Commit changes
+        run: |          
+          git add pyproject.toml poetry.lock
+          git commit -m"feat: bump hpcflow version"
+          git push
+        
+      - name: Create pull request
+        run: gh pr create -B develop -H bump/hpcflow --title 'Bump hpcflow version' --body 'Created by Github action'
+        env:
+            GITHUB_TOKEN: ${{ secrets.HPCFLOW_ACTIONS_TOKEN }}
