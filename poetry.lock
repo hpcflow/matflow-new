@@ -925,14 +925,14 @@ numpy = ">=1.17.3"
 
 [[package]]
 name = "hpcflow-new2"
-version = "0.2.0a79"
+version = "0.2.0a81"
 description = "Computational workflow management"
 category = "main"
 optional = false
 python-versions = ">=3.8,<3.13"
 files = [
-    {file = "hpcflow_new2-0.2.0a79-py3-none-any.whl", hash = "sha256:b9860f132d77a6e9f889d6f8e3c39cafb5fcb2929df47184f55d097c16dab073"},
-    {file = "hpcflow_new2-0.2.0a79.tar.gz", hash = "sha256:18e15166b3c6420a26338078981f06ee3f6833016af544a535b7f8a1347d5f21"},
+    {file = "hpcflow_new2-0.2.0a81-py3-none-any.whl", hash = "sha256:0b1a78dadc2d31dc92a6a2cfd228cf42c9a159010a51e190a25f85b4eca84d4e"},
+    {file = "hpcflow_new2-0.2.0a81.tar.gz", hash = "sha256:c151d6ba9cf4ba644c07ddd5868def9697bbd05e63dd9d6959f1f2403a46c8e0"},
 ]
 
 [package.dependencies]
@@ -950,7 +950,7 @@ rich = ">=13.4.2,<14.0.0"
 "ruamel.yaml" = ">=0.17.20,<0.18.0"
 sentry-sdk = ">=1.5.8,<2.0.0"
 termcolor = ">=1.1.0,<2.0.0"
-valida = ">=0.7.1,<0.8.0"
+valida = ">=0.7.2,<0.8.0"
 watchdog = ">=2.1.9,<3.0.0"
 zarr = ">=2.14.2,<3.0.0"
 
@@ -2846,14 +2846,14 @@ zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
 name = "valida"
-version = "0.7.1"
+version = "0.7.2"
 description = "Comprehensive validation library for nested data structures."
 category = "main"
 optional = false
 python-versions = ">=3.8,<4.0.0"
 files = [
-    {file = "valida-0.7.1-py3-none-any.whl", hash = "sha256:28f0859c06e2532c1280911f688550b7f885084d3675792330cb6550a49cba43"},
-    {file = "valida-0.7.1.tar.gz", hash = "sha256:342e4929ec27c1b6bf64e43f2a5024d078b98e3ab30c1b4a3e9637fc323d4d15"},
+    {file = "valida-0.7.2-py3-none-any.whl", hash = "sha256:003c376aa58ea0f8e5fb22de9b7047205c8b9a2efaadca3d87cab6bd57e4d727"},
+    {file = "valida-0.7.2.tar.gz", hash = "sha256:a98d57eab802dab82f9da90ae67f9ffef30cb4806d730da8e2c86aaeb5212c73"},
 ]
 
 [package.dependencies]
@@ -3164,4 +3164,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.12"
-content-hash = "cbd18d295201994d03ae4c80925c7ec310d3e272cbe5f805abbc8893d1d7f08a"
+content-hash = "76feb2dc3d8400040f8135d0754b1987998d773191258bb878d65a74bd7ba8b2"
