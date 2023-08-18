@@ -1,4 +1,23 @@
 
+<a name="v0.3.0a46"></a>
+## [v0.3.0a46](https://github.com/hpcflow/matflow-new/compare/v0.3.0a45...v0.3.0a46) - 2023.08.18
+
+### ♻ Code Refactoring
+
+* allow access to app log in ParameterValue classes
+
+### ✨ Features
+
+* add stub environments
+* bump hpcflow version
+* bump hpcflow version
+
+### 👷 Build changes
+
+* merge from develop
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a45"></a>
 ## [v0.3.0a45](https://github.com/hpcflow/matflow-new/compare/v0.3.0a44...v0.3.0a45) - 2023.08.16
 
