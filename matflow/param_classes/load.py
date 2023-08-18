@@ -10,6 +10,8 @@ import numpy as np
 from hpcflow.sdk.core.parameters import ParameterValue
 from hpcflow.sdk.core.utils import get_enum_by_name_or_val
 
+import matflow as mf
+
 logger = logging.getLogger(__name__)
 
 
@@ -179,11 +181,20 @@ class LoadStep(ParameterValue):
     @classmethod
     def example_uniaxial(cls):
         """A non-parametrisable example uniaxial load step."""
+        time = 100
+        incs = 200
+        direction = "x"
+        rate = 1e-3
+        mf.logger.debug(  # demonstration of logging in a `ParameterValue` class
+            f"Generating an example uniaxial load step with parameters: time={time!r}, "
+            f"num_increments={incs!r}, direction={direction!r}, "
+            f"target_def_grad_rate={rate!r}."
+        )
         return cls.uniaxial(
-            total_time=100,
-            num_increments=200,
-            direction="x",
-            target_def_grad_rate=1e-3,
+            total_time=time,
+            num_increments=incs,
+            direction=direction,
+            target_def_grad_rate=rate,
         )
 
     @classmethod
