@@ -2,7 +2,7 @@ from hpcflow.sdk import app as sdk_app
 from hpcflow.sdk.config import ConfigOptions
 
 from matflow._version import __version__
-from matflow.param_classes import *
+
 
 # provide access to app attributes:
 __getattr__ = sdk_app.get_app_attribute
@@ -34,3 +34,6 @@ app: sdk_app.App = sdk_app.App(
     scripts_dir="data.scripts",  # relative to root package
     config_options=config_options,
 )  #: |app|
+
+# defer import to allow us to use the app logger in the ParameterValue classes:
+from matflow.param_classes import *
