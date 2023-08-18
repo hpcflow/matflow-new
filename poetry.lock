@@ -885,13 +885,13 @@ numpy = ">=1.17.3"
 
 [[package]]
 name = "hpcflow-new2"
-version = "0.2.0a81"
+version = "0.2.0a82"
 description = "Computational workflow management"
 optional = false
 python-versions = ">=3.8,<3.13"
 files = [
-    {file = "hpcflow_new2-0.2.0a81-py3-none-any.whl", hash = "sha256:0b1a78dadc2d31dc92a6a2cfd228cf42c9a159010a51e190a25f85b4eca84d4e"},
-    {file = "hpcflow_new2-0.2.0a81.tar.gz", hash = "sha256:c151d6ba9cf4ba644c07ddd5868def9697bbd05e63dd9d6959f1f2403a46c8e0"},
+    {file = "hpcflow_new2-0.2.0a82-py3-none-any.whl", hash = "sha256:bb91781df00677ca040c8eed4a36c9668036aac5578f39cf000aeb5e0a611936"},
+    {file = "hpcflow_new2-0.2.0a82.tar.gz", hash = "sha256:7c42455b5850c56334d1b1ab507d26d9b5b161631dc343867db9f6b3b43ceff3"},
 ]
 
 [package.dependencies]
@@ -2264,7 +2264,8 @@ files = [
     {file = "ruamel.yaml.clib-0.2.7-cp310-cp310-win32.whl", hash = "sha256:763d65baa3b952479c4e972669f679fe490eee058d5aa85da483ebae2009d231"},
     {file = "ruamel.yaml.clib-0.2.7-cp310-cp310-win_amd64.whl", hash = "sha256:d000f258cf42fec2b1bbf2863c61d7b8918d31ffee905da62dede869254d3b8a"},
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:045e0626baf1c52e5527bd5db361bc83180faaba2ff586e763d3d5982a876a9e"},
-    {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-macosx_12_6_arm64.whl", hash = "sha256:721bc4ba4525f53f6a611ec0967bdcee61b31df5a56801281027a3a6d1c2daf5"},
+    {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-macosx_13_0_arm64.whl", hash = "sha256:1a6391a7cabb7641c32517539ca42cf84b87b667bad38b78d4d42dd23e957c81"},
+    {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-manylinux2014_aarch64.whl", hash = "sha256:9c7617df90c1365638916b98cdd9be833d31d337dbcd722485597b43c4a215bf"},
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:41d0f1fa4c6830176eef5b276af04c89320ea616655d01327d5ce65e50575c94"},
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-win32.whl", hash = "sha256:f6d3d39611ac2e4f62c3128a9eed45f19a6608670c5a2f4f07f24e8de3441d38"},
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-win_amd64.whl", hash = "sha256:da538167284de58a52109a9b89b8f6a53ff8437dd6dc26d33b57bf6699153122"},
@@ -3028,4 +3029,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.12"
-content-hash = "76feb2dc3d8400040f8135d0754b1987998d773191258bb878d65a74bd7ba8b2"
+content-hash = "d9f8bd7d5fd525631fb24c7e5a8c5fcc5077d2b3341b88e8f18f5c35cf95374e"
