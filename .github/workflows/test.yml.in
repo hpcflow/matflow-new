@@ -210,7 +210,7 @@ jobs:
       - name: Test invocation command with interactive python
         run: |
           source $(poetry env info --path)/bin/activate
-          actual=$(python ./.github/workflows/get_invoc_cmd_interactive.py python)
+          actual=$(python ./.github/workflows/get_invoc_cmd_interactive.py python {{ app_package }})
           expected="('`command -v python`', '$GITHUB_WORKSPACE/{{ CLI_path }}')"
           echo actual: $actual
           echo expected: $expected
@@ -219,7 +219,7 @@ jobs:
       - name: Test invocation command with interactive ipython
         run: |
           source $(poetry env info --path)/bin/activate
-          actual=$(python ./.github/workflows/get_invoc_cmd_interactive.py ipython)
+          actual=$(python ./.github/workflows/get_invoc_cmd_interactive.py ipython {{ app_package }})
           expected="('`command -v python`', '$GITHUB_WORKSPACE/{{ CLI_path }}')"
           echo actual: $actual
           echo expected: $expected
@@ -284,7 +284,7 @@ jobs:
       - name: Test invocation command with interactive python
         run: |
           source $(poetry env info --path)/bin/activate
-          actual=$(python ./.github/workflows/get_invoc_cmd_interactive.py python)
+          actual=$(python ./.github/workflows/get_invoc_cmd_interactive.py python {{ app_package }})
           expected="('`command -v python`', '$GITHUB_WORKSPACE/{{ CLI_path }}')"
           echo actual: $actual
           echo expected: $expected
@@ -293,7 +293,7 @@ jobs:
       - name: Test invocation command with interactive ipython
         run: |
           source $(poetry env info --path)/bin/activate
-          actual=$(python ./.github/workflows/get_invoc_cmd_interactive.py ipython)
+          actual=$(python ./.github/workflows/get_invoc_cmd_interactive.py ipython {{ app_package }})
           expected="('`command -v python`', '$GITHUB_WORKSPACE/{{ CLI_path }}')"
           echo actual: $actual
           echo expected: $expected
