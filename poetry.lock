@@ -925,14 +925,14 @@ numpy = ">=1.17.3"
 
 [[package]]
 name = "hpcflow-new2"
-version = "0.2.0a82"
+version = "0.2.0a83"
 description = "Computational workflow management"
 category = "main"
 optional = false
 python-versions = ">=3.8,<3.13"
 files = [
-    {file = "hpcflow_new2-0.2.0a82-py3-none-any.whl", hash = "sha256:bb91781df00677ca040c8eed4a36c9668036aac5578f39cf000aeb5e0a611936"},
-    {file = "hpcflow_new2-0.2.0a82.tar.gz", hash = "sha256:7c42455b5850c56334d1b1ab507d26d9b5b161631dc343867db9f6b3b43ceff3"},
+    {file = "hpcflow_new2-0.2.0a83-py3-none-any.whl", hash = "sha256:107fe131f3d2e574f80fb45db46f03951d0d35891a71d5556fa7d51476f60182"},
+    {file = "hpcflow_new2-0.2.0a83.tar.gz", hash = "sha256:9276e40b2b1668d87aab0133f27d8c563268a4e00b194b99808a0998f83f4dc9"},
 ]
 
 [package.dependencies]
@@ -3123,23 +3123,24 @@ multidict = ">=4.0"
 
 [[package]]
 name = "zarr"
-version = "2.16.0"
+version = "2.16.1"
 description = "An implementation of chunked, compressed, N-dimensional arrays for Python"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "zarr-2.16.0-py3-none-any.whl", hash = "sha256:6cf9e6e4c58b9233262e024394e68921a438a6af5a7428bd6bdb1e4e8d05b69a"},
-    {file = "zarr-2.16.0.tar.gz", hash = "sha256:84e36b695bda0ecea52af9861271984cb22a5c864679907b7b9ba3f79b684f7e"},
+    {file = "zarr-2.16.1-py3-none-any.whl", hash = "sha256:de4882433ccb5b42cc1ec9872b95e64ca3a13581424666b28ed265ad76c7056f"},
+    {file = "zarr-2.16.1.tar.gz", hash = "sha256:4276cf4b4a653431042cd53ff2282bc4d292a6842411e88529964504fb073286"},
 ]
 
 [package.dependencies]
 asciitree = "*"
 fasteners = "*"
 numcodecs = ">=0.10.0"
-numpy = ">=1.20"
+numpy = ">=1.20,<1.21.0 || >1.21.0"
 
 [package.extras]
+docs = ["numcodecs[msgpack]", "numpydoc", "pydata-sphinx-theme", "sphinx", "sphinx-copybutton", "sphinx-design", "sphinx-issues", "sphinx-rtd-theme"]
 jupyter = ["ipytree (>=0.2.2)", "ipywidgets (>=8.0.0)", "notebook"]
 
 [[package]]
@@ -3164,4 +3165,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.12"
-content-hash = "d9f8bd7d5fd525631fb24c7e5a8c5fcc5077d2b3341b88e8f18f5c35cf95374e"
+content-hash = "72001b8ffe70baf9c7e855c5dcf3a483abb3911a137572f5caeb583167a6b4a7"
