@@ -4,6 +4,9 @@
     "app_name": "MatFlow",
     "version_file": "matflow/_version.py",
     "release_branch": "main",
+    "CLI_path": "matflow/cli.py",
+    "CLI_path_win": "matflow\\cli.py",
+    "CLI_module": "matflow.cli",
     "pre_release_branch": "develop",
     "bot_account_name": "hpcflow-actions",
     "bot_account_email": "hpcflow-actions@users.noreply.github.com",
@@ -12,7 +15,6 @@
     "PYPI_token_name": "PYPI", // or "TEST_PYPI", as defined within the `secrets` context
     "PYPI_URL": "https://upload.pypi.org/legacy/", // "https://test.pypi.org/legacy/",
     "executable_name": "matflow",
-    "pyinstaller_package": "matflow/cli.py",
     "pyinstaller_dir": "pyinstaller", // directory containing hooks and make.sh and make.ps1 scripts to invoke
     "website_source_org": "hpcflow",
     "website_source_repo": "docs.matflow.io",

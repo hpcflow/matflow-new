@@ -4,11 +4,27 @@ concurrency:
   ci-${{ format('{0}github.head_ref', 'refs/heads') || github.ref }}
 
 env:
-  PYTHON_VERSION_PRE_COMMIT: "3.11"
+  PYTHON_VERSION: "3.11"
   POETRY_VERSION: "1.4"
 
 on:
   workflow_dispatch: # manual invocation
+    inputs:
+      run_pre_commit:
+        description: "Run pre-commit."
+        required: true
+        type: boolean
+        default: true
+      run_unit_tests:
+        description: "Run unit test on a matrix of OS/Python versions."
+        required: true
+        type: boolean
+        default: true
+      run_invoc_cmd_tests:
+        description: "Run invocation command tests."
+        required: true
+        type: boolean
+        default: true
   pull_request:
     types: [opened, edited, synchronize]
     branches: [main, develop] # have to manually change these
@@ -16,6 +32,7 @@ on:
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
+    if: github.event.inputs.run_pre_commit == 'true'
     steps:
       - uses: actions/checkout@v3
         with:
@@ -33,7 +50,7 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: ${{ env.PYTHON_VERSION_PRE_COMMIT }}
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: pre-commit
         # avoid exit code 1 (which halts GH actions) from pre-commit run command by
@@ -55,6 +72,7 @@ jobs:
 
   test:
     needs: pre-commit
+    if: github.event.inputs.run_unit_tests == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -101,6 +119,7 @@ jobs:
   test-CentOS:
     needs: pre-commit
     runs-on: ubuntu-latest
+    if: github.event.inputs.run_unit_tests == 'true'
     container:
       image: ghcr.io/hpcflow/centos7-poetry:latest
     steps:
@@ -131,3 +150,212 @@ jobs:
       - name: Run tests
         run: |
           poetry run python -m pytest --verbose --exitfirst
+
+  test-invoc-cmd-ubuntu:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.run_invoc_cmd_tests == 'true'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install poetry and configure poetry
+        run: |
+          python -m pip install poetry==${{ env.POETRY_VERSION }}
+          poetry config virtualenvs.in-project true
+          poetry config installer.modern-installation false
+
+      - name: Cache the virtualenv
+        uses: actions/cache@v3
+        with:
+          path: ./.venv
+          key: venv-invoc-cmd-test-linux-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: |
+          poetry install --without dev,pyinstaller
+          poetry run pip install ipython
+
+      - name: Test invocation command with `python ./matflow/cli.py`
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=`python ./matflow/cli.py internal get-invoc-cmd`
+          expected="('`command -v python`', '$GITHUB_WORKSPACE/matflow/cli.py')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+      - name: Test invocation command with `python -m matflow.cli`
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=`python -m matflow.cli internal get-invoc-cmd`
+          expected="('`command -v python`', '$GITHUB_WORKSPACE/matflow/cli.py')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+      - name: Test invocation command with `matflow` entry point script
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=`matflow internal get-invoc-cmd`
+          expected="('`command -v python`', '`command -v matflow`')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+      - name: Test invocation command with interactive python
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=$(python ./.github/workflows/get_invoc_cmd_interactive.py python)
+          expected="('`command -v python`', '$GITHUB_WORKSPACE/matflow/cli.py')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+      - name: Test invocation command with interactive ipython
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=$(python ./.github/workflows/get_invoc_cmd_interactive.py ipython)
+          expected="('`command -v python`', '$GITHUB_WORKSPACE/matflow/cli.py')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+  test-invoc-cmd-macos:
+    runs-on: macos-latest
+    if: github.event.inputs.run_invoc_cmd_tests == 'true'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install poetry and configure poetry
+        run: |
+          python -m pip install poetry==${{ env.POETRY_VERSION }}
+          poetry config virtualenvs.in-project true
+          poetry config installer.modern-installation false
+
+      - name: Cache the virtualenv
+        uses: actions/cache@v3
+        with:
+          path: ./.venv
+          key: venv-invoc-cmd-test-macos-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: |
+          poetry install --without dev,pyinstaller
+          poetry run pip install ipython
+
+      - name: Test invocation command with `python ./matflow/cli.py`
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=`python ./matflow/cli.py internal get-invoc-cmd`
+          expected="('`command -v python`', '$GITHUB_WORKSPACE/matflow/cli.py')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+      - name: Test invocation command with `python -m matflow.cli`
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=`python -m matflow.cli internal get-invoc-cmd`
+          expected="('`command -v python`', '$GITHUB_WORKSPACE/matflow/cli.py')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+      - name: Test invocation command with `matflow` entry point script
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=`matflow internal get-invoc-cmd`
+          expected="('`command -v python`', '`command -v matflow`')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+      - name: Test invocation command with interactive python
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=$(python ./.github/workflows/get_invoc_cmd_interactive.py python)
+          expected="('`command -v python`', '$GITHUB_WORKSPACE/matflow/cli.py')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+      - name: Test invocation command with interactive ipython
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=$(python ./.github/workflows/get_invoc_cmd_interactive.py ipython)
+          expected="('`command -v python`', '$GITHUB_WORKSPACE/matflow/cli.py')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+  test-invoc-cmd-windows:
+    runs-on: windows-latest
+    if: github.event.inputs.run_invoc_cmd_tests == 'true'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install poetry and configure poetry
+        run: |
+          python -m pip install poetry==${{ env.POETRY_VERSION }}
+          poetry config virtualenvs.in-project true
+          poetry config installer.modern-installation false
+
+      - name: Cache the virtualenv
+        uses: actions/cache@v3
+        with:
+          path: ./.venv
+          key: venv-invoc-cmd-test-win-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: |
+          poetry install --without dev,pyinstaller
+
+      - name: Test invocation command with `python ./matflow/cli.py`
+        run: |
+          ."$(poetry env info --path)\Scripts\activate.ps1"
+          $actual = $(python ./matflow/cli.py internal get-invoc-cmd)
+          $expected = "('" + ((Get-Command python).source | Resolve-Path).Path.Replace('\', '\\') + "', '" + "$env:GITHUB_WORKSPACE\matflow\cli.py".Replace('\', '\\') + "')"
+          Write-Host actual: $actual
+          Write-Host expected: $expected
+          if ($actual -ne $expected) {
+            exit 1
+          }
+
+      - name: Test invocation command with `python -m matflow.cli`
+        run: |
+          ."$(poetry env info --path)\Scripts\activate.ps1"
+          $actual = $(python -m matflow.cli internal get-invoc-cmd)
+          $expected = "('" + ((Get-Command python).source | Resolve-Path).Path.Replace('\', '\\') + "', '" + "$env:GITHUB_WORKSPACE\matflow\cli.py".Replace('\', '\\') + "')"
+          Write-Host actual: $actual
+          Write-Host expected: $expected
+          if ($actual -ne $expected) {
+            exit 1
+          }
+
+      - name: Test invocation command with `matflow` entry point script
+        run: |
+          ."$(poetry env info --path)\Scripts\activate.ps1"
+          $actual = $(matflow internal get-invoc-cmd)
+          $expected = "('" + ((Get-Command python).source | Resolve-Path).Path.Replace('\', '\\') + "', '" + ((Get-Command matflow).source | Resolve-Path).Path.Replace('\', '\\').Trim('.cmd') + "')"
+          Write-Host actual: $actual
+          Write-Host expected: $expected
+          if ($actual -ne $expected) {
+            exit 1
+          }
