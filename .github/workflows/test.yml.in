@@ -4,24 +4,24 @@ concurrency:
   {% raw %}ci-${{ format('{0}github.head_ref', 'refs/heads') || github.ref }}{% endraw %}
 
 env:
-  PYTHON_VERSION: "3.11"
+  PYTHON_VERSION_PRE_COMMIT: "3.11"
   POETRY_VERSION: "1.4"
 
 on:
   workflow_dispatch: # manual invocation
     inputs:
-      run_pre_commit:
+      pre_commit:
         description: "Run pre-commit."
         required: true
         type: boolean
         default: true
-      run_unit_tests:
-        description: "Run unit test on a matrix of OS/Python versions."
+      unit_tests:
+        description: "Run unit tests"
         required: true
         type: boolean
         default: true
-      run_invoc_cmd_tests:
-        description: "Run invocation command tests."
+      invocation_tests:
+        description: "Run invocation tests."
         required: true
         type: boolean
         default: true
@@ -32,7 +32,7 @@ on:
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || github.event.inputs.run_pre_commit == 'true'
+    if: github.event_name == 'pull_request' || github.event.inputs.pre_commit == 'true'
     steps:
       - uses: actions/checkout@v3
         with:
@@ -50,7 +50,7 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: {% raw %}${{ env.PYTHON_VERSION }}{% endraw %}
+          python-version: {% raw %}${{ env.PYTHON_VERSION_PRE_COMMIT }}{% endraw %}
 
       - name: pre-commit
         # avoid exit code 1 (which halts GH actions) from pre-commit run command by
@@ -70,9 +70,9 @@ jobs:
             git push
           fi
 
-  test:
+  test-units:
     needs: pre-commit
-    if: github.event_name == 'pull_request' || github.event.inputs.run_unit_tests == 'true'
+    if: github.event_name == 'pull_request' || github.event.inputs.unit_tests == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -116,10 +116,10 @@ jobs:
         run: |
           poetry run python -m pytest {{ pytest_args }}
 
-  test-CentOS:
+  test-units-CentOS:
     needs: pre-commit
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || github.event.inputs.run_unit_tests == 'true'
+    if: github.event_name == 'pull_request' || github.event.inputs.unit_tests == 'true'
     container:
       image: ghcr.io/hpcflow/centos7-poetry:latest
     steps:
@@ -151,9 +151,17 @@ jobs:
         run: |
           poetry run python -m pytest {{ pytest_args }}
 
-  test-invoc-cmd-ubuntu:
+  test-invocation-ubuntu:
+    if: github.event_name == 'pull_request' || github.event.inputs.invocation_tests == 'true'
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || github.event.inputs.run_invoc_cmd_tests == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
     steps:
       - uses: actions/checkout@v3
         with:
@@ -161,7 +169,7 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: {% raw %}${{ env.PYTHON_VERSION }}{% endraw %}
+          python-version: {% raw %}${{ matrix.python-version }}{% endraw %}
 
       - name: Install poetry and configure poetry
         run: |
@@ -173,7 +181,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ./.venv
-          key: venv-invoc-cmd-test-linux-{% raw %}${{ hashFiles('**/poetry.lock') }}{% endraw %}
+          key: venv-test-invocation-linux{% raw %}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}{% endraw %}
 
       - name: Install dependencies
         run: |
@@ -207,6 +215,15 @@ jobs:
           echo expected: $expected
           [ "$actual" = "$expected" ]
 
+      - name: Test invocation command within a python script
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=$(python ./.github/workflows/get_invoc_cmd.py {{ app_package }})
+          expected="('`command -v python`', '$GITHUB_WORKSPACE/{{ CLI_path }}')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
       - name: Test invocation command with interactive python
         run: |
           source $(poetry env info --path)/bin/activate
@@ -225,9 +242,28 @@ jobs:
           echo expected: $expected
           [ "$actual" = "$expected" ]
 
-  test-invoc-cmd-macos:
+      - name: Test direct workflow submission within a python script
+        run: |
+          source $(poetry env info --path)/bin/activate
+          python ./.github/workflows/test_direct_sub_python_script.py {{ app_package }}
+
+      - name: Test direct workflow submission within a Jupyter notebook (via papermill)
+        run: |
+          source $(poetry env info --path)/bin/activate
+          python -m ipykernel install --user --name python3
+          papermill ./.github/workflows/test_direct_sub_jupyter_notebook.ipynb ./.github/workflows/test_direct_sub_jupyter_notebook_{% raw %}${{ matrix.python-version }}_${{ runner.os }}{% endraw %}.ipynb -p app_import_str {{ app_package }}
+
+  test-invocation-macos:
+    if: github.event_name == 'pull_request' || github.event.inputs.invocation_tests == 'true'
     runs-on: macos-latest
-    if: github.event_name == 'pull_request' || github.event.inputs.run_invoc_cmd_tests == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
     steps:
       - uses: actions/checkout@v3
         with:
@@ -235,7 +271,7 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: {% raw %}${{ env.PYTHON_VERSION }}{% endraw %}
+          python-version: {% raw %}${{ matrix.python-version }}{% endraw %}
 
       - name: Install poetry and configure poetry
         run: |
@@ -247,7 +283,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ./.venv
-          key: venv-invoc-cmd-test-macos-{% raw %}${{ hashFiles('**/poetry.lock') }}{% endraw %}
+          key: venv-test-invocation-macos{% raw %}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}{% endraw %}
 
       - name: Install dependencies
         run: |
@@ -281,6 +317,15 @@ jobs:
           echo expected: $expected
           [ "$actual" = "$expected" ]
 
+      - name: Test invocation command within a python script
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=$(python ./.github/workflows/get_invoc_cmd.py {{ app_package }})
+          expected="('`command -v python`', '$GITHUB_WORKSPACE/{{ CLI_path }}')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
       - name: Test invocation command with interactive python
         run: |
           source $(poetry env info --path)/bin/activate
@@ -299,9 +344,28 @@ jobs:
           echo expected: $expected
           [ "$actual" = "$expected" ]
 
-  test-invoc-cmd-windows:
+      - name: Test direct workflow submission within a python script
+        run: |
+          source $(poetry env info --path)/bin/activate
+          python ./.github/workflows/test_direct_sub_python_script.py {{ app_package }}
+
+      - name: Test direct workflow submission within a Jupyter notebook (via papermill)
+        run: |
+          source $(poetry env info --path)/bin/activate
+          python -m ipykernel install --user --name python3
+          papermill ./.github/workflows/test_direct_sub_jupyter_notebook.ipynb ./.github/workflows/test_direct_sub_jupyter_notebook_{% raw %}${{ matrix.python-version }}_${{ runner.os }}{% endraw %}.ipynb -p app_import_str {{ app_package }}
+
+  test-invocation-windows:
+    if: github.event_name == 'pull_request' || github.event.inputs.invocation_tests == 'true'
     runs-on: windows-latest
-    if: github.event_name == 'pull_request' || github.event.inputs.run_invoc_cmd_tests == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
     steps:
       - uses: actions/checkout@v3
         with:
@@ -309,7 +373,7 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: {% raw %}${{ env.PYTHON_VERSION }}{% endraw %}
+          python-version: {% raw %}${{ matrix.python-version }}{% endraw %}
 
       - name: Install poetry and configure poetry
         run: |
@@ -321,7 +385,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ./.venv
-          key: venv-invoc-cmd-test-win-{% raw %}${{ hashFiles('**/poetry.lock') }}{% endraw %}
+          key: venv-test-invocation-windows{% raw %}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}{% endraw %}
 
       - name: Install dependencies
         run: |
@@ -359,3 +423,25 @@ jobs:
           if ($actual -ne $expected) {
             exit 1
           }
+
+      - name: Test invocation command within a python script
+        run: |
+          ."$(poetry env info --path)\Scripts\activate.ps1"
+          $actual = $(python .\.github\workflows\get_invoc_cmd.py {{ app_package }})
+          $expected = "('" + ((Get-Command python).source | Resolve-Path).Path.Replace('\', '\\') + "', '" + "$env:GITHUB_WORKSPACE\{{ CLI_path_win }}".Replace('\', '\\') + "')"
+          Write-Host actual: $actual
+          Write-Host expected: $expected
+          if ($actual -ne $expected) {
+            exit 1
+          }
+
+      - name: Test direct workflow submission within a python script
+        run: |
+          ."$(poetry env info --path)\Scripts\activate.ps1"
+          python .\.github\workflows\test_direct_sub_python_script.py {{ app_package }}
+
+      - name: Test direct workflow submission within a Jupyter notebook (via papermill)
+        run: |
+          ."$(poetry env info --path)\Scripts\activate.ps1"
+          python -m ipykernel install --user --name python3
+          papermill .\.github\workflows\test_direct_sub_jupyter_notebook.ipynb .\.github\workflows\test_direct_sub_jupyter_notebook_{% raw %}${{ matrix.python-version }}_${{ runner.os }}{% endraw %}.ipynb -p app_import_str {{ app_package }}
