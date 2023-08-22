@@ -2,7 +2,7 @@
 
 **Design, run, and share computational materials science workflows**
 
-Documentation: [https://matflow.io/docs](https://matflow.io/docs)
+Documentation: [https://docs.matflow.io/](https://docs.matflow.io/)
 
 ## Acknowledgements
 
