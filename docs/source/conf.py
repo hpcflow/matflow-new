@@ -93,7 +93,6 @@ def expose_variables(app):
 
 
 def generate_config_file_validation_schema(app):
-
     all_cfg_schema = app.config._file.file_schema
 
     # merge built-in schema with custom schemas:
@@ -107,15 +106,13 @@ def generate_config_file_validation_schema(app):
     )
 
     # write default config file example:
-    config = copy.deepcopy(app.config._options.default_config)
+    config = {"configs": {"default": copy.deepcopy(app.config._options.default_config)}}
     config["configs"]["default"]["config"]["machine"] = "HOSTNAME"
     log_file_path = config["configs"]["default"]["config"]["log_file_path"]
     config["configs"]["default"]["config"]["log_file_path"] = config_callback_vars(
         app.config, log_file_path
     )
-    app.config._file._dump_config(
-        config, Path("reference/_generated/default_config.yaml")
-    )
+    app.config._file._dump(config, Path("reference/_generated/default_config.yaml"))
 
     # write valida schema tree for config file:
     _write_valida_tree_html(
