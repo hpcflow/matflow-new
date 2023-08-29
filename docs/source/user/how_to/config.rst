@@ -55,7 +55,7 @@ Usually, when |app_name| is invoked, the first thing it does is load the configu
 
     .. code-block:: console
 
-        {{ app_package_name }} reset-config
+        {{ app_package_name }} manage reset-config
 
     Within the Python API, the config can be reset like this:
 
@@ -67,7 +67,7 @@ Usually, when |app_name| is invoked, the first thing it does is load the configu
 
     .. warning::
         
-        Resetting the configuration will remove any custom configuration you had, including pointers to template component source files (like environment source files). If you want to make a copy of the old file before resetting, you can retrieve its file path like this: :code:`{{ app_package_name }} get-config-path`, with the CLI, or, :code:`{{ app_docs_import_conv }}.get_config_path()`, with the Python API.
+        Resetting the configuration will remove any custom configuration you had, including pointers to template component source files (like environment source files). If you want to make a copy of the old file before resetting, you can retrieve its file path like this: :code:`{{ app_package_name }} manage get-config-path`, with the CLI, or, :code:`{{ app_docs_import_conv }}.get_config_path()`, with the Python API.
 
 Clear the known-submissions file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -78,7 +78,7 @@ Clear the known-submissions file
 
     .. code-block:: console
 
-        {{ app_package_name }} --clear-known-subs
+        {{ app_package_name }} manage clear-known-subs
 
     Within the Python API, the equivalent command is:
 

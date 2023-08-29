@@ -33,6 +33,7 @@ app: sdk_app.App = sdk_app.App(
     description="Materials science workflow manager",
     template_components=template_components,
     scripts_dir="data.scripts",  # relative to root package
+    workflows_dir="data.workflows",  # relative to root package
     config_options=config_options,
 )  #: |app|
 

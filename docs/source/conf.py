@@ -231,6 +231,7 @@ jinja_contexts = {
 jinja_globals = {
     "get_classmethods": get_classmethods,
     "parameter_task_schema_map": app.get_parameter_task_schema_map(),
+    "demo_workflows": app._load_all_demo_workflows(include_file_data=True),
 }
 
 # see: https://stackoverflow.com/a/62613202/5042280 for autosummary strategy
