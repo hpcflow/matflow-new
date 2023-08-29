@@ -56,3 +56,19 @@ table.binary-downloads-table td:first-child {
     color: #888;
     font-weight: 500;
 }
+
+div.admonition.code-dropdown div.code {
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+
+}
+
+div.admonition.code-dropdown div.code pre {
+    border: none
+}
+
+div.admonition.code-dropdown>.admonition-title:after {
+    content: "\f15b";
+    /* fa-regular fa-file */
+}
