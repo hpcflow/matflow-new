@@ -37,7 +37,7 @@
 
             .. code-block:: bash
 
-                (touch tmp.sh && curl -fsSL https://raw.githubusercontent.com/hpcflow/install-scripts/main/src/install-{{ app_package_name }}.sh > tmp.sh && bash tmp.sh --prerelease --path) ; rm tmp.sh
+                (touch tmp.sh && curl -fsSL https://raw.githubusercontent.com/hpcflow/install-scripts/main/src/install-{{ app_package_name }}.sh > tmp.sh && bash tmp.sh --prerelease --path --univlink) ; rm tmp.sh
 
         .. tab-item:: Windows
 
@@ -45,7 +45,7 @@
 
             .. code-block:: powershell
 
-                & $([scriptblock]::Create((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/hpcflow/install-scripts/main/src/install-{{ app_package_name }}.ps1'))) -PreRelease
+                & $([scriptblock]::Create((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/hpcflow/install-scripts/main/src/install-{{ app_package_name }}.ps1'))) -PreRelease -UnivLink
 
     .. admonition:: What does this script do?
         :class: note dropdown
