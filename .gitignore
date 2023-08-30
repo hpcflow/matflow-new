@@ -136,4 +136,6 @@ docs/source/reference/_autosummary/
 # generated via conf.py
 docs/source/reference/_generated
 
+docs/source/reference/demo_workflow*
+
 demo_workflows/
