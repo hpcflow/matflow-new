@@ -17,19 +17,20 @@ def seeds_from_random(
         "microstructure_seeds": {
             "position": position,
             "orientations": {
-                "type": "quat",
-                "quaternions": rotation.quaternion,
-                "quat_component_ordering": "scalar-vector",
-                "orientation_coordinate_system": orientation_coordinate_system,
+                "data": rotation.quaternion,
+                "representation": {
+                    "type": "quaternion",
+                    "quat_order": "scalar_vector",
+                },
                 "unit_cell_alignment": {
                     "x": "a",
+                    "y": "b_star",
                     "z": "c",
                 },
-                "P": -1,
             },
-            "size": VE_size,
+            "box_size": VE_size,
             "random_seed": None,
-            "phase_labels": [phase_label],
+            "phase_label": phase_label,
         }
     }
     return out

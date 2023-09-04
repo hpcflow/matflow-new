@@ -9,6 +9,22 @@ env:
 
 on:
   workflow_dispatch: # manual invocation
+    inputs:
+      pre_commit:
+        description: "Run pre-commit."
+        required: true
+        type: boolean
+        default: true
+      unit_tests:
+        description: "Run unit tests"
+        required: true
+        type: boolean
+        default: true
+      invocation_tests:
+        description: "Run invocation tests."
+        required: true
+        type: boolean
+        default: true
   pull_request:
     types: [opened, edited, synchronize]
     branches: [main, develop] # have to manually change these
@@ -16,6 +32,7 @@ on:
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event.inputs.pre_commit == 'true'
     steps:
       - uses: actions/checkout@v3
         with:
@@ -53,8 +70,9 @@ jobs:
             git push
           fi
 
-  test:
+  test-units:
     needs: pre-commit
+    if: github.event_name == 'pull_request' || github.event.inputs.unit_tests == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -98,9 +116,10 @@ jobs:
         run: |
           poetry run python -m pytest {{ pytest_args }}
 
-  test-CentOS:
+  test-units-CentOS:
     needs: pre-commit
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event.inputs.unit_tests == 'true'
     container:
       image: ghcr.io/hpcflow/centos7-poetry:latest
     steps:
@@ -131,3 +150,298 @@ jobs:
       - name: Run tests
         run: |
           poetry run python -m pytest {{ pytest_args }}
+
+  test-invocation-ubuntu:
+    if: github.event_name == 'pull_request' || github.event.inputs.invocation_tests == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: {% raw %}${{ github.ref }}{% endraw %}
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: {% raw %}${{ matrix.python-version }}{% endraw %}
+
+      - name: Install poetry and configure poetry
+        run: |
+          python -m pip install poetry=={% raw %}${{ env.POETRY_VERSION }}{% endraw %}
+          poetry config virtualenvs.in-project true
+          poetry config installer.modern-installation false
+
+      - name: Cache the virtualenv
+        uses: actions/cache@v3
+        with:
+          path: ./.venv
+          key: venv-test-invocation-linux{% raw %}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}{% endraw %}
+
+      - name: Install dependencies
+        run: |
+          poetry install --without dev,pyinstaller
+          poetry run pip install ipython
+
+      - name: Test invocation command with `python ./{{ CLI_path }}`
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=`python ./{{ CLI_path }} internal get-invoc-cmd`
+          expected="('`command -v python`', '$GITHUB_WORKSPACE/{{ CLI_path }}')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+      - name: Test invocation command with `python -m {{ CLI_module }}`
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=`python -m {{ CLI_module }} internal get-invoc-cmd`
+          expected="('`command -v python`', '$GITHUB_WORKSPACE/{{ CLI_path }}')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+      - name: Test invocation command with `{{ executable_name }}` entry point script
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=`{{ executable_name }} internal get-invoc-cmd`
+          expected="('`command -v python`', '`command -v {{ executable_name }}`')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+      - name: Test invocation command within a python script
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=$(python ./.github/workflows/get_invoc_cmd.py {{ app_package }})
+          expected="('`command -v python`', '$GITHUB_WORKSPACE/{{ CLI_path }}')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+      - name: Test invocation command with interactive python
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=$(python ./.github/workflows/get_invoc_cmd_interactive.py python {{ app_package }})
+          expected="('`command -v python`', '$GITHUB_WORKSPACE/{{ CLI_path }}')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+      - name: Test invocation command with interactive ipython
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=$(python ./.github/workflows/get_invoc_cmd_interactive.py ipython {{ app_package }})
+          expected="('`command -v python`', '$GITHUB_WORKSPACE/{{ CLI_path }}')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+      - name: Test direct workflow submission within a python script
+        run: |
+          source $(poetry env info --path)/bin/activate
+          python ./.github/workflows/test_direct_sub_python_script.py {{ app_package }}
+
+      - name: Test direct workflow submission within a Jupyter notebook (via papermill)
+        run: |
+          source $(poetry env info --path)/bin/activate
+          python -m ipykernel install --user --name python3
+          papermill ./.github/workflows/test_direct_sub_jupyter_notebook.ipynb ./.github/workflows/test_direct_sub_jupyter_notebook_{% raw %}${{ matrix.python-version }}_${{ runner.os }}{% endraw %}.ipynb -p app_import_str {{ app_package }}
+
+  test-invocation-macos:
+    if: github.event_name == 'pull_request' || github.event.inputs.invocation_tests == 'true'
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: {% raw %}${{ github.ref }}{% endraw %}
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: {% raw %}${{ matrix.python-version }}{% endraw %}
+
+      - name: Install poetry and configure poetry
+        run: |
+          python -m pip install poetry=={% raw %}${{ env.POETRY_VERSION }}{% endraw %}
+          poetry config virtualenvs.in-project true
+          poetry config installer.modern-installation false
+
+      - name: Cache the virtualenv
+        uses: actions/cache@v3
+        with:
+          path: ./.venv
+          key: venv-test-invocation-macos{% raw %}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}{% endraw %}
+
+      - name: Install dependencies
+        run: |
+          poetry install --without dev,pyinstaller
+          poetry run pip install ipython
+
+      - name: Test invocation command with `python ./{{ CLI_path }}`
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=`python ./{{ CLI_path }} internal get-invoc-cmd`
+          expected="('`command -v python`', '$GITHUB_WORKSPACE/{{ CLI_path }}')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+      - name: Test invocation command with `python -m {{ CLI_module }}`
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=`python -m {{ CLI_module }} internal get-invoc-cmd`
+          expected="('`command -v python`', '$GITHUB_WORKSPACE/{{ CLI_path }}')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+      - name: Test invocation command with `{{ executable_name }}` entry point script
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=`{{ executable_name }} internal get-invoc-cmd`
+          expected="('`command -v python`', '`command -v {{ executable_name }}`')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+      - name: Test invocation command within a python script
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=$(python ./.github/workflows/get_invoc_cmd.py {{ app_package }})
+          expected="('`command -v python`', '$GITHUB_WORKSPACE/{{ CLI_path }}')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+      - name: Test invocation command with interactive python
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=$(python ./.github/workflows/get_invoc_cmd_interactive.py python {{ app_package }})
+          expected="('`command -v python`', '$GITHUB_WORKSPACE/{{ CLI_path }}')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+      - name: Test invocation command with interactive ipython
+        run: |
+          source $(poetry env info --path)/bin/activate
+          actual=$(python ./.github/workflows/get_invoc_cmd_interactive.py ipython {{ app_package }})
+          expected="('`command -v python`', '$GITHUB_WORKSPACE/{{ CLI_path }}')"
+          echo actual: $actual
+          echo expected: $expected
+          [ "$actual" = "$expected" ]
+
+      - name: Test direct workflow submission within a python script
+        run: |
+          source $(poetry env info --path)/bin/activate
+          python ./.github/workflows/test_direct_sub_python_script.py {{ app_package }}
+
+      - name: Test direct workflow submission within a Jupyter notebook (via papermill)
+        run: |
+          source $(poetry env info --path)/bin/activate
+          python -m ipykernel install --user --name python3
+          papermill ./.github/workflows/test_direct_sub_jupyter_notebook.ipynb ./.github/workflows/test_direct_sub_jupyter_notebook_{% raw %}${{ matrix.python-version }}_${{ runner.os }}{% endraw %}.ipynb -p app_import_str {{ app_package }}
+
+  test-invocation-windows:
+    if: github.event_name == 'pull_request' || github.event.inputs.invocation_tests == 'true'
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: {% raw %}${{ github.ref }}{% endraw %}
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: {% raw %}${{ matrix.python-version }}{% endraw %}
+
+      - name: Install poetry and configure poetry
+        run: |
+          python -m pip install poetry=={% raw %}${{ env.POETRY_VERSION }}{% endraw %}
+          poetry config virtualenvs.in-project true
+          poetry config installer.modern-installation false
+
+      - name: Cache the virtualenv
+        uses: actions/cache@v3
+        with:
+          path: ./.venv
+          key: venv-test-invocation-windows{% raw %}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}{% endraw %}
+
+      - name: Install dependencies
+        run: |
+          poetry install --without dev,pyinstaller
+
+      - name: Test invocation command with `python ./{{ CLI_path }}`
+        run: |
+          ."$(poetry env info --path)\Scripts\activate.ps1"
+          $actual = $(python ./{{ CLI_path }} internal get-invoc-cmd)
+          $expected = "('" + ((Get-Command python).source | Resolve-Path).Path.Replace('\', '\\') + "', '" + "$env:GITHUB_WORKSPACE\{{ CLI_path_win }}".Replace('\', '\\') + "')"
+          Write-Host actual: $actual
+          Write-Host expected: $expected
+          if ($actual -ne $expected) {
+            exit 1
+          }
+
+      - name: Test invocation command with `python -m {{ CLI_module }}`
+        run: |
+          ."$(poetry env info --path)\Scripts\activate.ps1"
+          $actual = $(python -m {{ CLI_module }} internal get-invoc-cmd)
+          $expected = "('" + ((Get-Command python).source | Resolve-Path).Path.Replace('\', '\\') + "', '" + "$env:GITHUB_WORKSPACE\{{ CLI_path_win }}".Replace('\', '\\') + "')"
+          Write-Host actual: $actual
+          Write-Host expected: $expected
+          if ($actual -ne $expected) {
+            exit 1
+          }
+
+      - name: Test invocation command with `{{ executable_name }}` entry point script
+        run: |
+          ."$(poetry env info --path)\Scripts\activate.ps1"
+          $actual = $({{ executable_name }} internal get-invoc-cmd)
+          $expected = "('" + ((Get-Command python).source | Resolve-Path).Path.Replace('\', '\\') + "', '" + ((Get-Command {{ executable_name }}).source | Resolve-Path).Path.Replace('\', '\\').Trim('.cmd') + "')"
+          Write-Host actual: $actual
+          Write-Host expected: $expected
+          if ($actual -ne $expected) {
+            exit 1
+          }
+
+      - name: Test invocation command within a python script
+        run: |
+          ."$(poetry env info --path)\Scripts\activate.ps1"
+          $actual = $(python .\.github\workflows\get_invoc_cmd.py {{ app_package }})
+          $expected = "('" + ((Get-Command python).source | Resolve-Path).Path.Replace('\', '\\') + "', '" + "$env:GITHUB_WORKSPACE\{{ CLI_path_win }}".Replace('\', '\\') + "')"
+          Write-Host actual: $actual
+          Write-Host expected: $expected
+          if ($actual -ne $expected) {
+            exit 1
+          }
+
+      - name: Test direct workflow submission within a python script
+        run: |
+          ."$(poetry env info --path)\Scripts\activate.ps1"
+          python .\.github\workflows\test_direct_sub_python_script.py {{ app_package }}
+
+      - name: Test direct workflow submission within a Jupyter notebook (via papermill)
+        run: |
+          ."$(poetry env info --path)\Scripts\activate.ps1"
+          python -m ipykernel install --user --name python3
+          papermill .\.github\workflows\test_direct_sub_jupyter_notebook.ipynb .\.github\workflows\test_direct_sub_jupyter_notebook_{% raw %}${{ matrix.python-version }}_${{ runner.os }}{% endraw %}.ipynb -p app_import_str {{ app_package }}

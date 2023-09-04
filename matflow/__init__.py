@@ -2,7 +2,7 @@ from hpcflow.sdk import app as sdk_app
 from hpcflow.sdk.config import ConfigOptions
 
 from matflow._version import __version__
-from matflow.param_classes import *
+
 
 # provide access to app attributes:
 __getattr__ = sdk_app.get_app_attribute
@@ -18,6 +18,7 @@ config_options = ConfigOptions(
     sentry_DSN="https://2463b288fd1a40f4bada9f5ff53f6811@o1180430.ingest.sentry.io/6293231",
     sentry_traces_sample_rate=1.0,
     sentry_env="main" if "a" in __version__ else "develop",
+    default_known_configs_dir="github://hpcflow:matflow-configs@main",
 )
 
 # load built in template components:
@@ -34,3 +35,6 @@ app: sdk_app.App = sdk_app.App(
     scripts_dir="data.scripts",  # relative to root package
     config_options=config_options,
 )  #: |app|
+
+# defer import to allow us to use the app logger in the ParameterValue classes:
+from matflow.param_classes import *

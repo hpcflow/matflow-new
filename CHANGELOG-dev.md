@@ -1,4 +1,236 @@
 
+<a name="v0.3.0a55"></a>
+## [v0.3.0a55](https://github.com/hpcflow/matflow-new/compare/v0.3.0a54...v0.3.0a55) - 2023.08.28
+
+### ✨ Features
+
+* bump hpcflow version
+
+### 🐛 Bug Fixes
+
+* docs and add default_known_configs_dir
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a54"></a>
+## [v0.3.0a54](https://github.com/hpcflow/matflow-new/compare/v0.3.0a53...v0.3.0a54) - 2023.08.27
+
+### ✨ Features
+
+* bump hpcflow version
+
+### 🐛 Bug Fixes
+
+* docs link in README
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a53"></a>
+## [v0.3.0a53](https://github.com/hpcflow/matflow-new/compare/v0.3.0a52...v0.3.0a53) - 2023.08.22
+
+### ✨ Features
+
+* bump hpcflow version
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a52"></a>
+## [v0.3.0a52](https://github.com/hpcflow/matflow-new/compare/v0.3.0a51...v0.3.0a52) - 2023.08.21
+
+### ✨ Features
+
+* bump hpcflow version
+
+### 🐛 Bug Fixes
+
+* deps
+* add test deps
+* **GHA:** testing
+* **GHA:** testing
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a51"></a>
+## [v0.3.0a51](https://github.com/hpcflow/matflow-new/compare/v0.3.0a50...v0.3.0a51) - 2023.08.19
+
+### ✨ Features
+
+* bump hpcflow version
+
+
+<a name="v0.3.0a50"></a>
+## [v0.3.0a50](https://github.com/hpcflow/matflow-new/compare/v0.3.0a49...v0.3.0a50) - 2023.08.19
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a49"></a>
+## [v0.3.0a49](https://github.com/hpcflow/matflow-new/compare/v0.3.0a48...v0.3.0a49) - 2023.08.19
+
+### 🐛 Bug Fixes
+
+* **GHA:** testing
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a48"></a>
+## [v0.3.0a48](https://github.com/hpcflow/matflow-new/compare/v0.3.0a47...v0.3.0a48) - 2023.08.19
+
+### ✨ Features
+
+* bump hpcflow version
+* bump hpcflow version
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a47"></a>
+## [v0.3.0a47](https://github.com/hpcflow/matflow-new/compare/v0.3.0a46...v0.3.0a47) - 2023.08.18
+
+### 🐛 Bug Fixes
+
+* bump hpcflow
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a46"></a>
+## [v0.3.0a46](https://github.com/hpcflow/matflow-new/compare/v0.3.0a45...v0.3.0a46) - 2023.08.18
+
+### ♻ Code Refactoring
+
+* allow access to app log in ParameterValue classes
+
+### ✨ Features
+
+* add stub environments
+* bump hpcflow version
+* bump hpcflow version
+
+### 👷 Build changes
+
+* merge from develop
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a45"></a>
+## [v0.3.0a45](https://github.com/hpcflow/matflow-new/compare/v0.3.0a44...v0.3.0a45) - 2023.08.16
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a44"></a>
+## [v0.3.0a44](https://github.com/hpcflow/matflow-new/compare/v0.3.0a43...v0.3.0a44) - 2023.08.15
+
+### ✨ Features
+
+* bump hpcflow version
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a43"></a>
+## [v0.3.0a43](https://github.com/hpcflow/matflow-new/compare/v0.3.0a42...v0.3.0a43) - 2023.08.14
+
+### ✨ Features
+
+* bump hpcflow version
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a42"></a>
+## [v0.3.0a42](https://github.com/hpcflow/matflow-new/compare/v0.3.0a41...v0.3.0a42) - 2023.08.10
+
+### ✨ Features
+
+* bump hpcflow version
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a41"></a>
+## [v0.3.0a41](https://github.com/hpcflow/matflow-new/compare/v0.3.0a40...v0.3.0a41) - 2023.08.09
+
+### ✨ Features
+
+* bump hpcflow version
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a40"></a>
+## [v0.3.0a40](https://github.com/hpcflow/matflow-new/compare/v0.3.0a39...v0.3.0a40) - 2023.08.07
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a39"></a>
+## [v0.3.0a39](https://github.com/hpcflow/matflow-new/compare/v0.3.0a38...v0.3.0a39) - 2023.08.03
+
+### 🐛 Bug Fixes
+
+* docs build
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a38"></a>
+## [v0.3.0a38](https://github.com/hpcflow/matflow-new/compare/v0.3.0a37...v0.3.0a38) - 2023.08.03
+
+### ✨ Features
+
+* initial support of fit yield function workflow
+
+### 🐛 Bug Fixes
+
+* bump hpcflow
+* fit_yield_function script, cast zarr arrays to numpy
+* update gitignore
+* make OrientationRepresentation store-encodable and fix matlab hdf5 orientation export
+* flesh out LoadCase and add LoadStep class
+* use Orientations-compatible dict in MicrostructureSeeds object
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a37"></a>
 ## [v0.3.0a37](https://github.com/hpcflow/matflow-new/compare/v0.3.0a36...v0.3.0a37) - 2023.07.28
 
