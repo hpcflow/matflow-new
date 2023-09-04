@@ -149,6 +149,24 @@ def generate_dummy_environments(*env_names):
     app.config.append("environment_sources", str(tmp_envs_file))
 
 
+def copy_all_demo_workflows(app):
+    """Load WorkflowTemplate objects and copy template files from all builtin demo
+    template files to the reference source directory (adjacent to the workflows.rst file
+    within which they are included)."""
+    out = {}
+    for name in app.list_demo_workflows():
+        obj = app.load_demo_workflow(name)
+        dst = Path(f"reference/demo_workflow_{name}")
+        file_name = app.copy_demo_workflow(name, dst=dst, doc=False)
+        value = {
+            "obj": obj,
+            "file_path": f"demo_workflow_{name}",
+            "file_name": file_name,
+        }
+        out[name] = value
+    return out
+
+
 # -------- app-specific content START ----------------------------------------------------
 
 from matflow import __version__
@@ -231,6 +249,7 @@ jinja_contexts = {
 jinja_globals = {
     "get_classmethods": get_classmethods,
     "parameter_task_schema_map": app.get_parameter_task_schema_map(),
+    "demo_workflows": copy_all_demo_workflows(app),
 }
 
 # see: https://stackoverflow.com/a/62613202/5042280 for autosummary strategy
