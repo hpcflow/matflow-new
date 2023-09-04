@@ -1,5 +1,6 @@
-doc:
-  - A simple crystal plasticity simulation using DAMASK. A volume element is loading uniaxially.
+doc: |
+  A simple crystal plasticity simulation using DAMASK. A volume element is loaded 
+  uniaxially.
 tasks:
   - schemas: [generate_microstructure_seeds_from_random]
     inputs:
