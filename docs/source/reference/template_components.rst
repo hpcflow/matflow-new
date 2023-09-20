@@ -1,7 +1,7 @@
 Template components
 ===================
 
-This section details MatFlow's built-in template components.
+This section details {{ app_name }}'s built-in template components.
 
 .. toctree::
    :maxdepth: 1

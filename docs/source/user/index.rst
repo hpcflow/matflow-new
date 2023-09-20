@@ -1,7 +1,7 @@
 User Guide
 ##########
 
-MatFlow is a computational workflow management package for materials science.
+{{ app_description }}
 
 .. toctree::
    :maxdepth: 3

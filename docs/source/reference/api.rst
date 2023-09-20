@@ -6,4 +6,4 @@ Python API
    :template: custom-module-template.rst
    :recursive:
 
-   matflow
+   {{ app_module }}
