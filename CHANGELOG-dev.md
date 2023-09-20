@@ -1,4 +1,16 @@
 
+<a name="v0.3.0a64"></a>
+## [v0.3.0a64](https://github.com/hpcflow/matflow-new/compare/v0.3.0a63...v0.3.0a64) - 2023.09.20
+
+### ✨ Features
+
+* Adds script to configure and sync remotes
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a63"></a>
 ## [v0.3.0a63](https://github.com/hpcflow/matflow-new/compare/v0.3.0a62...v0.3.0a63) - 2023.09.20
 
