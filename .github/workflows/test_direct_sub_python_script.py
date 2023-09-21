@@ -18,7 +18,7 @@ task_schemas:
     actions:
       - rules:
           - rule:
-              path: [resources.os_name]
+              path: resources.os_name
               condition: { value.equal_to: posix }
         environments:
           - scope:
@@ -29,7 +29,7 @@ task_schemas:
             stdout: <<parameter:p2>>
       - rules:
           - rule:
-              path: [resources.os_name]
+              path: resources.os_name
               condition: { value.equal_to: nt }
         environments:
           - scope:
