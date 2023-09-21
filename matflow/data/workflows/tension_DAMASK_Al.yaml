@@ -1,18 +1,18 @@
 doc:
   - A simple crystal plasticity simulation using DAMASK. A volume element is loading uniaxially.
 tasks:
-  - schemas: [generate_microstructure_seeds_from_random]
+  - schema: generate_microstructure_seeds_from_random
     inputs:
       VE_size: [1, 1, 1]
       num_grains: 4
       phase_label: Al
 
-  - schemas: [generate_volume_element_from_voronoi]
+  - schema: generate_volume_element_from_voronoi
     inputs:
       homog_label: SX
       VE_grid_size: [8, 8, 8]
 
-  - schemas: [simulate_VE_loading_damask]
+  - schema: simulate_VE_loading_damask
     inputs:
       load_case::uniaxial:
         total_time: 50
