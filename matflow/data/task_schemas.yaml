@@ -354,7 +354,6 @@
       script_data_in: direct
       script_data_out: direct
       script_exe: python_script
-
 - objective: print_hello
   inputs:
     - parameter: my_name
@@ -382,8 +381,8 @@
         - path: resources.os_name
           condition: { value.equal_to: posix }
       commands:
-        command: echo "$((<<parameter:number_1>> + <<parameter:number_2>>))"
-        stdout: <<int(parameter:sum)>>
+        - command: echo "$((<<parameter:number_1>> + <<parameter:number_2>>))"
+          stdout: <<int(parameter:sum)>>
     - rules:
         - path: resources.os_name
           condition: { value.equal_to: nt }
