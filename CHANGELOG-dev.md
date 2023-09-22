@@ -1,4 +1,21 @@
 
+<a name="v0.3.0a68"></a>
+## [v0.3.0a68](https://github.com/hpcflow/matflow-new/compare/v0.3.0a67...v0.3.0a68) - 2023.09.22
+
+### ✨ Features
+
+* add MicrostructureSeeds.show`
+
+### 🐛 Bug Fixes
+
+* demo workflow upstream change
+
+### 👷 Build changes
+
+* update lock
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a67"></a>
 ## [v0.3.0a67](https://github.com/hpcflow/matflow-new/compare/v0.3.0a66...v0.3.0a67) - 2023.09.21
 
