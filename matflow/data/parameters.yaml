@@ -26,6 +26,28 @@
     - path: [{ "type": "list_value" }]
       condition:
         value.type.equal_to: int
+- type: my_name
+  _validation:
+    - path: []
+      doc: Used in the `demo_hello_world` task schema, which is used for teaching and learning.
+      condition:
+        value.type.equal_to: str
+- type: number_1
+  _validation:
+    - path: []
+      doc: Used in the `demo_adder` task schema, which is used for teaching and learning.
+      condition:
+        value.type.equal_to: int
+- type: number_2
+  _validation:
+    - path: []
+      doc: Used in the `demo_adder` task schema, which is used for teaching and learning.
+      condition: { value.type.equal_to: int }
+- type: sum
+  _validation:
+    - path: []
+      doc: Used in the `demo_adder` task schema, which is used for teaching and learning.
+      condition: { value.type.equal_to: int }
 - type: phase_label
 - type: num_grains
 - type: microstructure_seeds
