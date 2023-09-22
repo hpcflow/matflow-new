@@ -35,6 +35,7 @@ app: sdk_app.App = sdk_app.App(
     scripts_dir="data.scripts",  # relative to root package
     workflows_dir="data.workflows",  # relative to root package
     config_options=config_options,
+    docs_url="https://docs.matflow.io/stable",
 )  #: |app|
 
 # defer import to allow us to use the app logger in the ParameterValue classes:
