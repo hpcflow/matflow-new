@@ -1,4 +1,22 @@
 
+<a name="v0.3.0a69"></a>
+## [v0.3.0a69](https://github.com/hpcflow/matflow-new/compare/v0.3.0a68...v0.3.0a69) - 2023.09.22
+
+### ✨ Features
+
+* bump hpcflow version
+* bump hpcflow version
+
+### 🐛 Bug Fixes
+
+* schemas ref again
+* schemas ref
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a68"></a>
 ## [v0.3.0a68](https://github.com/hpcflow/matflow-new/compare/v0.3.0a67...v0.3.0a68) - 2023.09.22
 
