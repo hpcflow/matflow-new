@@ -17,9 +17,8 @@ task_schemas:
       - parameter: p2
     actions:
       - rules:
-          - rule:
-              path: resources.os_name
-              condition: { value.equal_to: posix }
+          - path: resources.os_name
+            condition: { value.equal_to: posix }
         environments:
           - scope:
               type: any
@@ -28,9 +27,8 @@ task_schemas:
           - command: echo "$((<<parameter:p1>> + 100))"
             stdout: <<parameter:p2>>
       - rules:
-          - rule:
-              path: resources.os_name
-              condition: { value.equal_to: nt }
+          - path: resources.os_name
+            condition: { value.equal_to: nt }
         environments:
           - scope:
               type: any
@@ -39,7 +37,7 @@ task_schemas:
           - command: Write-Output ((<<parameter:p1>> + 100))
             stdout: <<parameter:p2>>
 tasks:
-  - schemas: [test_t1_conditional_OS_in_place]
+  - schema: test_t1_conditional_OS_in_place
     inputs:
       p1: 101
 """
