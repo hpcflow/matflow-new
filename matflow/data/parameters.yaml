@@ -49,9 +49,21 @@
       doc: Used in the `demo_adder` task schema, which is used for teaching and learning.
       condition: { value.type.equal_to: int }
 - type: phase_label
+  _validation:
+    - path: []
+      doc: The string phase label to associated with e.g. the microstructure seed points.
+      condition: { value.type.equal_to: str }
 - type: num_grains
+  _validation:
+    - path: []
+      doc: The integer number of grains to include.
+      condition: { value.type.equal_to: int }
 - type: microstructure_seeds
 - type: volume_element
+  _validation:
+    - path: []
+      doc: Voxelated volume element
+      condition: { value.type.equal_to: dict }
 - type: CTF_file_path
 - type: specimen_symmetry
 - type: EBSD_phase
@@ -60,6 +72,19 @@
 - type: num_orientations
 - type: orientations
 - type: homog_label
+  _validation:
+    - path: []
+      doc:
+        description: >
+          This parameter associates a string label with each grain that determines which
+          homogenization scheme should be used. The homogenization schemes to be employed
+          by the crystal plasticity simulation are then defined according to these labels.
+        examples:
+          - >
+            For a full-field simulation, where there is no mechanical homogenization we
+            typically use the label 'SX'.
+      condition:
+        value.type.equal_to: str
 - type: VE_response
 - type: VE_response_data
 - type: load_case
@@ -89,3 +114,5 @@
 - type: fit_yield_initial_parameters
 - type: fit_yield_opt_parameters
 - type: fitted_yield_functions
+- type: max_sleep_time
+- type: sleep_time
