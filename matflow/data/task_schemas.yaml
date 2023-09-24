@@ -149,6 +149,7 @@
     - parameter: microstructure_seeds
     - parameter: VE_grid_size
     - parameter: homog_label
+      default_value: SX
     - parameter: orientations
       default_value: null
   outputs:
@@ -389,6 +390,56 @@
       commands:
         - command: "Write-Output (<<parameter:number_1>> + <<parameter:number_2>>)"
           stdout: <<int(parameter:sum)>>
+
+- objective: demo_sleep
+  inputs:
+    - parameter: max_sleep_time
+      default_value: 1800 # 30 mins
+  outputs:
+    - parameter: sleep_time
+  actions:
+    - rules:
+        - path: resources.shell
+          condition: { value.in: [bash, wsl] }
+      abortable: true
+      commands:
+        - command: |
+            count=0
+            while [ $count -le <<parameter:max_sleep_time>> ]
+            do
+                echo "count: $count; sleeping..."
+                ((count++))
+                echo $count > sleep_seconds.txt
+                sleep 1
+            done
+    - rules:
+        - path: resources.shell
+          condition: { value.equal_to: powershell }
+      abortable: true
+      commands:
+        - command: |
+            $count = 0
+            while ($true) {
+                Write-Host "count: $count; sleeping..."
+                $count++
+                if ($count -ge <<parameter:max_sleep_time>>) {
+                    break
+                }
+                $count | Out-File -FilePath sleep_seconds.txt
+                Start-Sleep 1
+            }
+    - rules:
+        - path: resources.shell
+          condition: { value.in: [bash, wsl] }
+      commands:
+        - command: head -n 1 sleep_seconds.txt
+          stdout: <<int(parameter:sleep_time)>>
+    - rules:
+        - path: resources.shell
+          condition: { value.equal_to: powershell }
+      commands:
+        - command: Write-Output (Get-Content sleep_seconds.txt)
+          stdout: <<int(parameter:sleep_time)>>
 # - objective: hello_world
 #   actions:
 #     - commands:
