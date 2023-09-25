@@ -401,7 +401,7 @@
     - rules:
         - path: resources.shell
           condition: { value.in: [bash, wsl] }
-      abortable: true
+      # abortable: true # fails on some powershell
       commands:
         - command: |
             count=0
@@ -415,7 +415,7 @@
     - rules:
         - path: resources.shell
           condition: { value.equal_to: powershell }
-      abortable: true
+      # abortable: true # fails on some powershell
       commands:
         - command: |
             $count = 0

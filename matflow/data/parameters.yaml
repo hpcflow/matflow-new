@@ -116,3 +116,23 @@
 - type: fitted_yield_functions
 - type: max_sleep_time
 - type: sleep_time
+- type: a
+  # _validation:
+  #   - path: []
+  #     doc: Non-specific parameter, used for teaching and learning.
+  #     condition: null
+- type: b
+  # _validation:
+  #   - path: []
+  #     doc: Non-specific parameter, used for teaching and learning.
+  #     condition: null
+- type: c
+  # _validation:
+  #   - path: []
+  #     doc: Non-specific parameter, used for teaching and learning.
+  #     condition: null
+- type: f_c
+  # _validation:
+  #   - path: []
+  #     doc: Non-specific parameter, used for teaching and learning.
+  #     condition: null
