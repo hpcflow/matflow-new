@@ -136,3 +136,37 @@
   #   - path: []
   #     doc: Non-specific parameter, used for teaching and learning.
   #     condition: null
+- type: mu
+  # _validation:
+  #   - path: []
+  #     doc: Non-specific parameter, used for teaching and learning.
+  #     condition: null
+- type: sigma
+  # _validation:
+  #   - path: []
+  #     doc: Non-specific parameter, used for teaching and learning.
+  #     condition: null
+
+- type: geom_file_path
+  # _validation:
+  #   - path: []
+  #     doc: Non-specific parameter, used for teaching and learning.
+  #     condition: null
+
+- type: geom_data
+  # _validation:
+  #   - path: []
+  #     doc: Non-specific parameter, used for teaching and learning.
+  #     condition: null
+
+- type: num_increments
+  # _validation:
+  #   - path: []
+  #     doc: Non-specific parameter, used for teaching and learning.
+  #     condition: null
+
+- type: magnitude
+  # _validation:
+  #   - path: []
+  #     doc: Non-specific parameter, used for teaching and learning.
+  #     condition: null
