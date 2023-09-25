@@ -1,4 +1,22 @@
 
+<a name="v0.3.0a71"></a>
+## [v0.3.0a71](https://github.com/hpcflow/matflow-new/compare/v0.3.0a70...v0.3.0a71) - 2023.09.25
+
+### ✨ Features
+
+* bump hpcflow version
+* add fit yield func demo workflow
+* bump hpcflow version
+
+### 🐛 Bug Fixes
+
+* demo_sleep remove abortable for now; fails on some powershell
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a70"></a>
 ## [v0.3.0a70](https://github.com/hpcflow/matflow-new/compare/v0.3.0a69...v0.3.0a70) - 2023.09.24
 
