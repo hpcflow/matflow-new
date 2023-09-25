@@ -21,4 +21,3 @@ html_logo = "_static/images/logo-50dpi.png"
 additional_intersphinx = {"hpcflow": ("https://hpcflow.github.io/docs/stable", None)}
 
 # -------- app-specific content END ------------------------------------------------------
-
