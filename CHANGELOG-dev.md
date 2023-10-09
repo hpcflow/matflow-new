@@ -1,4 +1,21 @@
 
+<a name="v0.3.0a74"></a>
+## [v0.3.0a74](https://github.com/hpcflow/matflow-new/compare/v0.3.0a73...v0.3.0a74) - 2023.10.09
+
+### ♻ Code Refactoring
+
+* Sync workflows and docs with remotes.
+* conf.py include only app specific, and imports config_common
+
+### 🐛 Bug Fixes
+
+* "path: resources.os_name"
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a73"></a>
 ## [v0.3.0a73](https://github.com/hpcflow/matflow-new/compare/v0.3.0a72...v0.3.0a73) - 2023.10.08
 
