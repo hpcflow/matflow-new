@@ -1,8 +1,10 @@
-Command-line interface
-======================
+.. jinja:: first_ctx
 
-CLI reference documentation.
+  Command-line interface
+  ======================
 
-.. click:: matflow.cli:cli
-  :prog: matflow
-  :nested: full
+  CLI reference documentation.
+
+  .. click:: {{ app_package_name }}.cli:cli
+    :prog: {{ app_package_name }}
+    :nested: full

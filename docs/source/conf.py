@@ -1,8 +1,7 @@
-# Configuration file for the Sphinx documentation builder.
+# Configuration file for the Sphinx documentation builder -- Common config content
 
 import copy
 from pathlib import Path
-import tempfile
 from typing import Type
 
 from ruamel.yaml import YAML
@@ -137,18 +136,6 @@ def generate_parameter_validation_schemas(app):
             jinja_contexts["first_ctx"]["tree_files"][param.typ] = str(full_path)
 
 
-def generate_dummy_environments(*env_names):
-    """Add environments to a temporary file and add that file to the config's environment
-    sources."""
-    dummy_envs = [{"name": i} for i in env_names]
-    tmp_dir = Path(tempfile.gettempdir())
-    tmp_envs_file = tmp_dir / "temp_envs.yml"
-    yaml = YAML()
-    with tmp_envs_file.open("wt") as fp:
-        yaml.dump(dummy_envs, fp)
-    app.config.append("environment_sources", str(tmp_envs_file))
-
-
 def copy_all_demo_workflows(app):
     """Load WorkflowTemplate objects and copy template files from all builtin demo
     template files to the reference source directory (adjacent to the workflows.rst file
@@ -169,30 +156,9 @@ def copy_all_demo_workflows(app):
 
 # -------- app-specific content START ----------------------------------------------------
 
-from matflow import __version__
-from matflow import app
-
-project = "MatFlow"
-copyright = "2023, MatFlow developers"
-author = "MatFlow developers"
-release = __version__
-
-github_user = "hpcflow"
-github_repo = "matflow-new"
-PyPI_project = "matflow-new"
-
-switcher_JSON_URL = "https://docs.matflow.io/switcher.json"
-
-html_logo = "_static/images/logo-50dpi.png"
-
-additional_intersphinx = {"hpcflow": ("https://hpcflow.github.io/docs/stable", None)}
-
-# allow loading task schemas without these envs defined:
-generate_dummy_environments()
+from docs.source.config_app import *
 
 # -------- app-specific content END ------------------------------------------------------
-# ----------------------------------------------------------------------------------------
-# -------- ...the remaining content can be identical for hpcflow and downstream apps -----
 
 
 Path("./reference/_generated").mkdir(exist_ok=True)
@@ -231,6 +197,7 @@ jinja_contexts = {
     "first_ctx": {
         "app_name": app.name,
         "app_version": app.version,
+        "app_description": app.description,
         "app_package_name": app.package_name,
         "app_module": app.module,
         "app_docs_import_conv": app.docs_import_conv,
@@ -270,7 +237,7 @@ html_theme_options = {
     "switcher": {
         "json_url": switcher_JSON_URL,
         # "url_template": "https://docs.matflow.io/v{version}/",  # TODO: update switcher.json to include this url
-        "version_match": __version__,
+        "version_match": release,
     },
     "navbar_end": ["theme-switcher", "navbar-icon-links", "version-switcher"],
     "use_edit_page_button": True,
