@@ -189,10 +189,9 @@
             type: any
           environment: matlab_env
       rules:
-        - rule:
-            path: [inputs.compile]
-            condition:
-              value.equal_to: true
+        - path: inputs.compile
+          condition:
+            value.equal_to: true
 
     - script: sample_texture_CTF
       script_data_in: json
@@ -203,10 +202,9 @@
             type: any
           environment: matlab_env
       rules:
-        - rule:
-            path: [inputs.compile]
-            condition:
-              value.equal_to: true
+        - path: inputs.compile
+          condition:
+            value.equal_to: true
 
     - script: <<script:mtex/sample_texture_CTF.m>>
       script_data_in: json
@@ -217,10 +215,9 @@
             type: any
           environment: matlab_env
       rules:
-        - rule:
-            path: [inputs.compile]
-            condition:
-              value.equal_to: false
+        - path: inputs.compile
+          condition:
+            value.equal_to: false
 
 - objective: generate_orientations
   inputs:
