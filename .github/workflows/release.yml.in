@@ -557,7 +557,7 @@ jobs:
 
       - name: Update doc version switcher
         run: |
-          curl https://raw.githubusercontent.com/{{ org }}/{{ repo }}/{% raw %}${{ github.head_ref }}{% endraw %}/docs/make_vers_switcher.py --output docs/make_vers_switcher.py
+          curl https://raw.githubusercontent.com/{{ org }}/{{ repo }}/{% raw %}${{ github.ref_name }}{% endraw %}/docs/make_vers_switcher.py --output docs/make_vers_switcher.py
           python docs/make_vers_switcher.py
 
       - name: Push changes

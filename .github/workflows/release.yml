@@ -557,7 +557,7 @@ jobs:
 
       - name: Update doc version switcher
         run: |
-          curl https://raw.githubusercontent.com/hpcflow/matflow-new/${{ github.head_ref }}/docs/make_vers_switcher.py --output docs/make_vers_switcher.py
+          curl https://raw.githubusercontent.com/hpcflow/matflow-new/${{ github.ref_name }}/docs/make_vers_switcher.py --output docs/make_vers_switcher.py
           python docs/make_vers_switcher.py
 
       - name: Push changes
