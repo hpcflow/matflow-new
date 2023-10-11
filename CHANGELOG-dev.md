@@ -1,4 +1,17 @@
 
+<a name="v0.3.0a76"></a>
+## [v0.3.0a76](https://github.com/hpcflow/matflow-new/compare/v0.3.0a75...v0.3.0a76) - 2023.10.11
+
+### 🐛 Bug Fixes
+
+* test_direct_sub schemas to schema
+* missing jinja raw
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a75"></a>
 ## [v0.3.0a75](https://github.com/hpcflow/matflow-new/compare/v0.3.0a74...v0.3.0a75) - 2023.10.09
 
