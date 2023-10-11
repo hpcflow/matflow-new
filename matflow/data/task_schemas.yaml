@@ -189,10 +189,9 @@
             type: any
           environment: matlab_env
       rules:
-        - rule:
-            path: [inputs.compile]
-            condition:
-              value.equal_to: true
+        - path: inputs.compile
+          condition:
+            value.equal_to: true
 
     - script: sample_texture_CTF
       script_data_in: json
@@ -203,10 +202,9 @@
             type: any
           environment: matlab_env
       rules:
-        - rule:
-            path: [inputs.compile]
-            condition:
-              value.equal_to: true
+        - path: inputs.compile
+          condition:
+            value.equal_to: true
 
     - script: <<script:mtex/sample_texture_CTF.m>>
       script_data_in: json
@@ -217,10 +215,58 @@
             type: any
           environment: matlab_env
       rules:
-        - rule:
-            path: [inputs.compile]
-            condition:
-              value.equal_to: false
+        - path: inputs.compile
+          condition:
+            value.equal_to: false
+
+- objective: sample_texture
+  method: from_ODF_mat_file
+  implementation: mtex
+  inputs:
+    - parameter: compile
+      default_value: false
+      propagation_mode: explicit
+    - parameter: ODF_mat_file_path
+    - parameter: num_orientations
+  outputs:
+    - parameter: orientations
+  actions:
+    - script: <<script:mtex/sample_texture_ODF_mat.m>>
+      script_exe: compile_mtex
+      environments:
+        - scope:
+            type: any
+          environment: matlab_env
+      rules:
+        - path: inputs.compile
+          condition:
+            value.equal_to: true
+
+    - script: sample_texture_ODF_mat
+      script_data_in: json
+      script_data_out: hdf5
+      script_exe: run_compiled_mtex
+      environments:
+        - scope:
+            type: any
+          environment: matlab_env
+      rules:
+        - path: inputs.compile
+          condition:
+            value.equal_to: true
+
+    - script: <<script:mtex/sample_texture_ODF_mat.m>>
+      script_data_in: json
+      script_data_out: hdf5
+      script_exe: run_mtex
+      environments:
+        - scope:
+            type: any
+          environment: matlab_env
+      rules:
+        - path: inputs.compile
+          condition:
+            value.equal_to: false
 
 - objective: generate_orientations
   inputs:
