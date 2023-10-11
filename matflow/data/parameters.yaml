@@ -65,6 +65,7 @@
       doc: Voxelated volume element
       condition: { value.type.equal_to: dict }
 - type: CTF_file_path
+- type: ODF_mat_file_path
 - type: specimen_symmetry
 - type: EBSD_phase
 - type: EBSD_reference_frame_transformation
