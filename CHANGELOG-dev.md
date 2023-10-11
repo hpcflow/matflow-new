@@ -1,4 +1,20 @@
 
+<a name="v0.3.0a77"></a>
+## [v0.3.0a77](https://github.com/hpcflow/matflow-new/compare/v0.3.0a76...v0.3.0a77) - 2023.10.11
+
+### ✨ Features
+
+* add task method sample_texture from_ODF_mat_file with MTEX
+
+### 🐛 Bug Fixes
+
+* sample_texture task schema rules
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a76"></a>
 ## [v0.3.0a76](https://github.com/hpcflow/matflow-new/compare/v0.3.0a75...v0.3.0a76) - 2023.10.11
 
