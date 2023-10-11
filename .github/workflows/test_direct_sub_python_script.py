@@ -37,7 +37,7 @@ task_schemas:
           - command: Write-Output ((<<parameter:p1>> + 100))
             stdout: <<parameter:p2>>
 tasks:
-  - schemas: [test_t1_conditional_OS_in_place]
+  - schema: test_t1_conditional_OS_in_place
     inputs:
       p1: 101
 """
