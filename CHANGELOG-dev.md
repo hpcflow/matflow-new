@@ -1,4 +1,16 @@
 
+<a name="v0.3.0a78"></a>
+## [v0.3.0a78](https://github.com/hpcflow/matflow-new/compare/v0.3.0a77...v0.3.0a78) - 2023.10.11
+
+### 🐛 Bug Fixes
+
+* replaced head_ref with ref_name to prevent fail if branch is deleted
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a77"></a>
 ## [v0.3.0a77](https://github.com/hpcflow/matflow-new/compare/v0.3.0a76...v0.3.0a77) - 2023.10.11
 
