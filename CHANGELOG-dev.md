@@ -1,4 +1,17 @@
 
+<a name="v0.3.0a80"></a>
+## [v0.3.0a80](https://github.com/hpcflow/matflow-new/compare/v0.3.0a79...v0.3.0a80) - 2023.10.26
+
+### ✨ Features
+
+* bump hpcflow version
+* add plot_pole_figures
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a79"></a>
 ## [v0.3.0a79](https://github.com/hpcflow/matflow-new/compare/v0.3.0a78...v0.3.0a79) - 2023.10.13
 
