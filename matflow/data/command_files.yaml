@@ -20,6 +20,12 @@
   name:
     name: ((?:geom_load_inc\d+|static_outputs).vt(i|r))
     is_regex: true
+- label: mtex_pole_figures
+  name:
+    name: pole_figure.png
+- label: mtex_IPF_figure
+  name:
+    name: IPF_key.png
 - label: lammps_atoms_file
   name:
     name: atoms.lammps
