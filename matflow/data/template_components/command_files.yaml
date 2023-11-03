@@ -45,3 +45,6 @@
 - label: my_file
   name:
     name: my_file.txt
+- label: dream_3D_pipeline
+  name:
+    name: pipeline.json
