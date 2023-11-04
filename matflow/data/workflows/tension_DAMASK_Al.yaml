@@ -1,5 +1,8 @@
 doc:
-  - A simple crystal plasticity simulation using DAMASK. A volume element is loading uniaxially.
+  - >
+    A simple crystal plasticity simulation using DAMASK. A volume element generated from a
+    random voronoi tessellation is loaded uniaxially, using aluminium (Al) material
+    parameters.
 tasks:
   - schema: generate_microstructure_seeds_from_random
     inputs:
@@ -15,10 +18,11 @@ tasks:
   - schema: simulate_VE_loading_damask
     inputs:
       load_case::uniaxial:
-        total_time: 50
-        num_increments: 100
+        total_time: 100
+        num_increments: 200
         direction: x
         target_def_grad_rate: 1.0e-3
+        dump_frequency: 1
       homogenization:
         SX:
           mechanical: { type: "pass" }
@@ -78,5 +82,6 @@ tasks:
           - field_name: O
             increments: [{ values: [0, -1] }]
       damask_viz:
-        fields: [F, F_p, P, sigma_vM, IPFcolor_(0 0 1), phase]
-        increments: [{ start: 10, stop: 20, step: 2 }]
+        fields: [F, F_p, P, sigma_vM, epsilon_V^0(F_p)_vM, IPFcolor_(0 0 1), phase]
+        increments:
+          - step: 20
