@@ -254,10 +254,6 @@ jobs:
           echo $matflow_vers_expected
           [ "$matflow_vers" = "$matflow_vers_expected" ]
 
-      - name: Run test suite on the frozen app (file)
-        run: |
-          pyinstaller/dist/onefile/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }} test
-
       - name: Run test suite on the frozen app (folder)
         run: |
           pyinstaller/dist/onedir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir${{ matrix.executable_ext }} test
@@ -371,6 +367,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       binary_download_links: ${{ steps.get_binary_download_links.outputs.binary_download_links }}
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v3
         with:

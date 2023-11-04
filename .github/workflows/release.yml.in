@@ -254,10 +254,6 @@ jobs:
           echo ${{ executable_name }}_vers_expected
           [ "${{ executable_name }}_vers" = "${{ executable_name }}_vers_expected" ]
 
-      - name: Run test suite on the frozen app (file)
-        run: |
-          {{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %} test
-
       - name: Run test suite on the frozen app (folder)
         run: |
           {{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir/{% endraw %}{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir${{ matrix.executable_ext }}{% endraw %} test
@@ -371,6 +367,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       binary_download_links: {% raw %}${{ steps.get_binary_download_links.outputs.binary_download_links }}{% endraw %}
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v3
         with:
