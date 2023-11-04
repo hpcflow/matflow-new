@@ -1,4 +1,23 @@
 
+<a name="v0.3.0a81"></a>
+## [v0.3.0a81](https://github.com/hpcflow/matflow-new/compare/v0.3.0a80...v0.3.0a81) - 2023.11.04
+
+### ✨ Features
+
+* bump hpcflow version
+* bump hpcflow version
+
+### 🐛 Bug Fixes
+
+* update conftest.py
+* missing `BaseApp` attributes
+
+### 👷 Build changes
+
+* merge upstream python-release-workflow
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a80"></a>
 ## [v0.3.0a80](https://github.com/hpcflow/matflow-new/compare/v0.3.0a79...v0.3.0a80) - 2023.10.26
 
