@@ -1,11 +1,9 @@
-.. jinja:: first_ctx
+Python API
+==========
 
-   Python API
-   ==========
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-module-template.rst
+   :recursive:
 
-   .. autosummary::
-      :toctree: _autosummary
-      :template: custom-module-template.rst
-      :recursive:
-
-      {{ app_module }}
+   REPLACE_WITH_APP_MODULE

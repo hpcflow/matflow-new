@@ -11,6 +11,8 @@ from valida.schema import write_tree_html
 
 from hpcflow.sdk.config.callbacks import callback_vars as config_callback_vars
 
+from docs.source.config_app import *
+
 
 def get_classmethods(cls: Type):
     """Get a list of class methods of a given class."""
@@ -154,11 +156,13 @@ def copy_all_demo_workflows(app):
     return out
 
 
-# -------- app-specific content START ----------------------------------------------------
-
-from docs.source.config_app import *
-
-# -------- app-specific content END ------------------------------------------------------
+def prepare_API_reference_stub(app):
+    api_path = Path("reference/api.rst")
+    with api_path.open("rt") as fp:
+        contents = fp.read()
+    contents = contents.replace("REPLACE_WITH_APP_MODULE", app.module)
+    with api_path.open("wt") as fp:
+        fp.write(contents)
 
 
 Path("./reference/_generated").mkdir(exist_ok=True)
@@ -259,3 +263,4 @@ html_theme_options = {
 rst_epilog = expose_variables(app)
 generate_config_file_validation_schema(app)
 generate_parameter_validation_schemas(app)
+prepare_API_reference_stub(app)
