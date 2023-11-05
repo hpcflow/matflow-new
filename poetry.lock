@@ -1102,14 +1102,14 @@ numpy = ">=1.17.3"
 
 [[package]]
 name = "hpcflow-new2"
-version = "0.2.0a122"
+version = "0.2.0a123"
 description = "Computational workflow management"
 category = "main"
 optional = false
 python-versions = ">=3.8,<3.13"
 files = [
-    {file = "hpcflow_new2-0.2.0a122-py3-none-any.whl", hash = "sha256:011ababe252d2fa09cf335e6320fcf80dadca3e97b0e79009ce2dc4fcd3bb022"},
-    {file = "hpcflow_new2-0.2.0a122.tar.gz", hash = "sha256:c1563b1603e2fe7c9d5c5f44dd02daa2af2825074e3803b66b1922291eb0d92b"},
+    {file = "hpcflow_new2-0.2.0a123-py3-none-any.whl", hash = "sha256:38d787b28bc892d6a0c419455de234c6c615044a61d4e140f5b80731c2db1f61"},
+    {file = "hpcflow_new2-0.2.0a123.tar.gz", hash = "sha256:3e987b70dcd905504f9bfa82ff31a862dd91bd4b74868dda38637f717c4d2d1d"},
 ]
 
 [package.dependencies]
@@ -1122,6 +1122,7 @@ msgpack = ">=1.0.4,<2.0.0"
 paramiko = ">=3.2.0,<4.0.0"
 platformdirs = ">=2.5.1,<3.0.0"
 psutil = ">=5.9.4,<6.0.0"
+requests = ">=2.31.0,<3.0.0"
 reretry = ">=0.11.8,<0.12.0"
 rich = ">=13.4.2,<14.0.0"
 "ruamel.yaml" = ">=0.17.20,<0.18.0"
@@ -2928,7 +2929,7 @@ rpds-py = ">=0.7.0"
 name = "requests"
 version = "2.31.0"
 description = "Python HTTP for Humans."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -4007,4 +4008,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.12"
-content-hash = "a40ac2230b5ed9cd63a0cba14f5cd842f5e820dff43770ea80a369db5157fa87"
+content-hash = "eee002bf4273f176fc271a696286a6803e6e72f8be4a32df5617bdaf97beaef2"
