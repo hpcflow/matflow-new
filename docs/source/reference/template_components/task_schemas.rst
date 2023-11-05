@@ -8,11 +8,11 @@ Task schemas
    {{i.objective.name}}
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    Inputs:
-   
+
    {% for inp in i.inputs %}
 
    * :ref:`reference/template_components/parameters:{{ inp.parameter.typ }}`
-     
+
      * Labels: {{ inp.labels }}
 
    {% endfor %}
@@ -26,9 +26,9 @@ Task schemas
    {% endfor %}
 
    Actions:
-   
+
    {% for act in i.actions %}
-   
+
    * Action {{ loop.index0 }}
 
      {% set inp_types = act.get_input_types() %}
@@ -42,43 +42,43 @@ Task schemas
      {% endif %}
 
      * Commands:
-  
+
      {% for cmd in act.commands %}
-  
-       * Command: 
-         
+
+       * Command:
+
          .. code-block:: console
-           
+
             {{ cmd.command }}
 
        {% if cmd.stdout %}
-       * Stdout: 
+       * Stdout:
 
          .. code-block:: console
-            
+
             {{ cmd.stdout }}
 
        {% endif %}
 
        {% if cmd.stderr %}
-       * Stderr: 
+       * Stderr:
 
          .. code-block:: console
-            
+
             {{ cmd.stderr }}
 
        {% endif %}
-  
+
      {% endfor %}
-  
-     * Environments: 
-  
+
+     * Environments:
+
      {% for cmd_env in act.environments %}
-  
+
        * {{ cmd_env.scope.typ.name.lower() }}: :ref:`reference/template_components/environments:{{ cmd_env.environment.name }}`
-  
+
      {% endfor %}
-  
+
    {% endfor %}
-    
+
    {% endfor %}

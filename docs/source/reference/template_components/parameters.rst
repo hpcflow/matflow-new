@@ -8,7 +8,7 @@ Parameters
   {% for i in parameters %}
 
   {{i.typ}}
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
   {% if i._validation %}
@@ -39,8 +39,8 @@ Parameters
   * :meth:`{{ i._value_class.__qualname__ }} <{{ i._value_class.__module__ }}.{{ i._value_class.__qualname__ }}>`
 
   {% for cls_method in get_classmethods(i._value_class) %}
-      
-  * :meth:`{{ i._value_class.__qualname__ }}.{{ cls_method }} <{{ i._value_class.__module__ }}.{{ i._value_class.__qualname__ }}.{{ cls_method }}>`   
+
+  * :meth:`{{ i._value_class.__qualname__ }}.{{ cls_method }} <{{ i._value_class.__module__ }}.{{ i._value_class.__qualname__ }}.{{ cls_method }}>`
 
   {% endfor %}
 

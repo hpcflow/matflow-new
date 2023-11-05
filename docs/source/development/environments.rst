@@ -2,7 +2,7 @@ Environments
 ############
 
 `matlab_env`
-~~~~~~~~~~~
+~~~~~~~~~~~~
 
 
 * There are two ways of running tasks that use MTEX. Scripts can either be compiled and then the compiled application can be run, or the script can be run directly.
@@ -15,6 +15,7 @@ Example environment definition - Windows
 ----------------------------------------
 
 .. code-block:: yaml
+
   - name: matlab_env
     executables:
 

@@ -1,7 +1,11 @@
 # Configuration file for the Sphinx documentation builder -- Common config content
 
 import copy
+import importlib
+import json
+import re
 from pathlib import Path
+from textwrap import dedent
 from typing import Type
 
 from ruamel.yaml import YAML
@@ -10,8 +14,6 @@ from valida.datapath import DataPath, MapValue
 from valida.schema import write_tree_html
 
 from hpcflow.sdk.config.callbacks import callback_vars as config_callback_vars
-
-from docs.source.config_app import *
 
 
 def get_classmethods(cls: Type):
@@ -157,13 +159,43 @@ def copy_all_demo_workflows(app):
 
 
 def prepare_API_reference_stub(app):
-    api_path = Path("reference/api.rst")
-    with api_path.open("rt") as fp:
-        contents = fp.read()
-    contents = contents.replace("REPLACE_WITH_APP_MODULE", app.module)
-    with api_path.open("wt") as fp:
+    contents = dedent(
+        f"""\
+        Python API
+        ==========
+
+        .. autosummary::
+          :toctree: _autosummary
+          :template: custom-module-template.rst
+          :recursive:
+
+          {app.module}
+    """
+    )
+    with Path("reference/api.rst").open("wt") as fp:
         fp.write(contents)
 
+
+with open("config.jsonc") as fp:
+    jsonc_str = fp.read()
+    json_str = re.sub(
+        r'\/\/(?=([^"]*"[^"]*")*[^"]*$).*', "", jsonc_str, flags=re.MULTILINE
+    )
+    config_dat = json.loads(json_str)
+
+app = importlib.import_module(config_dat["package"], "app")
+release = app.version
+project = config_dat["project"]
+copyright = config_dat["copyright"]
+author = config_dat["author"]
+github_user = config_dat["github_user"]
+github_repo = config_dat["github_repo"]
+PyPI_project = config_dat["PyPI_project"]
+switcher_JSON_URL = config_dat["switcher_JSON_URL"]
+html_logo = config_dat["html_logo"]
+additional_intersphinx = {
+    k: tuple(v) for k, v in config_dat["additional_intersphinx"].items()
+}
 
 Path("./reference/_generated").mkdir(exist_ok=True)
 
@@ -260,7 +292,7 @@ html_theme_options = {
     ],
 }
 
+prepare_API_reference_stub(app)
 rst_epilog = expose_variables(app)
 generate_config_file_validation_schema(app)
 generate_parameter_validation_schemas(app)
-prepare_API_reference_stub(app)
