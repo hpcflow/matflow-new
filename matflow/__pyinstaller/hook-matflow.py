@@ -2,7 +2,7 @@ from PyInstaller.utils.hooks import collect_data_files
 
 hiddenimports = ["matflow.data", "matflow.param_classes"]
 datas = collect_data_files("matflow.data")
-datas += collect_data_files("matflow.data.workflows")
+datas += collect_data_files("matflow.data.workflows.demo_data_manifest")
 datas += collect_data_files(
     "matflow.tests",
     include_py_files=True,

@@ -38,7 +38,7 @@ app: sdk_app.App = sdk_app.App(
     workflows_dir="data.workflows",  # relative to root package
     config_options=config_options,
     demo_data_dir="matflow.data.workflows.demo_data",
-    demo_data_manifest_dir="matflow.data.workflows",
+    demo_data_manifest_dir="matflow.data.workflows.demo_data_manifest",
     docs_url="https://docs.matflow.io/stable",
 )  #: |app|
 

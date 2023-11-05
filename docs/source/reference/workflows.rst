@@ -11,7 +11,7 @@ Demo workflows
       {{ app_package_name }} demo-workflow copy WORKFLOW_NAME DESTINATION
 
    where :code:`WORKFLOW_NAME` is the name of one of the demo workflows, and :code:`DESTINATION` is the
-   target copy location, which can be a directory (e.g. :code:`"."` for the current 
+   target copy location, which can be a directory (e.g. :code:`"."` for the current
    working directory, or a full file path).
 
    In the Python API, we can copy a demo workflow template file like this:
@@ -27,14 +27,14 @@ Demo workflows
 
    {{i.obj.name}}
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   
+
    {% if i.obj.doc %}
    {% for para_j in i.obj.doc %}
-   
+
    {{ para_j }}
 
    {% endfor %}
-   
+
    {% endif %}
 
    .. admonition:: {{ i.file_name }}
