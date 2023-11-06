@@ -22,7 +22,9 @@ config_options = ConfigOptions(
 )
 
 # load built in template components:
-template_components = sdk_app.App.load_builtin_template_component_data("matflow.data")
+template_components = sdk_app.App.load_builtin_template_component_data(
+    "matflow.data.template_components"
+)
 
 # initialise the App object:
 app: sdk_app.App = sdk_app.App(
@@ -37,8 +39,8 @@ app: sdk_app.App = sdk_app.App(
     scripts_dir="data.scripts",  # relative to root package
     workflows_dir="data.workflows",  # relative to root package
     config_options=config_options,
-    demo_data_dir="matflow.data.workflows.demo_data",
-    demo_data_manifest_dir="matflow.data.workflows.demo_data_manifest",
+    demo_data_dir="matflow.data.demo_data",
+    demo_data_manifest_dir="matflow.data.demo_data_manifest",
     docs_url="https://docs.matflow.io/stable",
 )  #: |app|
 
