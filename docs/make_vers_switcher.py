@@ -58,4 +58,4 @@ def write_switcher_json(*args):
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-    write_switcher_json(args)
+    write_switcher_json(*args)
