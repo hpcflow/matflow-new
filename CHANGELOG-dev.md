@@ -1,4 +1,17 @@
 
+<a name="v0.3.0a88"></a>
+## [v0.3.0a88](https://github.com/hpcflow/matflow-new/compare/v0.3.0a87...v0.3.0a88) - 2023.11.08
+
+### 🐛 Bug Fixes
+
+* remove unused import
+* parse masked arrays from lists in `LoadStep`
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a87"></a>
 ## [v0.3.0a87](https://github.com/hpcflow/matflow-new/compare/v0.3.0a86...v0.3.0a87) - 2023.11.07
 
