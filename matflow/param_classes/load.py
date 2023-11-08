@@ -11,6 +11,7 @@ from hpcflow.sdk.core.parameters import ParameterValue
 from hpcflow.sdk.core.utils import get_enum_by_name_or_val
 
 import matflow as mf
+from matflow.param_classes.utils import masked_array_from_list
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +67,6 @@ class LoadStep(ParameterValue):
         stress: Optional[np.typing.ArrayLike] = None,
         dump_frequency: Optional[int] = 1,
     ) -> None:
-
         self.total_time = total_time
         self.num_increments = num_increments
         self.direction = direction
@@ -133,7 +133,18 @@ class LoadStep(ParameterValue):
                 "Specify a strain-like tensor (`target_def_grad`, `target_def_grad_rate`,"
                 " `target_vel_grad`) and/or the `stress` tensor."
             )
+        if isinstance(self.target_def_grad, list):
+            self.target_def_grad = masked_array_from_list(self.target_def_grad)
+
+        if isinstance(self.target_def_grad_rate, list):
+            self.target_def_grad_rate = masked_array_from_list(self.target_def_grad_rate)
+
+        if isinstance(self.target_vel_grad, list):
+            self.target_vel_grad = masked_array_from_list(self.target_vel_grad)
+
         if self.stress is not None:
+            if isinstance(self.stress, list):
+                self.stress = masked_array_from_list(self.stress)
             xor_arr = np.logical_xor(self.strain_like_tensor.mask, self.stress.mask)
             if not np.alltrue(xor_arr):
                 raise RuntimeError(
@@ -677,7 +688,6 @@ class LoadStep(ParameterValue):
         target_def_grad,
         dump_frequency=1,
     ) -> LoadStep:
-
         _method_name = "random_3D"
         _method_args = {
             "total_time": total_time,
@@ -736,7 +746,6 @@ class LoadStep(ParameterValue):
         waveform: str = "sine",
         dump_frequency=1,
     ) -> List[LoadStep]:
-
         dir_idx = ["x", "y", "z"]
         try:
             loading_dir_idx = dir_idx.index(direction)
@@ -750,7 +759,6 @@ class LoadStep(ParameterValue):
         cycle_time = 1 / cycle_frequency
 
         if waveform.lower() == "sine":
-
             sig_mean = (max_stress + min_stress) / 2
             sig_diff = max_stress - min_stress
 
@@ -802,7 +810,6 @@ class LoadStep(ParameterValue):
 
 @dataclass
 class LoadCase(ParameterValue):
-
     # TODO: store step data (e.g. stress tensor for each step) in combined arrays; steps
     # can be a (cached) property that indexes those arrays?
 
