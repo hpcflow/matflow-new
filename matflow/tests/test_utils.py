@@ -1,6 +1,6 @@
 import numpy as np
 
-from matflow.param_classes.utils import linspace_rectangle, masked_array_from_list
+from matflow.param_classes.utils import masked_array_from_list
 
 
 def test_masked_array_from_list_1D():
