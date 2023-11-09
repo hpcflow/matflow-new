@@ -417,6 +417,35 @@
           outputs: [VE_response]
           script: <<script:damask/viz_damask_HDF5.py>>
 
+- objective: read_tensile_test
+  method: from_CSV
+  inputs:
+    - parameter: CSV_file_path
+    - parameter: CSV_arguments
+    - parameter: eng_stress_col_index
+      default_value: null
+    - parameter: eng_strain_col_index
+      default_value: null
+    - parameter: true_stress_col_index
+      default_value: null
+    - parameter: true_strain_col_index
+      default_value: null
+    - parameter: stress_units
+      default_value: Pa
+    - parameter: plastic_range
+      default_value: null
+  outputs:
+    - parameter: tensile_test
+  actions:
+    - environments:
+        - scope:
+            type: any
+          environment: formable_env
+      script: <<script:formable/read_tensile_test_CSV.py>>
+      script_data_in: direct
+      script_data_out: direct
+      script_exe: python_script
+
 - objective: dump_all_yield_stresses
   inputs:
     - parameter: VE_response
