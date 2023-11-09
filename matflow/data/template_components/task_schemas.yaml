@@ -367,6 +367,8 @@
     - parameter: damask_post_processing
     - parameter: VE_response_data
     - parameter: damask_viz
+    - parameter: single_crystal_parameters
+      default_value: null
   outputs:
     - parameter: damask_log
     - parameter: damask_post_processing_result
@@ -388,7 +390,11 @@
           from_inputs: [load_case]
           script: <<script:damask/write_load.py>>
         - input_file: damask_material_file
-          from_inputs: [volume_element, homogenization, damask_phases]
+          from_inputs:
+            - volume_element
+            - homogenization
+            - damask_phases
+            - single_crystal_parameters
           script: <<script:damask/write_material.py>>
       abortable: true
       commands:
