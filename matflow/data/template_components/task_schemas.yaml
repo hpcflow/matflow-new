@@ -452,6 +452,30 @@
       script_data_out: direct
       script_exe: python_script
 
+- objective: fit_single_crystal_parameters
+  inputs:
+    - parameter: VE_response
+      group: fit_single_crystal_parameters
+    - parameter: single_crystal_parameters
+      group: fit_single_crystal_parameters
+    - parameter: tensile_test
+    - parameter: initial_damping
+  outputs:
+    - parameter: single_crystal_parameters
+    - parameter: levenberg_marquardt_fitter
+  actions:
+    - environments:
+        - scope:
+            type: any
+          environment: formable_env
+      script: <<script:formable/fit_single_crystal_parameters.py>>
+      script_data_in:
+        VE_response: { format: direct, all_iterations: true }
+        single_crystal_parameters: { format: direct, all_iterations: true }
+        "*": { format: direct }
+      script_data_out: direct
+      script_exe: python_script
+
 - objective: dump_all_yield_stresses
   inputs:
     - parameter: VE_response
