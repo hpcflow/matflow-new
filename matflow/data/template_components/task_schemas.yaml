@@ -367,6 +367,8 @@
     - parameter: damask_post_processing
     - parameter: VE_response_data
     - parameter: damask_viz
+    - parameter: single_crystal_parameters
+      default_value: null
   outputs:
     - parameter: damask_log
     - parameter: damask_post_processing_result
@@ -388,7 +390,11 @@
           from_inputs: [load_case]
           script: <<script:damask/write_load.py>>
         - input_file: damask_material_file
-          from_inputs: [volume_element, homogenization, damask_phases]
+          from_inputs:
+            - volume_element
+            - homogenization
+            - damask_phases
+            - single_crystal_parameters
           script: <<script:damask/write_material.py>>
       abortable: true
       commands:
@@ -416,6 +422,59 @@
           inputs: [damask_viz]
           outputs: [VE_response]
           script: <<script:damask/viz_damask_HDF5.py>>
+
+- objective: read_tensile_test
+  method: from_CSV
+  inputs:
+    - parameter: CSV_file_path
+    - parameter: CSV_arguments
+    - parameter: eng_stress_col_index
+      default_value: null
+    - parameter: eng_strain_col_index
+      default_value: null
+    - parameter: true_stress_col_index
+      default_value: null
+    - parameter: true_strain_col_index
+      default_value: null
+    - parameter: stress_units
+      default_value: Pa
+    - parameter: plastic_range
+      default_value: null
+  outputs:
+    - parameter: tensile_test
+  actions:
+    - environments:
+        - scope:
+            type: any
+          environment: formable_env
+      script: <<script:formable/read_tensile_test_CSV.py>>
+      script_data_in: direct
+      script_data_out: direct
+      script_exe: python_script
+
+- objective: fit_single_crystal_parameters
+  inputs:
+    - parameter: VE_response
+      group: fit_single_crystal_parameters
+    - parameter: single_crystal_parameters
+      group: fit_single_crystal_parameters
+    - parameter: tensile_test
+    - parameter: initial_damping
+  outputs:
+    - parameter: single_crystal_parameters
+    - parameter: levenberg_marquardt_fitter
+  actions:
+    - environments:
+        - scope:
+            type: any
+          environment: formable_env
+      script: <<script:formable/fit_single_crystal_parameters.py>>
+      script_data_in:
+        VE_response: { format: direct, all_iterations: true }
+        single_crystal_parameters: { format: direct, all_iterations: true }
+        "*": { format: direct }
+      script_data_out: direct
+      script_exe: python_script
 
 - objective: dump_all_yield_stresses
   inputs:

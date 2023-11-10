@@ -5,10 +5,12 @@ defined in this sub-package are sub-classes of `ParameterValue`."""
 from matflow.param_classes.load import LoadCase, LoadStep
 from matflow.param_classes.orientations import Orientations
 from matflow.param_classes.seeds import MicrostructureSeeds
+from matflow.param_classes.single_crystal_parameters import SingleCrystalParameters
 
 __all__ = [
     "LoadCase",
     "LoadStep",
     "Orientations",
     "MicrostructureSeeds",
+    "SingleCrystalParameters",
 ]
