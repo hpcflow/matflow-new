@@ -1,4 +1,18 @@
 
+<a name="v0.3.0a90"></a>
+## [v0.3.0a90](https://github.com/hpcflow/matflow-new/compare/v0.3.0a89...v0.3.0a90) - 2023.11.10
+
+### ✨ Features
+
+* add demo fitting workflow
+* add `SingleCrystalParameters` class
+* add read_tensile_test
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a89"></a>
 ## [v0.3.0a89](https://github.com/hpcflow/matflow-new/compare/v0.3.0a88...v0.3.0a89) - 2023.11.10
 
