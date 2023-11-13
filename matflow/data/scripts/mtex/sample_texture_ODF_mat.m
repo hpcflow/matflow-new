@@ -6,7 +6,7 @@ function sample_texture_ODF_mat(inputs_JSON_path, outputs_HDF5_path)
     numOrientations = all_args.num_orientations;
 
     ODF = get_ODF_from_mat_file(ODFMatFilePath);
-    orientations = calcOrientations(ODF, numOrientations);
+    orientations = discreteSample(ODF, numOrientations);
     export_orientations_HDF5(orientations, outputs_HDF5_path);
 
 end
@@ -34,9 +34,9 @@ function alignment = prepare_crystal_alignment(crystalSym)
         align1 = split(crystalSym.alignment{1}, '||');
         align2 = split(crystalSym.alignment{2}, '||');
         align3 = split(crystalSym.alignment{3}, '||');
-        alignment(end + 1) = latticeDirs(align1{1});
-        alignment(end + 1) = latticeDirs(align2{1});
-        alignment(end + 1) = latticeDirs(align3{1});
+        alignment(end + 1) = latticeDirs(align1{2});
+        alignment(end + 1) = latticeDirs(align2{2});
+        alignment(end + 1) = latticeDirs(align3{2});
     end
 
 end
