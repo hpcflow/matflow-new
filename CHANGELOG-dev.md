@@ -1,4 +1,16 @@
 
+<a name="v0.3.0a94"></a>
+## [v0.3.0a94](https://github.com/hpcflow/matflow-new/compare/v0.3.0a93...v0.3.0a94) - 2023.11.13
+
+### ✨ Features
+
+* add schema sample_texture_from_model_ODF
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a93"></a>
 ## [v0.3.0a93](https://github.com/hpcflow/matflow-new/compare/v0.3.0a92...v0.3.0a93) - 2023.11.13
 
