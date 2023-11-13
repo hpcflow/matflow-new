@@ -164,6 +164,22 @@
             type: any
           environment: damask_parse_env
 
+- objective: visualise_volume_element
+  method: VTK
+  inputs:
+    - parameter: volume_element
+    - parameter: path
+      default_value: geom.vti
+  actions:
+    - script: <<script:damask/write_geom.py>>
+      script_data_in: direct
+      script_exe: python_script
+      save_files: [damask_geom_file]
+      environments:
+        - scope:
+            type: any
+          environment: damask_parse_env
+
 - objective: sample_texture
   method: from_CTF_file
   implementation: mtex

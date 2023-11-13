@@ -37,14 +37,12 @@ class QuatOrder(enum.Enum):
 
 
 class OrientationRepresentationType(enum.Enum):
-
     QUATERNION = 0
     EULER = 1
 
 
 @dataclass
 class OrientationRepresentation(ParameterValue):
-
     type: OrientationRepresentationType
     euler_definition: Optional[EulerDefinition] = None
     euler_is_degrees: Optional[bool] = None
@@ -80,7 +78,6 @@ class LatticeDirection(enum.Enum):
 
 @dataclass
 class UnitCellAlignment(ParameterValue):
-
     _typ = "unit_cell_alignment"
 
     x: Optional[LatticeDirection] = None
@@ -114,7 +111,6 @@ class UnitCellAlignment(ParameterValue):
 
 @dataclass
 class Orientations(ParameterValue):
-
     _typ = "orientations"
 
     data: np.ndarray
