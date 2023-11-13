@@ -369,6 +369,8 @@
     - parameter: damask_viz
     - parameter: single_crystal_parameters
       default_value: null
+    - parameter: damask_solver
+      default_value: null
   outputs:
     - parameter: damask_log
     - parameter: damask_post_processing_result
@@ -387,7 +389,7 @@
           from_inputs: [volume_element]
           script: <<script:damask/write_geom.py>>
         - input_file: damask_load_file
-          from_inputs: [load_case]
+          from_inputs: [load_case, damask_solver]
           script: <<script:damask/write_load.py>>
         - input_file: damask_material_file
           from_inputs:
