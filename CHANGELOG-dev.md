@@ -1,4 +1,16 @@
 
+<a name="v0.3.0a93"></a>
+## [v0.3.0a93](https://github.com/hpcflow/matflow-new/compare/v0.3.0a92...v0.3.0a93) - 2023.11.13
+
+### ✨ Features
+
+* support specifying damask solver
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a92"></a>
 ## [v0.3.0a92](https://github.com/hpcflow/matflow-new/compare/v0.3.0a91...v0.3.0a92) - 2023.11.11
 
