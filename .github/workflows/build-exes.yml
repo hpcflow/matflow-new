@@ -117,9 +117,15 @@ jobs:
           name: matflow-${{ env.vers }}-win-build
           path: pyinstaller/build/matflow-${{ env.vers }}-win
 
-      - name: Set demo data Github URL using current git SHA # instead of default which is current version tag
+      - name: Set demo data GitHub URL using current git SHA (file) # instead of default which is current version tag
+        if: github.event.inputs.build_onefile == 'true'
         run: |
           pyinstaller/dist/onefile/matflow-${{ env.vers }}-win.exe config set-github-demo-data-dir ${{ env.sha }}
+
+      - name: Set demo data GitHub URL using current git SHA (folder) # instead of default which is current version tag
+        if: github.event.inputs.build_onedir == 'true'
+        run: |
+          pyinstaller/dist/onedir/matflow-${{ env.vers }}-win-dir/matflow-${{ env.vers }}-win-dir.exe config set-github-demo-data-dir ${{ env.sha }}
 
       - name: Run test suite on the frozen app (file)
         if:  github.event.inputs.build_onefile == 'true'
@@ -211,9 +217,15 @@ jobs:
           name: matflow-${{ env.vers }}-macOS-build
           path: pyinstaller/build/matflow-${{ env.vers }}-macOS
 
-      - name: Set demo data Github URL using current git SHA # instead of default which is current version tag
+      - name: Set demo data GitHub URL using current git SHA (file) # instead of default which is current version tag
+        if: github.event.inputs.build_onefile == 'true'
         run: |
           pyinstaller/dist/onefile/matflow-${{ env.vers }}-macOS config set-github-demo-data-dir ${{ env.sha }}
+
+      - name: Set demo data GitHub URL using current git SHA (folder) # instead of default which is current version tag
+        if: github.event.inputs.build_onedir == 'true'
+        run: |
+          pyinstaller/dist/onedir/matflow-${{ env.vers }}-macOS-dir/matflow-${{ env.vers }}-macOS-dir config set-github-demo-data-dir ${{ env.sha }}
 
       - name: Run test suite on the frozen app (file)
         if:  github.event.inputs.build_onefile == 'true'
@@ -306,9 +318,15 @@ jobs:
           name: matflow-${{ env.vers }}-linux-build
           path: pyinstaller/build/matflow-${{ env.vers }}-linux
 
-      - name: Set demo data Github URL using current git SHA # instead of default which is current version tag
+      - name: Set demo data GitHub URL using current git SHA (file) # instead of default which is current version tag
+        if: github.event.inputs.build_onefile == 'true'
         run: |
           pyinstaller/dist/onefile/matflow-${{ env.vers }}-linux config set-github-demo-data-dir ${{ env.sha }}
+
+      - name: Set demo data GitHub URL using current git SHA (folder) # instead of default which is current version tag
+        if: github.event.inputs.build_onedir == 'true'
+        run: |
+          pyinstaller/dist/onedir/matflow-${{ env.vers }}-linux-dir/matflow-${{ env.vers }}-linux-dir config set-github-demo-data-dir ${{ env.sha }}
 
       - name: Run test suite on the frozen app (file)
         if: github.event.inputs.build_onefile == 'true'

@@ -117,9 +117,15 @@ jobs:
           name: {{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-win-build
           path: {{ pyinstaller_dir }}/build/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-win
 
-      - name: Set demo data Github URL using current git SHA # instead of default which is current version tag
+      - name: Set demo data GitHub URL using current git SHA (file) # instead of default which is current version tag
+        if: github.event.inputs.build_onefile == 'true'
         run: |
           {{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-win.exe config set-github-demo-data-dir {% raw %}${{ env.sha }}{% endraw %}
+
+      - name: Set demo data GitHub URL using current git SHA (folder) # instead of default which is current version tag
+        if: github.event.inputs.build_onedir == 'true'
+        run: |
+          {{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-win-dir/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-win-dir.exe config set-github-demo-data-dir {% raw %}${{ env.sha }}{% endraw %}
 
       - name: Run test suite on the frozen app (file)
         if:  github.event.inputs.build_onefile == 'true'
@@ -211,9 +217,15 @@ jobs:
           name: {{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-macOS-build
           path: {{ pyinstaller_dir }}/build/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-macOS
 
-      - name: Set demo data Github URL using current git SHA # instead of default which is current version tag
+      - name: Set demo data GitHub URL using current git SHA (file) # instead of default which is current version tag
+        if: github.event.inputs.build_onefile == 'true'
         run: |
           {{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-macOS config set-github-demo-data-dir {% raw %}${{ env.sha }}{% endraw %}
+
+      - name: Set demo data GitHub URL using current git SHA (folder) # instead of default which is current version tag
+        if: github.event.inputs.build_onedir == 'true'
+        run: |
+          {{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-macOS-dir/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-macOS-dir config set-github-demo-data-dir {% raw %}${{ env.sha }}{% endraw %}
 
       - name: Run test suite on the frozen app (file)
         if:  github.event.inputs.build_onefile == 'true'
@@ -306,9 +318,15 @@ jobs:
           name: {{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux-build
           path: {{ pyinstaller_dir }}/build/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux
 
-      - name: Set demo data Github URL using current git SHA # instead of default which is current version tag
+      - name: Set demo data GitHub URL using current git SHA (file) # instead of default which is current version tag
+        if: github.event.inputs.build_onefile == 'true'
         run: |
           {{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux config set-github-demo-data-dir {% raw %}${{ env.sha }}{% endraw %}
+
+      - name: Set demo data GitHub URL using current git SHA (folder) # instead of default which is current version tag
+        if: github.event.inputs.build_onedir == 'true'
+        run: |
+          {{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ env.vers }}-linux-dir/{% endraw %}{{ executable_name }}-{% raw %}${{ env.vers }}-linux-dir{% endraw %} config set-github-demo-data-dir {% raw %}${{ env.sha }}{% endraw %}
 
       - name: Run test suite on the frozen app (file)
         if: github.event.inputs.build_onefile == 'true'
