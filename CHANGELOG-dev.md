@@ -1,4 +1,22 @@
 
+<a name="v0.3.0a95"></a>
+## [v0.3.0a95](https://github.com/hpcflow/matflow-new/compare/v0.3.0a94...v0.3.0a95) - 2023.11.13
+
+### ✨ Features
+
+* bump hpcflow version
+* add WIP demo workflow for simulating a known-texture yield surface
+* add schema visualise_volume_element
+
+### 🐛 Bug Fixes
+
+* build-exes when only build dirs
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a94"></a>
 ## [v0.3.0a94](https://github.com/hpcflow/matflow-new/compare/v0.3.0a93...v0.3.0a94) - 2023.11.13
 
