@@ -26,7 +26,7 @@ function exitcode = plot_pole_figures(inputs_HDF5_path, inputs_JSON_path)
 
     millerDirs = Miller(num2cell(poleFigureDirections(1, :)), crystalSym);
 
-    for i = 2:length(poleFigureDirections)
+    for i = 2:size(poleFigureDirections, 1)
         newMillerDir = Miller(num2cell(poleFigureDirections(i, :)), crystalSym);
         millerDirs = [millerDirs, newMillerDir];
     end

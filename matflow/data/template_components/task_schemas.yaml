@@ -268,6 +268,57 @@
           condition:
             value.equal_to: false
 
+- objective: sample_texture
+  method: from_model_ODF
+  implementation: mtex
+  inputs:
+    - parameter: num_orientations
+    - parameter: crystal_symmetry
+    - parameter: specimen_symmetry
+    - parameter: ODF_components
+    - parameter: compile
+      default_value: false
+      propagation_mode: explicit
+  outputs:
+    - parameter: orientations
+  actions:
+    - script: <<script:mtex/sample_texture_model_ODF.m>>
+      script_exe: compile_mtex
+      environments:
+        - scope:
+            type: any
+          environment: matlab_env
+      rules:
+        - path: inputs.compile
+          condition:
+            value.equal_to: true
+
+    - script: sample_texture_model_ODF
+      script_data_in: json
+      script_data_out: hdf5
+      script_exe: run_compiled_mtex
+      environments:
+        - scope:
+            type: any
+          environment: matlab_env
+      rules:
+        - path: inputs.compile
+          condition:
+            value.equal_to: true
+
+    - script: <<script:mtex/sample_texture_model_ODF.m>>
+      script_data_in: json
+      script_data_out: hdf5
+      script_exe: run_mtex
+      environments:
+        - scope:
+            type: any
+          environment: matlab_env
+      rules:
+        - path: inputs.compile
+          condition:
+            value.equal_to: false
+
 - objective: visualise_orientations
   method: pole_figure
   implementation: mtex
