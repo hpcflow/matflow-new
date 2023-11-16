@@ -135,7 +135,9 @@ docs/source/reference/_autosummary/
 
 # generated via conf.py
 docs/source/reference/_generated
-
 docs/source/reference/demo_workflow*
+docs/source/reference/api.rst
 
 demo_workflows/
+
+problems/

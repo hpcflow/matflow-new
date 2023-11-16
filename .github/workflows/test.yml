@@ -25,6 +25,11 @@ on:
         required: true
         type: boolean
         default: true
+      integration_tests:
+        description: "Run integration-like workflow submission tests."
+        required: true
+        type: boolean
+        default: true
   pull_request:
     types: [opened, edited, synchronize]
     branches: [main, develop] # have to manually change these
@@ -150,6 +155,87 @@ jobs:
       - name: Run tests
         run: |
           poetry run python -m pytest --verbose --exitfirst
+
+  test-integration:
+    needs: pre-commit
+    if: github.event_name == 'pull_request' || github.event.inputs.integration_tests == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install and configure poetry
+        run: |
+          python -m pip install poetry==${{ env.POETRY_VERSION }}
+          poetry config virtualenvs.in-project true
+          poetry config installer.modern-installation false
+
+      - name: Cache the virtualenv
+        uses: actions/cache@v3
+        with:
+          path: ./.venv
+          key: ${{ runner.os }}-test-${{ matrix.python-version }}-venv-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: |
+          poetry install --without dev,pyinstaller
+
+      - name: Run tests
+        run: |
+          poetry run matflow test --verbose --exitfirst --integration
+
+  test-integration-CentOS:
+    needs: pre-commit
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event.inputs.integration_tests == 'true'
+    container:
+      image: ghcr.io/hpcflow/centos7-poetry:latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Set ownership
+        run: |
+          # see: https://github.com/actions/runner/issues/2033#issuecomment-1204205989
+          # this is to fix GIT not liking owner of the checkout dir
+          chown -R $(id -u):$(id -g) $PWD
+
+      - name: Configure poetry
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry config installer.modern-installation false
+
+      - name: Cache the virtualenv
+        uses: actions/cache@v3
+        with:
+          path: ./.venv
+          key: venv-CentOS-test-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: poetry install --without dev,pyinstaller
+
+      - name: Run tests
+        run: |
+          poetry run matflow test --verbose --exitfirst --integration
 
   test-invocation-ubuntu:
     if: github.event_name == 'pull_request' || github.event.inputs.invocation_tests == 'true'

@@ -1,0 +1,11 @@
+{
+    "ODF.mat": {
+        "in_zip": "ODF.zip"
+    },
+    "texture_Al.ctf": {
+        "in_zip": "texture_Al.zip"
+    },
+    "surfalex_tensile_test.csv": {
+        "in_zip": "surfalex_tensile_test.zip"
+    }
+}

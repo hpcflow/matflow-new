@@ -37,14 +37,12 @@ class QuatOrder(enum.Enum):
 
 
 class OrientationRepresentationType(enum.Enum):
-
     QUATERNION = 0
     EULER = 1
 
 
 @dataclass
 class OrientationRepresentation(ParameterValue):
-
     type: OrientationRepresentationType
     euler_definition: Optional[EulerDefinition] = None
     euler_is_degrees: Optional[bool] = None
@@ -80,7 +78,6 @@ class LatticeDirection(enum.Enum):
 
 @dataclass
 class UnitCellAlignment(ParameterValue):
-
     _typ = "unit_cell_alignment"
 
     x: Optional[LatticeDirection] = None
@@ -114,7 +111,6 @@ class UnitCellAlignment(ParameterValue):
 
 @dataclass
 class Orientations(ParameterValue):
-
     _typ = "orientations"
 
     data: np.ndarray
@@ -165,16 +161,20 @@ class Orientations(ParameterValue):
             if_exists="replace",
         )
 
-    def dump_to_HDF5_group(self, HDF5_group):
-        pass
+    def dump_to_HDF5_group(self, group):
+        group.create_dataset("data", data=np.asarray(self.data))
+        group.attrs["representation_type"] = self.representation.type.value
+        group.attrs["representation_quat_order"] = self.representation.quat_order.value
+        group.attrs["unit_cell_alignment"] = [
+            self.unit_cell_alignment.x.value,
+            self.unit_cell_alignment.y.value,
+            self.unit_cell_alignment.z.value,
+        ]
 
     @classmethod
     def from_JSON_like(cls, data, ori_format):
         """For custom initialisation via YAML or JSON."""
         return cls(data=np.asarray(data), ori_format=ori_format)
-
-    # def to_json_like(self, dct=None, shared_data=None, exclude=None, _depth=0):
-    #     return
 
     @classmethod
     def from_random(cls, number):

@@ -1,0 +1,47 @@
+- label: damask_geom_file
+  name:
+    name: geom.vti
+- label: damask_load_file
+  name:
+    name: load.yaml
+- label: damask_material_file
+  name:
+    name: material.yaml
+- label: damask_stdout_file
+  name:
+    name: stdout.log
+- label: damask_stderr_file
+  name:
+    name: stderr.log
+- label: damask_hdf5_file
+  name:
+    name: geom_load.hdf5
+- label: damask_viz_files
+  name:
+    name: ((?:geom_load_inc\d+|static_outputs).vt(i|r))
+    is_regex: true
+- label: mtex_pole_figures
+  name:
+    name: pole_figure.png
+- label: mtex_IPF_figure
+  name:
+    name: IPF_key.png
+- label: lammps_atoms_file
+  name:
+    name: atoms.lammps
+- label: lammps_input_script
+  name:
+    name: in.lammps
+- label: lammps_dump_files
+  name:
+    name: (dump.\d+.txt)
+    is_regex: true
+- label: t1_outfile_1
+  name:
+    name: t1_outfile_1.txt
+- label: t1_infile_1
+  name:
+    name: t1_infile_1.txt
+- label: my_file
+  name:
+    name: my_file.txt

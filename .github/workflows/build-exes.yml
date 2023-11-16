@@ -67,7 +67,7 @@ jobs:
       - name: Install dependencies
         run: poetry install --without dev
 
-      - name: Get exectuable version name
+      - name: Get executable version name and store git SHA
         run: |
           $CUR_TAG = $(git describe --tags $(git rev-list --tags --max-count=1))
           echo "CUR_TAG is: $CUR_TAG"
@@ -75,6 +75,9 @@ jobs:
           $vers = git describe --tags
           echo "vers is: $vers"
           echo "vers=$vers" >> $env:GITHUB_ENV
+          $sha = git rev-parse HEAD
+          echo "sha is: $sha"
+          echo "sha=$sha" >> $env:GITHUB_ENV
 
       - name: Build with pyinstaller for Windows (file)
         if: github.event.inputs.build_onefile == 'true'
@@ -113,6 +116,16 @@ jobs:
         with:
           name: matflow-${{ env.vers }}-win-build
           path: pyinstaller/build/matflow-${{ env.vers }}-win
+
+      - name: Set demo data GitHub URL using current git SHA (file) # instead of default which is current version tag
+        if: github.event.inputs.build_onefile == 'true'
+        run: |
+          pyinstaller/dist/onefile/matflow-${{ env.vers }}-win.exe config set-github-demo-data-dir ${{ env.sha }}
+
+      - name: Set demo data GitHub URL using current git SHA (folder) # instead of default which is current version tag
+        if: github.event.inputs.build_onedir == 'true'
+        run: |
+          pyinstaller/dist/onedir/matflow-${{ env.vers }}-win-dir/matflow-${{ env.vers }}-win-dir.exe config set-github-demo-data-dir ${{ env.sha }}
 
       - name: Run test suite on the frozen app (file)
         if:  github.event.inputs.build_onefile == 'true'
@@ -154,7 +167,7 @@ jobs:
       - name: Install dependencies
         run: poetry install --without dev
 
-      - name: Get exectuable version name
+      - name: Get executable version name and store git SHA
         run: |
           CUR_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
           echo "CUR_TAG is: $CUR_TAG"
@@ -162,6 +175,9 @@ jobs:
           vers=$(git describe --tags)
           echo "vers is: $vers"
           echo "vers=$vers" >> $GITHUB_ENV
+          sha=$(git rev-parse HEAD)
+          echo "sha is: $sha"
+          echo "sha=$sha" >> $GITHUB_ENV
 
       - name: Build with pyinstaller for macOS (file)
         if: github.event.inputs.build_onefile == 'true'
@@ -200,6 +216,16 @@ jobs:
         with:
           name: matflow-${{ env.vers }}-macOS-build
           path: pyinstaller/build/matflow-${{ env.vers }}-macOS
+
+      - name: Set demo data GitHub URL using current git SHA (file) # instead of default which is current version tag
+        if: github.event.inputs.build_onefile == 'true'
+        run: |
+          pyinstaller/dist/onefile/matflow-${{ env.vers }}-macOS config set-github-demo-data-dir ${{ env.sha }}
+
+      - name: Set demo data GitHub URL using current git SHA (folder) # instead of default which is current version tag
+        if: github.event.inputs.build_onedir == 'true'
+        run: |
+          pyinstaller/dist/onedir/matflow-${{ env.vers }}-macOS-dir/matflow-${{ env.vers }}-macOS-dir config set-github-demo-data-dir ${{ env.sha }}
 
       - name: Run test suite on the frozen app (file)
         if:  github.event.inputs.build_onefile == 'true'
@@ -242,7 +268,7 @@ jobs:
       - name: Install dependencies
         run: poetry install --without dev
 
-      - name: Get exectuable version name
+      - name: Get executable version name and store git SHA
         run: |
           CUR_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
           echo "CUR_TAG is: $CUR_TAG"
@@ -250,6 +276,9 @@ jobs:
           vers=$(git describe --tags)
           echo "vers is: $vers"
           echo "vers=$vers" >> $GITHUB_ENV
+          sha=$(git rev-parse HEAD)
+          echo "sha is: $sha"
+          echo "sha=$sha" >> $GITHUB_ENV
 
       - name: Build with pyinstaller for CentOS (file)
         if: github.event.inputs.build_onefile == 'true'
@@ -288,6 +317,16 @@ jobs:
         with:
           name: matflow-${{ env.vers }}-linux-build
           path: pyinstaller/build/matflow-${{ env.vers }}-linux
+
+      - name: Set demo data GitHub URL using current git SHA (file) # instead of default which is current version tag
+        if: github.event.inputs.build_onefile == 'true'
+        run: |
+          pyinstaller/dist/onefile/matflow-${{ env.vers }}-linux config set-github-demo-data-dir ${{ env.sha }}
+
+      - name: Set demo data GitHub URL using current git SHA (folder) # instead of default which is current version tag
+        if: github.event.inputs.build_onedir == 'true'
+        run: |
+          pyinstaller/dist/onedir/matflow-${{ env.vers }}-linux-dir/matflow-${{ env.vers }}-linux-dir config set-github-demo-data-dir ${{ env.sha }}
 
       - name: Run test suite on the frozen app (file)
         if: github.event.inputs.build_onefile == 'true'
