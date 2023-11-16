@@ -124,6 +124,7 @@ dmypy.json
 
 # VS Code
 /.vscode
+*.code-workspace
 
 # Poetry
 poetry.toml
