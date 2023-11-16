@@ -6,12 +6,9 @@ doc:
 tasks:
   - schema: simulate_VE_loading_damask
     input_files:
-      - file: damask_load_file
-        path: <<demo_data_file:load.yaml>>
-      - file: damask_geom_file
-        path: <<demo_data_file:geom.vti>>
-      - file: damask_material_file
-        path: <<demo_data_file:material.yaml>>
+      damask_load_file: <<demo_data_file:load.yaml>>
+      damask_geom_file: <<demo_data_file:geom.vti>>
+      damask_material_file: <<demo_data_file:material.yaml>>
     inputs:
       damask_post_processing:
         - name: add_stress_Cauchy
