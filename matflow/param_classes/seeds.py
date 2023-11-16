@@ -22,8 +22,11 @@ class MicrostructureSeeds(ParameterValue):
     def __post_init__(self):
         self.box_size = np.asarray(self.box_size)
         self.position = np.asarray(self.position)
-        if self.orientations and not isinstance(self.orientations, Orientations):
-            self.orientations = Orientations(**self.orientations)
+        if self.orientations:
+            if not isinstance(self.orientations, Orientations):
+                self.orientations = Orientations(**self.orientations)
+        else:
+            self.orientations = Orientations.from_random(number=self.num_seeds)
 
     @classmethod
     def from_JSON_like(cls, position, orientations=None, **kwargs):
