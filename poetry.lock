@@ -1102,14 +1102,14 @@ numpy = ">=1.17.3"
 
 [[package]]
 name = "hpcflow-new2"
-version = "0.2.0a134"
+version = "0.2.0a135"
 description = "Computational workflow management"
 category = "main"
 optional = false
 python-versions = ">=3.8,<3.13"
 files = [
-    {file = "hpcflow_new2-0.2.0a134-py3-none-any.whl", hash = "sha256:894691bae6913d8bebfbf8d9b631df4c1845fda4f094ad5c2aca58380f347f9d"},
-    {file = "hpcflow_new2-0.2.0a134.tar.gz", hash = "sha256:7d82507f934d54f77eb160e97a4d087549da79799bd2e4bf62a37dbe1a976a97"},
+    {file = "hpcflow_new2-0.2.0a135-py3-none-any.whl", hash = "sha256:6c7ec69cbf9b2681baca86881f8fcd525431e4fc5dde57bb2cd0313061154acc"},
+    {file = "hpcflow_new2-0.2.0a135.tar.gz", hash = "sha256:4adf5ce7f3f05f8d6170b1ca5b754c4ecdd460082c79ea216db71b097d289551"},
 ]
 
 [package.dependencies]
@@ -2961,14 +2961,14 @@ files = [
 
 [[package]]
 name = "rich"
-version = "13.6.0"
+version = "13.7.0"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
 category = "main"
 optional = false
 python-versions = ">=3.7.0"
 files = [
-    {file = "rich-13.6.0-py3-none-any.whl", hash = "sha256:2b38e2fe9ca72c9a00170a1a2d20c63c790d0e10ef1fe35eba76e1e7b1d7d245"},
-    {file = "rich-13.6.0.tar.gz", hash = "sha256:5c14d22737e6d5084ef4771b62d5d4363165b403455a30a1c8ca39dc7b644bef"},
+    {file = "rich-13.7.0-py3-none-any.whl", hash = "sha256:6da14c108c4866ee9520bbffa71f6fe3962e193b7da68720583850cd4548e235"},
+    {file = "rich-13.7.0.tar.gz", hash = "sha256:5cb5123b5cf9ee70584244246816e9114227e0b98ad9176eede6ad54bf5403fa"},
 ]
 
 [package.dependencies]
@@ -4008,4 +4008,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.12"
-content-hash = "e04f2a389e5deb741f54d81b2e2d8f57938e9e306f72388f4e08347bd8772213"
+content-hash = "734f5a36241502a86034ff7042ea908f2bd76f1a0e0c69e42a22f975a119abcf"
