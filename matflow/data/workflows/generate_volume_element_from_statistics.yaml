@@ -18,3 +18,5 @@ tasks:
             ESD_mean: 0.3 # Specify either `ESD_mean` or `ESD_log_mean`
             ESD_log_stddev: 0.1
             num_bins: 10 # Specify either `num_bins` or `bin_step_size
+
+  - schema: visualise_volume_element_VTK

@@ -857,6 +857,8 @@
       default_value: null
     - parameter: orientations
       default_value: null
+  outputs:
+    - parameter: volume_element
   actions:
     - environments:
         - scope:
@@ -876,3 +878,8 @@
           script: <<script:dream_3D/generate_volume_element_statistics.py>>
       commands:
         - command: <<executable:dream_3D_runner>> --pipeline ${PWD}/pipeline.json
+      output_file_parsers:
+        volume_element:
+          from_files: [dream_3D_hdf5_file]
+          save_files: [dream_3D_hdf5_file, dream_3D_XDMF_file]
+          script: <<script:dream_3D/parse_dream_3D_volume_element.py>>
