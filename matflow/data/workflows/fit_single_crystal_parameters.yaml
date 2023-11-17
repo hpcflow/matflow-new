@@ -83,7 +83,6 @@ tasks:
           - out_name: vol_avg_strain
             field_name: epsilon_U^0(F)
             transforms: [{ mean_along_axes: 1 }]
-      damask_viz: null
     sequences:
       - path: inputs.single_crystal_parameters.perturbations
         values:
