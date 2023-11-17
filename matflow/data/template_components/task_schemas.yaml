@@ -840,7 +840,8 @@
 #       commands:
 #         - command: DAMASK_grid --load <<input_file:damask_load_file>> --geom <<input_file:damask_geom_file>>
 
-- objective: generate_volume_element_from_statistics
+- objective: generate_volume_element
+  method: from_statistics
   inputs:
     - parameter: grid_size
     - parameter: phase_statistics
