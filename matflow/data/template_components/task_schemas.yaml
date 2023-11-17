@@ -863,7 +863,14 @@
           environment: dream_3D_env
       input_file_generators:
         - input_file: dream_3D_pipeline
-          from_inputs: [grid_size, resolution, size, origin, periodic, phase_statistics, precipitates, orientations]
-          script: <<script:dream_3D/generate_RVE_from_statistics_pipeline_writer.py>>
+          from_inputs:
+            - grid_size
+            - resolution
+            - size
+            - origin
+            - periodic
+            - phase_statistics
+            - precipitates
+            - orientations
       commands:
         - command: <<executable:dream_3D_runner>> --pipeline ${PWD}/pipeline.json
