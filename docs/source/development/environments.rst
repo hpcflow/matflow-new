@@ -72,6 +72,50 @@ Example environment definition - Linux/MacOS
             num_cores: 1
             parallel_mode: null
 
+`dream_3D_env`
+~~~~~~~~~~~~~~
+
+Two executables are required:
+
+* `dream_3D_runner`: this is the pipeline runner which processes a pipeline.json file.
+* `python_script`: this is used to generate the `pipeline.json` file using a Python script.
+
+Example environment definition - Linux/MacOS
+--------------------------------------------
+
+.. code-block:: yaml
+
+  - name: dream_3D_env
+    executables:
+      - label: dream_3D_runner
+        instances:
+          - command: /path/to/DREAM3D-directory/bin/PipelineRunner
+            num_cores: 1
+            parallel_mode: null
+      - label: python_script
+        instances:
+          - command: python <<script_name>> <<args>>
+            num_cores: 1
+            parallel_mode: null
+
+Example environment definition - Windows
+----------------------------------------
+
+.. code-block:: yaml
+
+  - name: dream_3D_env
+    executables:
+      - label: dream_3D_runner
+        instances:
+          - command: "& 'C:\\path\\to\\DREAM3D-directory\\PipelineRunner.exe'"
+            num_cores: 1
+            parallel_mode: null
+      - label: python_script
+        instances:
+          - command: python <<script_name>> <<args>>
+            num_cores: 1
+            parallel_mode: null
+
 `damask_parse`
 ~~~~~~~~~~~~~~
 
