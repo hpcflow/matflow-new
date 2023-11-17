@@ -434,6 +434,7 @@
     - parameter: damask_post_processing
     - parameter: VE_response_data
     - parameter: damask_viz
+      default_value: null
     - parameter: single_crystal_parameters
       default_value: null
     - parameter: damask_solver
@@ -491,6 +492,9 @@
           inputs: [damask_viz]
           outputs: [VE_response]
           script: <<script:damask/viz_damask_HDF5.py>>
+          rules:
+            - path: inputs.damask_viz
+              condition: { value.not_equal_to: null }
 
 - objective: read_tensile_test
   method: from_CSV
