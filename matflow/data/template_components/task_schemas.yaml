@@ -873,5 +873,6 @@
             - phase_statistics
             - precipitates
             - orientations
+          script: <<script:dream_3D/generate_volume_element_statistics.py>>
       commands:
         - command: <<executable:dream_3D_runner>> --pipeline ${PWD}/pipeline.json

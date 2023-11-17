@@ -9,7 +9,7 @@ from damask_parse.utils import validate_orientations, validate_volume_element
 from damask_parse.quats import axang2quat, multiply_quaternions
 
 
-def generate_RVE_from_statistics_pipeline_writer(
+def generate_volume_element_statistics(
     path,
     grid_size,
     resolution,
