@@ -179,7 +179,6 @@ def generate_RVE_from_statistics_pipeline_writer(
     vol_frac_sum = 0.0
     stats_JSON = []
     for phase_idx, phase_stats in enumerate(phase_statistics):
-
         # Validation:
 
         err_msg = f"Problem with `phase_statistics` index {phase_idx}: "
@@ -314,7 +313,6 @@ def generate_RVE_from_statistics_pipeline_writer(
         # Validate other distributions after sorting out number of bins:
         all_dists = {}
         for dist_key, dist_info in DISTRIBUTIONS_MAP.items():
-
             dist = size_dist.get(dist_key)
             if not dist:
                 if not preset:
@@ -347,7 +345,6 @@ def generate_RVE_from_statistics_pipeline_writer(
 
             # Match number of distributions to number of bins:
             for dist_param in required_dist_keys:  # i.e. "alpha" and "beta" for beta dist
-
                 dist_param_val = dist[dist_param]
 
                 if isinstance(dist_param_val, np.ndarray):
@@ -414,7 +411,6 @@ def generate_RVE_from_statistics_pipeline_writer(
                     ODF["orientations"] = orientations
 
             if ODF_presets:
-
                 if any([ODF.get(i) is not None for i in ALLOWED_PHASE_AXIS_ODF_KEYS]):
                     raise ValueError(
                         err_msg + f"Specify either `presets` or `orientations` (and "
@@ -475,7 +471,6 @@ def generate_RVE_from_statistics_pipeline_writer(
                 ODF["sigmas"] = DEFAULT_ODF_SIGMA
 
             for i in ("weights", "sigmas"):
-
                 val = ODF[i]
 
                 if isinstance(val, np.ndarray):
@@ -554,7 +549,6 @@ def generate_RVE_from_statistics_pipeline_writer(
                 axis_ODF["sigmas"] = DEFAULT_AXIS_ODF_SIGMA
 
             for i in ("weights", "sigmas"):
-
                 val = axis_ODF[i]
 
                 if isinstance(val, np.ndarray):
@@ -608,7 +602,6 @@ def generate_RVE_from_statistics_pipeline_writer(
 
         # Generate dists from `preset_statistics_model`:
         if preset:
-
             if "omega3" not in all_dists:
                 omega3_dist = generate_omega3_dist_from_preset(num_bins)
                 all_dists.update({"omega3": omega3_dist})
@@ -1140,7 +1133,6 @@ def generate_shape_dist_from_preset(num_bins, aspect_ratio, preset_type):
     alphas = []
     betas = []
     for _ in range(num_bins):
-
         if preset_type in ["primary_rolled", "precipitate_rolled"]:
             alpha = (1.1 + (28.9 * (1.0 / aspect_ratio))) + np.random.random()
             beta = (30 - (28.9 * (1.0 / aspect_ratio))) + np.random.random()
@@ -1161,7 +1153,6 @@ def generate_neighbour_dist_from_preset(num_bins, preset_type):
     sigmas = []
     middlebin = num_bins // 2
     for i in range(num_bins):
-
         if preset_type == "primary_equiaxed":
             mu = np.log(14.0 + (2.0 * float(i - middlebin)))
             sigma = 0.3 + (float(middlebin - i) / float(middlebin * 10))
