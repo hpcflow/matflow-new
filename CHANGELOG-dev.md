@@ -1,4 +1,23 @@
 
+<a name="v0.3.0a96"></a>
+## [v0.3.0a96](https://github.com/hpcflow/matflow-new/compare/v0.3.0a95...v0.3.0a96) - 2023.11.17
+
+### ✨ Features
+
+* bump hpcflow version
+* bump hpcflow version
+* add demo workflow to show passing damask input files directly
+
+### 🐛 Bug Fixes
+
+* add rule to damask_viz_result output file parser
+* use random orientations if none passed to `MicrostructureSeeds`
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a95"></a>
 ## [v0.3.0a95](https://github.com/hpcflow/matflow-new/compare/v0.3.0a94...v0.3.0a95) - 2023.11.13
 
