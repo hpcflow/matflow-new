@@ -1,4 +1,5 @@
 - objective: test_t1_bash
+  web_doc: false
   inputs:
     - parameter: p1
   outputs:
@@ -23,6 +24,7 @@
             done
 
 - objective: test_t1_ps
+  web_doc: false
   inputs:
     - parameter: p1
   outputs:
@@ -51,6 +53,7 @@
           stdout: <<parameter:p2>>
 
 - objective: test_t2_bash
+  web_doc: false
   inputs:
     - parameter: p2
   outputs:
@@ -66,6 +69,7 @@
           stdout: <<parameter:p3>>
 
 - objective: test_t2_ps
+  web_doc: false
   inputs:
     - parameter: p2
   outputs:
@@ -410,6 +414,7 @@
           environment: python_env
 
 - objective: define_p1
+  web_doc: false
   inputs:
     - parameter: p1
 
@@ -593,6 +598,7 @@
       script_data_out: direct
       script_exe: python_script
 - objective: print_hello
+  web_doc: false
   inputs:
     - parameter: my_name
       default_value: "world"
@@ -609,6 +615,7 @@
         - command: Write-Host "Hello, <<parameter:my_name>>!"
 
 - objective: demo_adder
+  web_doc: false
   inputs:
     - parameter: number_1
     - parameter: number_2
@@ -629,6 +636,7 @@
           stdout: <<int(parameter:sum)>>
 
 - objective: demo_sleep
+  web_doc: false
   inputs:
     - parameter: max_sleep_time
       default_value: 1800 # 30 mins
