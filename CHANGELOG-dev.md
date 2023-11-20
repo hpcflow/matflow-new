@@ -1,4 +1,21 @@
 
+<a name="v0.3.0a97"></a>
+## [v0.3.0a97](https://github.com/hpcflow/matflow-new/compare/v0.3.0a96...v0.3.0a97) - 2023.11.20
+
+### ✨ Features
+
+* bump hpcflow version
+* improve task schema Sphinx docs
+
+### 🐛 Bug Fixes
+
+* remove extraneous template components
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a96"></a>
 ## [v0.3.0a96](https://github.com/hpcflow/matflow-new/compare/v0.3.0a95...v0.3.0a96) - 2023.11.17
 
