@@ -1,8 +1,6 @@
 Parameters
 ==========
 
-
-
 .. jinja:: first_ctx
 
   {% for i in parameters %}

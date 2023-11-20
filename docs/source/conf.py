@@ -176,6 +176,31 @@ def prepare_API_reference_stub(app):
         fp.write(contents)
 
 
+def prepare_task_schema_action_info(app):
+    """Write an HTML file for each task schema that lists the actions."""
+    out = {}
+    for ts_i in app.task_schemas:
+        if not ts_i.web_doc:
+            continue
+        html = ts_i.get_info_html()
+        rel_path = f"ts_{ts_i.name}_actions.html"
+        dst = Path(f"reference/{rel_path}")
+        with dst.open("wt", encoding="utf") as fh:
+            fh.write(html)
+        value = {
+            "file_path": str(dst.resolve()),
+            "file_name": dst.name,
+        }
+        if ts_i.objective.name not in out:
+            out[ts_i.objective.name] = {}
+
+        out[ts_i.objective.name][
+            ts_i.name if ts_i.method or ts_i.implementation else None
+        ] = value
+
+    return dict(sorted(out.items()))
+
+
 with open("config.jsonc") as fp:
     jsonc_str = fp.read()
     json_str = re.sub(
@@ -238,7 +263,7 @@ jinja_contexts = {
         "app_module": app.module,
         "app_docs_import_conv": app.docs_import_conv,
         "dist_name": dist_name,
-        "parameters": app.parameters,
+        "parameters": sorted(app.parameters),
         "task_schemas": app.task_schemas,
         "command_files": app.command_files,
         "environments": app.envs,
@@ -253,6 +278,7 @@ jinja_globals = {
     "get_classmethods": get_classmethods,
     "parameter_task_schema_map": app.get_parameter_task_schema_map(),
     "demo_workflows": copy_all_demo_workflows(app),
+    "task_schema_actions_html": prepare_task_schema_action_info(app),
 }
 
 # see: https://stackoverflow.com/a/62613202/5042280 for autosummary strategy
@@ -267,12 +293,12 @@ exclude_patterns = []
 text_newlines = "unix"
 html_static_path = ["_static"]
 html_css_files = ["css/custom.css"]
+html_js_files = ["js/custom.js"]
 html_theme = "pydata_sphinx_theme"
 html_theme_options = {
     "external_links": [],
     "switcher": {
         "json_url": switcher_JSON_URL,
-        # "url_template": "https://docs.matflow.io/v{version}/",  # TODO: update switcher.json to include this url
         "version_match": release,
     },
     "navbar_end": ["theme-switcher", "navbar-icon-links", "version-switcher"],
