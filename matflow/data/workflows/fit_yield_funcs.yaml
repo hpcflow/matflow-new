@@ -73,7 +73,6 @@ tasks:
           - out_name: vol_avg_plastic_strain
             field_name: epsilon_U^0(F_p)
             transforms: [mean_along_axes: 1]
-      damask_viz: null
 
   - schema: fit_yield_function
     inputs:

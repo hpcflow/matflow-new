@@ -7,5 +7,14 @@
     },
     "surfalex_tensile_test.csv": {
         "in_zip": "surfalex_tensile_test.zip"
+    },
+    "load.yaml": {
+        "in_zip": "load.zip"
+    },
+    "geom.vti": {
+        "in_zip": "geom.zip"
+    },
+    "material.yaml": {
+        "in_zip": "material.zip"
     }
 }

@@ -104,4 +104,3 @@ tasks:
             phase_name: Al
             out_name: vol_avg_plastic_strain
             transforms: [{ mean_along_axes: 1 }]
-      damask_viz: null

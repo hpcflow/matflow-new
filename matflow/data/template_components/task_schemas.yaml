@@ -1,4 +1,5 @@
 - objective: test_t1_bash
+  web_doc: false
   inputs:
     - parameter: p1
   outputs:
@@ -23,6 +24,7 @@
             done
 
 - objective: test_t1_ps
+  web_doc: false
   inputs:
     - parameter: p1
   outputs:
@@ -51,6 +53,7 @@
           stdout: <<parameter:p2>>
 
 - objective: test_t2_bash
+  web_doc: false
   inputs:
     - parameter: p2
   outputs:
@@ -66,6 +69,7 @@
           stdout: <<parameter:p3>>
 
 - objective: test_t2_ps
+  web_doc: false
   inputs:
     - parameter: p2
   outputs:
@@ -410,6 +414,7 @@
           environment: python_env
 
 - objective: define_p1
+  web_doc: false
   inputs:
     - parameter: p1
 
@@ -434,6 +439,7 @@
     - parameter: damask_post_processing
     - parameter: VE_response_data
     - parameter: damask_viz
+      default_value: null
     - parameter: single_crystal_parameters
       default_value: null
     - parameter: damask_solver
@@ -491,6 +497,9 @@
           inputs: [damask_viz]
           outputs: [VE_response]
           script: <<script:damask/viz_damask_HDF5.py>>
+          rules:
+            - path: inputs.damask_viz
+              condition: { value.not_equal_to: null }
 
 - objective: read_tensile_test
   method: from_CSV
@@ -589,6 +598,7 @@
       script_data_out: direct
       script_exe: python_script
 - objective: print_hello
+  web_doc: false
   inputs:
     - parameter: my_name
       default_value: "world"
@@ -605,6 +615,7 @@
         - command: Write-Host "Hello, <<parameter:my_name>>!"
 
 - objective: demo_adder
+  web_doc: false
   inputs:
     - parameter: number_1
     - parameter: number_2
@@ -625,6 +636,7 @@
           stdout: <<int(parameter:sum)>>
 
 - objective: demo_sleep
+  web_doc: false
   inputs:
     - parameter: max_sleep_time
       default_value: 1800 # 30 mins

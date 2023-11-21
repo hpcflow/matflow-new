@@ -14,7 +14,6 @@
     - path: [{ "type": "list_value" }]
       condition:
         value.type.equal_to: float
-
 - type: VE_grid_size
   _validation:
     - path: []
@@ -26,28 +25,6 @@
     - path: [{ "type": "list_value" }]
       condition:
         value.type.equal_to: int
-- type: my_name
-  _validation:
-    - path: []
-      doc: Used in the `demo_hello_world` task schema, which is used for teaching and learning.
-      condition:
-        value.type.equal_to: str
-- type: number_1
-  _validation:
-    - path: []
-      doc: Used in the `demo_adder` task schema, which is used for teaching and learning.
-      condition:
-        value.type.equal_to: int
-- type: number_2
-  _validation:
-    - path: []
-      doc: Used in the `demo_adder` task schema, which is used for teaching and learning.
-      condition: { value.type.equal_to: int }
-- type: sum
-  _validation:
-    - path: []
-      doc: Used in the `demo_adder` task schema, which is used for teaching and learning.
-      condition: { value.type.equal_to: int }
 - type: phase_label
   _validation:
     - path: []
@@ -114,16 +91,6 @@
     - path: [{ "type": "map_value" }]
       condition:
         value.type.equal_to: str
-- type: p1
-- type: p2
-- type: p3
-- type: p4
-- type: p5
-- type: number_atoms
-- type: box
-- type: atoms
-- type: empirical_potential
-- type: optimised_atoms
 - type: compile
 - type: dump_path
 - type: yield_point # vol-avg equivalent plastic strain
@@ -133,59 +100,3 @@
 - type: fit_yield_initial_parameters
 - type: fit_yield_opt_parameters
 - type: fitted_yield_functions
-- type: max_sleep_time
-- type: sleep_time
-- type: a
-  # _validation:
-  #   - path: []
-  #     doc: Non-specific parameter, used for teaching and learning.
-  #     condition: null
-- type: b
-  # _validation:
-  #   - path: []
-  #     doc: Non-specific parameter, used for teaching and learning.
-  #     condition: null
-- type: c
-  # _validation:
-  #   - path: []
-  #     doc: Non-specific parameter, used for teaching and learning.
-  #     condition: null
-- type: f_c
-  # _validation:
-  #   - path: []
-  #     doc: Non-specific parameter, used for teaching and learning.
-  #     condition: null
-- type: mu
-  # _validation:
-  #   - path: []
-  #     doc: Non-specific parameter, used for teaching and learning.
-  #     condition: null
-- type: sigma
-  # _validation:
-  #   - path: []
-  #     doc: Non-specific parameter, used for teaching and learning.
-  #     condition: null
-
-- type: geom_file_path
-  # _validation:
-  #   - path: []
-  #     doc: Non-specific parameter, used for teaching and learning.
-  #     condition: null
-
-- type: geom_data
-  # _validation:
-  #   - path: []
-  #     doc: Non-specific parameter, used for teaching and learning.
-  #     condition: null
-
-- type: num_increments
-  # _validation:
-  #   - path: []
-  #     doc: Non-specific parameter, used for teaching and learning.
-  #     condition: null
-
-- type: magnitude
-  # _validation:
-  #   - path: []
-  #     doc: Non-specific parameter, used for teaching and learning.
-  #     condition: null
