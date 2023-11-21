@@ -1,6 +1,8 @@
 import h5py
 import numpy as np
 
+from damask_parse.utils import validate_volume_element
+
 
 def parse_dream_3D_volume_element(dream_3D_hdf5_file):
     with h5py.File(dream_3D_hdf5_file, mode="r") as fh:
@@ -31,7 +33,7 @@ def parse_dream_3D_volume_element(dream_3D_hdf5_file):
         "material_homog": ["SX"] * num_grains,
         "orientations": process_dream3D_euler_angles(eulers),
     }
-    return vol_elem
+    return validate_volume_element(vol_elem)
 
 
 def process_dream3D_euler_angles(euler_angles, degrees=False):
