@@ -1,0 +1,20 @@
+doc:
+  - >
+    This simple workflow generates a `pipeline.json` file, and then runs it with
+    Dream.3D's `PipelineRunner` command. Phases can be specified and parametrised as if
+    using the "Stats Generator" filter in the Dream.3D GUI.
+
+tasks:
+  - schema: generate_volume_element_from_statistics
+    inputs:
+      grid_size: [128, 128, 256]
+      size: [1, 1, 2]
+      phase_statistics:
+        - type: primary
+          name: Al
+          crystal_structure: cubic
+          volume_fraction: 1.00 # `volume_fraction` for all phases must sum to 1!
+          size_distribution:
+            ESD_mean: 0.3 # Specify either `ESD_mean` or `ESD_log_mean`
+            ESD_log_stddev: 0.1
+            num_bins: 10 # Specify either `num_bins` or `bin_step_size

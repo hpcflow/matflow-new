@@ -851,3 +851,47 @@
 #           from_files: [damask_hdf5_file, damask_stdout]
 #       commands:
 #         - command: DAMASK_grid --load <<input_file:damask_load_file>> --geom <<input_file:damask_geom_file>>
+
+- objective: generate_volume_element
+  method: from_statistics
+  inputs:
+    - parameter: grid_size
+    - parameter: phase_statistics
+    - parameter: resolution
+      default_value: null
+    - parameter: size
+      default_value: null
+    - parameter: origin
+      default_value: null
+    - parameter: periodic
+      default_value: true
+    - parameter: precipitates
+      default_value: null
+    - parameter: orientations
+      default_value: null
+  outputs:
+    - parameter: volume_element
+  actions:
+    - environments:
+        - scope:
+            type: any
+          environment: dream_3D_env
+      input_file_generators:
+        - input_file: dream_3D_pipeline
+          from_inputs:
+            - grid_size
+            - resolution
+            - size
+            - origin
+            - periodic
+            - phase_statistics
+            - precipitates
+            - orientations
+          script: <<script:dream_3D/generate_volume_element_statistics.py>>
+      commands:
+        - command: <<executable:dream_3D_runner>> --pipeline ${PWD}/pipeline.json
+      output_file_parsers:
+        volume_element:
+          from_files: [dream_3D_hdf5_file]
+          save_files: [dream_3D_hdf5_file, dream_3D_XDMF_file]
+          script: <<script:dream_3D/parse_dream_3D_volume_element.py>>
