@@ -1,4 +1,25 @@
 
+<a name="v0.3.0a99"></a>
+## [v0.3.0a99](https://github.com/hpcflow/matflow-new/compare/v0.3.0a98...v0.3.0a99) - 2023.11.21
+
+### ✨ Features
+
+* parse dream_3D volume element
+* add task schema generate_volume_element_from_statistics
+
+### 🐛 Bug Fixes
+
+* add validation of new VE
+* remove unused import
+* save dream3d files in workflow directory
+* bug in `LoadStep.plane_strain` class method; fix [#194](https://github.com/hpcflow/matflow-new/issues/194)
+
+### 👷 Build changes
+
+* merge develop
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a98"></a>
 ## [v0.3.0a98](https://github.com/hpcflow/matflow-new/compare/v0.3.0a97...v0.3.0a98) - 2023.11.20
 
