@@ -5,7 +5,7 @@ import copy
 import numpy as np
 
 from pathlib import Path
-from damask_parse.utils import validate_orientations, validate_volume_element
+from damask_parse.utils import validate_orientations
 from damask_parse.quats import axang2quat, multiply_quaternions
 
 
