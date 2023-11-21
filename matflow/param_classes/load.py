@@ -514,7 +514,7 @@ class LoadStep(ParameterValue):
             num_increments=num_increments,
             target_def_grad=def_grad,
             target_def_grad_rate=def_grad_rate,
-            vel_grad=vel_grad,
+            target_vel_grad=vel_grad,
             stress=stress_arr,
             dump_frequency=dump_frequency,
         )
