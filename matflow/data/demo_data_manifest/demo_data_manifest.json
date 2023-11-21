@@ -16,5 +16,8 @@
     },
     "material.yaml": {
         "in_zip": "material.zip"
+    },
+    "defdap_small_dataset": {
+        "in_zip": "defdap_small_dataset.zip"
     }
 }

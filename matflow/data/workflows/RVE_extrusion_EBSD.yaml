@@ -1,0 +1,10 @@
+tasks:
+  - schema: load_microstructure_EBSD
+    inputs:
+      root_path: <<demo_data_file:defdap_small_dataset>>
+      scaling_factor: 0.5
+      EBSD:
+        filename: ebsd_data
+        flip_vert: true # optional
+        boundary_tol: 8 # optional
+        min_grain_size: 30 # optional

@@ -895,3 +895,46 @@
           from_files: [dream_3D_hdf5_file]
           save_files: [dream_3D_hdf5_file, dream_3D_XDMF_file]
           script: <<script:dream_3D/parse_dream_3D_volume_element.py>>
+
+- objective: load_microstructure
+  method: EBSD_DIC
+  inputs:
+    - parameter: DIC
+    - parameter: EBSD
+    - parameter: root_path
+    - parameter: transform_type
+      default_value: affine
+    - parameter: scaling_factor
+      default_value: 1
+    - parameter: find_grains_algorithm
+      default_value: warp
+  outputs:
+    - parameter: microstructure_image
+  actions:
+    - environments:
+        - scope:
+            type: any
+          environment: defdap_env
+      script: <<script:defdap/load_microstructure_EBSD_DIC.py>>
+      script_data_in: direct
+      script_data_out: direct
+      script_exe: python_script
+
+- objective: load_microstructure
+  method: EBSD
+  inputs:
+    - parameter: EBSD
+    - parameter: root_path
+    - parameter: scaling_factor
+      default_value: 1
+  outputs:
+    - parameter: microstructure_image
+  actions:
+    - environments:
+        - scope:
+            type: any
+          environment: defdap_env
+      script: <<script:defdap/load_microstructure_EBSD.py>>
+      script_data_in: direct
+      script_data_out: direct
+      script_exe: python_script

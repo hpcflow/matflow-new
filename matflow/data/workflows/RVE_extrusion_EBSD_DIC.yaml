@@ -1,0 +1,40 @@
+tasks:
+  - schema: load_microstructure_EBSD_DIC
+    inputs:
+      transform_type: affine
+      root_path: <<demo_data_file:defdap_small_dataset>>
+      scaling_factor: 0.5
+      DIC:
+        filename: dic_data.txt
+        crop: [15, 28, 30, 15] # optional
+        scale: 1.328e-2 # microns per pixel, optional
+        min_grain_size: 20 # optional
+        homog_points:
+          - [452, 322]
+          - [200, 417]
+          - [159, 144]
+          - [352, 269]
+          - [102, 33]
+          - [500, 48]
+          - [295, 245]
+          - [176, 437]
+          - [61, 382]
+          - [391, 398]
+          - [240, 208]
+      EBSD:
+        filename: ebsd_data
+        flip_vert: true # optional
+        boundary_tol: 8 # optional
+        min_grain_size: 10 # optional
+        homog_points:
+          - [780, 606]
+          - [374, 816]
+          - [285, 385]
+          - [612, 543]
+          - [186, 218]
+          - [839, 149]
+          - [516, 519]
+          - [335, 856]
+          - [145, 794]
+          - [686, 743]
+          - [424, 470]
