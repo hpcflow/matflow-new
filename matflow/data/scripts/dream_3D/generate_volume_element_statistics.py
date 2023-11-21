@@ -997,7 +997,7 @@ def generate_volume_element_statistics(
             "Filter_Human_Label": "Write DREAM.3D Data File",
             "Filter_Name": "DataContainerWriter",
             "Filter_Uuid": "{3fcd4c43-9d75-5b86-aad4-4441bc914f37}",
-            "OutputFile": f"{str(Path(path).parent.joinpath('pipeline.dream3d'))}",
+            "OutputFile": f"{str(Path(path).absolute().parent.joinpath('pipeline.dream3d'))}",
             "WriteTimeSeries": 0,
             "WriteXdmfFile": 1,
         },
