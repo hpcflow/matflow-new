@@ -48,3 +48,9 @@
 - label: dream_3D_pipeline
   name:
     name: pipeline.json
+- label: dream_3D_hdf5_file
+  name:
+    name: pipeline.dream3d
+- label: dream_3D_XDMF_file
+  name:
+    name: pipeline.xdmf
