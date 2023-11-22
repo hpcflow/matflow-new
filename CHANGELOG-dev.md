@@ -1,4 +1,28 @@
 
+<a name="v0.3.0a100"></a>
+## [v0.3.0a100](https://github.com/hpcflow/matflow-new/compare/v0.3.0a99...v0.3.0a100) - 2023.11.22
+
+### ✨ Features
+
+* bump hpcflow version
+* update RVE_extrusion demos to include DAMASK sim
+* bump hpcflow version
+* add damask numerics file and example
+* add `modify_VE_add_buffer_zones` task schema
+* add `generate_volume_element_extrusion` task schema
+* bump hpcflow version
+* add `load_microstructure` task schema using DefDAP
+
+### 🐛 Bug Fixes
+
+* remove non-breaking spaces from new demo workflows
+* numerics parameter name in new demo workflows
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a99"></a>
 ## [v0.3.0a99](https://github.com/hpcflow/matflow-new/compare/v0.3.0a98...v0.3.0a99) - 2023.11.21
 
