@@ -28,7 +28,7 @@ tasks:
       homog_label: SX
       VE_grid_size: [64, 64, 64]
 
-  - schema: visualise_volume_element_VTK
+  - schema: visualise_VE_VTK
 
   - schema: define_load_case
     inputs:

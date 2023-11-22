@@ -168,7 +168,7 @@
             type: any
           environment: damask_parse_env
 
-- objective: visualise_volume_element
+- objective: visualise_VE
   method: VTK
   inputs:
     - parameter: volume_element
