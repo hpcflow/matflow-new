@@ -444,6 +444,8 @@
       default_value: null
     - parameter: damask_solver
       default_value: null
+    - parameter: damask_numerics
+      default_value: null
   outputs:
     - parameter: damask_log
     - parameter: damask_post_processing_result
@@ -471,6 +473,12 @@
             - damask_phases
             - single_crystal_parameters
           script: <<script:damask/write_material.py>>
+        - input_file: damask_numerics_file
+          from_inputs: [damask_numerics]
+          script: <<script:damask/write_numerics.py>>
+          rules:
+            - path: inputs.damask_numerics
+              condition: { value.not_equal_to: null }
       abortable: true
       commands:
         - command: <<executable:damask_grid>> --load load.yaml --geom geom.vti

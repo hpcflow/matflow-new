@@ -19,5 +19,8 @@
     },
     "defdap_small_dataset": {
         "in_zip": "defdap_small_dataset.zip"
+    },
+    "numerics_example.yaml": {
+        "in_zip": "numerics_example.zip"
     }
 }
