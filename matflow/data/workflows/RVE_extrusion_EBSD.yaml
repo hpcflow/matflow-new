@@ -16,4 +16,14 @@ tasks:
       homog_label: SX
       phase_label: Ti
 
-  - schema: visualise_volume_element_VTK
+  - schema: visualise_VE_VTK
+
+  - schema: modify_VE_add_buffer_zones
+    inputs:
+      buffer_sizes: [4, 4, 4, 4, 2, 2] # size of buffer on each face [-x, +x, -y, +y, -z, +z]
+      phase_ids: [1, 1, 1, 1, 2, 2] # phase of each buffer. Relative, so 1 is the first new phase and so on
+      phase_labels: ["Ti_iso", "Air"] # labels of the new phases
+      homog_label: SX
+      order: ["z", "y", "x"] # order to add the zones, default [x, y, z]
+
+  - schema: visualise_VE_VTK
