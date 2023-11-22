@@ -118,7 +118,7 @@ Example environment definition - Windows
 
 
 `defdap_env`
-~~~~~~~~~~~
+~~~~~~~~~~~~
 
 - The included DefDap scripts currently work only with DefDAP version 0.93.4 and up to Numpy version 1.23.5.
 

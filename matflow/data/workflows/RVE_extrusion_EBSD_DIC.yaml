@@ -59,7 +59,7 @@ tasks:
     inputs:
       buffer_sizes: [4, 4, 4, 4, 2, 2] # size of buffer on each face [-x, +x, -y, +y, -z, +z]
       phase_ids: [1, 1, 1, 1, 2, 2] # phase of each buffer. Relative, so 1 is the first new phase and so on
-      phase_labels: ["Ti_iso", "Air"] # labels of the new phases
+      phase_labels: ["Ti_iso", "Air"] # labels of the new phases
       homog_label: SX
       order: ["z", "y", "x"] # order to add the zones, default [x, y, z]
 
@@ -154,7 +154,7 @@ tasks:
             phase_name: Ti
             out_name: vol_avg_strain
             transforms: [mean_along_axes: 1]
-        # Use to extract spatial data from (probably a subset of increments)
+        # Use to extract spatial data from (probably a subset of increments)
         field_data:
           - field_name: epsilon_U^2(F)
             increments:
