@@ -183,7 +183,7 @@ tasks:
           - field_name: O
             increments:
               - values: [10, 20, 30]
-      numerics:
+      damask_numerics:
         grid:
           itmin: 2
           itmax: 100
