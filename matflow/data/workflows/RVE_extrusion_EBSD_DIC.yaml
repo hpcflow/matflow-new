@@ -38,3 +38,12 @@ tasks:
           - [145, 794]
           - [686, 743]
           - [424, 470]
+
+  - schema: generate_volume_element_extrusion
+    inputs:
+      depth: 8
+      image_axes: ["y", "x"]
+      homog_label: SX
+      phase_label: Ti
+
+  - schema: visualise_volume_element_VTK

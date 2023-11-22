@@ -129,6 +129,11 @@ def get_DIC_image(dic_map, scaling_factor):
     # downstream expects grain numbering to start at 0 not 1
     grain_image -= 1
 
+    # set grain IDs as contiguous range:
+    uniq, inv = np.unique(grain_image.reshape(-1, order="C"), return_inverse=True)
+    grain_quats = grain_quats[uniq]
+    grain_image = np.reshape(inv, grain_image.shape, order="C")
+
     DIC_image = {
         "orientations": {
             "type": "quat",

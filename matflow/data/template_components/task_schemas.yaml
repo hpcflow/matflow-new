@@ -896,6 +896,29 @@
           save_files: [dream_3D_hdf5_file, dream_3D_XDMF_file]
           script: <<script:dream_3D/parse_dream_3D_volume_element.py>>
 
+- objective: generate_volume_element
+  method: extrusion
+  inputs:
+    - parameter: microstructure_image
+    - parameter: depth
+    - parameter: image_axes
+    - parameter: homog_label
+    - parameter: phase_label
+      default_value: null
+    - parameter: phase_label_mapping
+      default_value: null
+  outputs:
+    - parameter: volume_element
+  actions:
+    - environments:
+        - scope:
+            type: any
+          environment: damask_parse_env
+      script: <<script:damask/generate_volume_element_extrusion.py>>
+      script_data_in: direct
+      script_data_out: direct
+      script_exe: python_script
+
 - objective: load_microstructure
   method: EBSD_DIC
   inputs:

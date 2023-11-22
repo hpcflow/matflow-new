@@ -75,6 +75,12 @@ def get_EBSD_image(ebsd_map, scaling_factor):
     # downstream expects grain numbering to start at 0 not 1
     grain_image -= 1
 
+    # set grain IDs as contiguous range:
+    uniq, inv = np.unique(grain_image.reshape(-1, order="C"), return_inverse=True)
+    grain_quats = grain_quats[uniq]
+    grain_image = np.reshape(inv, grain_image.shape, order="C")
+    grain_phases = np.array([grain.phaseID.item() for grain in ebsd_map])[uniq]
+
     EBSD_image = {
         "orientations": {
             "type": "quat",
@@ -86,7 +92,7 @@ def get_EBSD_image(ebsd_map, scaling_factor):
         "grains": grain_image,
         "scale": ebsd_map.scale,
         "phase_labels": [phase.name for phase in ebsd_map.phases],
-        "grain_phases": [grain.phaseID.item() for grain in ebsd_map],
+        "grain_phases": grain_phases,
     }
 
     return EBSD_image
