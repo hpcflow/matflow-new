@@ -168,7 +168,7 @@
             type: any
           environment: damask_parse_env
 
-- objective: visualise_volume_element
+- objective: visualise_VE
   method: VTK
   inputs:
     - parameter: volume_element
@@ -444,6 +444,8 @@
       default_value: null
     - parameter: damask_solver
       default_value: null
+    - parameter: damask_numerics
+      default_value: null
   outputs:
     - parameter: damask_log
     - parameter: damask_post_processing_result
@@ -471,6 +473,12 @@
             - damask_phases
             - single_crystal_parameters
           script: <<script:damask/write_material.py>>
+        - input_file: damask_numerics_file
+          from_inputs: [damask_numerics]
+          script: <<script:damask/write_numerics.py>>
+          rules:
+            - path: inputs.damask_numerics
+              condition: { value.not_equal_to: null }
       abortable: true
       commands:
         - command: <<executable:damask_grid>> --load load.yaml --geom geom.vti
@@ -895,3 +903,91 @@
           from_files: [dream_3D_hdf5_file]
           save_files: [dream_3D_hdf5_file, dream_3D_XDMF_file]
           script: <<script:dream_3D/parse_dream_3D_volume_element.py>>
+
+- objective: generate_volume_element
+  method: extrusion
+  inputs:
+    - parameter: microstructure_image
+    - parameter: depth
+    - parameter: image_axes
+    - parameter: homog_label
+    - parameter: phase_label
+      default_value: null
+    - parameter: phase_label_mapping
+      default_value: null
+  outputs:
+    - parameter: volume_element
+  actions:
+    - environments:
+        - scope:
+            type: any
+          environment: damask_parse_env
+      script: <<script:damask/generate_volume_element_extrusion.py>>
+      script_data_in: direct
+      script_data_out: direct
+      script_exe: python_script
+
+- objective: load_microstructure
+  method: EBSD_DIC
+  inputs:
+    - parameter: DIC
+    - parameter: EBSD
+    - parameter: root_path
+    - parameter: transform_type
+      default_value: affine
+    - parameter: scaling_factor
+      default_value: 1
+    - parameter: find_grains_algorithm
+      default_value: warp
+  outputs:
+    - parameter: microstructure_image
+  actions:
+    - environments:
+        - scope:
+            type: any
+          environment: defdap_env
+      script: <<script:defdap/load_microstructure_EBSD_DIC.py>>
+      script_data_in: direct
+      script_data_out: direct
+      script_exe: python_script
+
+- objective: load_microstructure
+  method: EBSD
+  inputs:
+    - parameter: EBSD
+    - parameter: root_path
+    - parameter: scaling_factor
+      default_value: 1
+  outputs:
+    - parameter: microstructure_image
+  actions:
+    - environments:
+        - scope:
+            type: any
+          environment: defdap_env
+      script: <<script:defdap/load_microstructure_EBSD.py>>
+      script_data_in: direct
+      script_data_out: direct
+      script_exe: python_script
+
+- objective: modify_VE
+  method: add_buffer_zones
+  inputs:
+    - parameter: volume_element
+    - parameter: buffer_sizes # size of buffer on each face [-x, +x, -y, +y, -z, +z]
+    - parameter: phase_ids # phase of each buffer. Relative so 1 is the first new phase and so on
+    - parameter: phase_labels # labels of the new phases
+    - parameter: homog_label # label of the homog type
+    - parameter: order # order to add the zones, default [x, y, z]
+      default_value: null
+  outputs:
+    - parameter: volume_element
+  actions:
+    - environments:
+        - scope:
+            type: any
+          environment: damask_parse_env
+      script: <<script:damask/add_VE_buffer_zones.py>>
+      script_data_in: direct
+      script_data_out: direct
+      script_exe: python_script

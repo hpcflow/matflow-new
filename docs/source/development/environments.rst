@@ -116,6 +116,12 @@ Example environment definition - Windows
             num_cores: 1
             parallel_mode: null
 
+
+`defdap_env`
+~~~~~~~~~~~~
+
+- The included DefDap scripts currently work only with DefDAP version 0.93.4 and up to Numpy version 1.23.5.
+
 `damask_parse`
 ~~~~~~~~~~~~~~
 

@@ -1,4 +1,3 @@
-import copy
 import numpy as np
 from damask import Grid
 from damask_parse.utils import validate_volume_element, validate_orientations
