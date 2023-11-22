@@ -1090,14 +1090,14 @@ numpy = ">=1.17.3"
 
 [[package]]
 name = "hpcflow-new2"
-version = "0.2.0a140"
+version = "0.2.0a143"
 description = "Computational workflow management"
 category = "main"
 optional = false
 python-versions = ">=3.8,<3.13"
 files = [
-    {file = "hpcflow_new2-0.2.0a140-py3-none-any.whl", hash = "sha256:30d0456e03c821a5c8a8c708e0f110c3bb52798d7e46b2362efbe40b241961e9"},
-    {file = "hpcflow_new2-0.2.0a140.tar.gz", hash = "sha256:0d38fdfcfe72ba7e0c6ce1bb3b9511d31eee55cf60b1f21325d8dab8f133f383"},
+    {file = "hpcflow_new2-0.2.0a143-py3-none-any.whl", hash = "sha256:b70eb815525ae58a4f349e06060dd370b89f6896d0952bf13a162d7dc6a23a55"},
+    {file = "hpcflow_new2-0.2.0a143.tar.gz", hash = "sha256:92c24afae8b6f5561b174234ebc188be06f799cca8e5b32f8b5301e4cce091e8"},
 ]
 
 [package.dependencies]
@@ -3155,14 +3155,14 @@ files = [
 
 [[package]]
 name = "sentry-sdk"
-version = "1.35.0"
+version = "1.36.0"
 description = "Python client for Sentry (https://sentry.io)"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "sentry-sdk-1.35.0.tar.gz", hash = "sha256:04e392db9a0d59bd49a51b9e3a92410ac5867556820465057c2ef89a38e953e9"},
-    {file = "sentry_sdk-1.35.0-py2.py3-none-any.whl", hash = "sha256:a7865952701e46d38b41315c16c075367675c48d049b90a4cc2e41991ebc7efa"},
+    {file = "sentry-sdk-1.36.0.tar.gz", hash = "sha256:f32dd16547f2f45e1c71a96fd4a48925e629541f7ddfe3d5d25ef7d5e94eb3c8"},
+    {file = "sentry_sdk-1.36.0-py2.py3-none-any.whl", hash = "sha256:25d574f94fdf72199e331c2401fdac60d01b5be8f32822174c51c3ff0fc2f8cb"},
 ]
 
 [package.dependencies]
@@ -4012,4 +4012,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.12"
-content-hash = "211cb72c8599614683d199fae4ebc5241b2f5d3fdaa6b9dc1db2736f8edbca48"
+content-hash = "d2357b5c14fd0fade868bb982186862e41548af9175c9b9cedaac08eec74f6f4"
