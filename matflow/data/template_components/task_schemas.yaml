@@ -156,6 +156,10 @@
       default_value: SX
     - parameter: orientations
       default_value: null
+    - parameter: scale_morphology
+      default_value: null
+    - parameter: scale_update_size
+      default_value: true
   outputs:
     - parameter: volume_element
   actions:
