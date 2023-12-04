@@ -1,4 +1,16 @@
 
+<a name="v0.3.0a102"></a>
+## [v0.3.0a102](https://github.com/hpcflow/matflow-new/compare/v0.3.0a101...v0.3.0a102) - 2023.12.04
+
+### ✨ Features
+
+* add scale_morphology parameter to generate VE voronoi
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a101"></a>
 ## [v0.3.0a101](https://github.com/hpcflow/matflow-new/compare/v0.3.0a100...v0.3.0a101) - 2023.11.22
 
