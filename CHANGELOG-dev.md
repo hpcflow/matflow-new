@@ -1,4 +1,20 @@
 
+<a name="v0.3.0a104"></a>
+## [v0.3.0a104](https://github.com/hpcflow/matflow-new/compare/v0.3.0a103...v0.3.0a104) - 2023.12.07
+
+### ✨ Features
+
+* modify VE grid size using damask
+
+### 🐛 Bug Fixes
+
+* whitespace and readme table links
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a103"></a>
 ## [v0.3.0a103](https://github.com/hpcflow/matflow-new/compare/v0.3.0a102...v0.3.0a103) - 2023.12.07
 
