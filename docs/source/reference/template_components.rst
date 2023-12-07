@@ -1,12 +1,14 @@
-Template components
-===================
+.. jinja:: first_ctx
 
-This section details MatFlow's built-in template components.
+   Template components
+   ===================
 
-.. toctree::
-   :maxdepth: 1
+   This section details {{ app_name }}'s built-in template components.
 
-   Parameters <template_components/parameters>
-   Environments <template_components/environments>
-   Command files <template_components/command_files>
-   Task schemas <template_components/task_schemas>
+   .. toctree::
+      :maxdepth: 1
+
+      Parameters <template_components/parameters>
+      Environments <template_components/environments>
+      Command files <template_components/command_files>
+      Task schemas <template_components/task_schemas>

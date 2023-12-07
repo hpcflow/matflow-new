@@ -3,6 +3,7 @@
     "repo": "matflow-new",
     "app_name": "MatFlow",
     "app_package": "matflow",
+    "docs_url_prefix": "",
     "version_file": "matflow/_version.py",
     "release_branch": "main",
     "CLI_path": "matflow/cli.py",

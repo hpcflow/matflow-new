@@ -124,6 +124,7 @@ dmypy.json
 
 # VS Code
 /.vscode
+*.code-workspace
 
 # Poetry
 poetry.toml
@@ -135,7 +136,10 @@ docs/source/reference/_autosummary/
 
 # generated via conf.py
 docs/source/reference/_generated
-
 docs/source/reference/demo_workflow*
+docs/source/reference/ts_*.html
+docs/source/reference/api.rst
 
 demo_workflows/
+
+problems/

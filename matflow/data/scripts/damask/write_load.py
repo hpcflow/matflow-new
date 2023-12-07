@@ -2,8 +2,7 @@ from damask import __version__
 from damask_parse.writers import write_load_case
 
 
-def write_load(path, load_case):
-
+def write_load(path, load_case, damask_solver):
     load_steps = []
     for step in load_case.steps:
         dct = step.to_dict()
@@ -14,6 +13,7 @@ def write_load(path, load_case):
     write_load_case(
         dir_path=path.parent,
         load_cases=load_steps,
+        solver=damask_solver,
         name=path.name,
         write_2D_arrs=(__version__ != "3.0.0-alpha3"),
     )

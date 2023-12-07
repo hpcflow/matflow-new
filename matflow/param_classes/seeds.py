@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Optional
 
 import numpy as np
+from matplotlib import pyplot as plt
 
 from hpcflow.sdk.core.parameters import ParameterValue
 from matflow.param_classes.orientations import Orientations
@@ -21,8 +22,11 @@ class MicrostructureSeeds(ParameterValue):
     def __post_init__(self):
         self.box_size = np.asarray(self.box_size)
         self.position = np.asarray(self.position)
-        if self.orientations and not isinstance(self.orientations, Orientations):
-            self.orientations = Orientations(**self.orientations)
+        if self.orientations:
+            if not isinstance(self.orientations, Orientations):
+                self.orientations = Orientations(**self.orientations)
+        else:
+            self.orientations = Orientations.from_random(number=self.num_seeds)
 
     @classmethod
     def from_JSON_like(cls, position, orientations=None, **kwargs):
@@ -83,3 +87,13 @@ class MicrostructureSeeds(ParameterValue):
             box_size=box_size,
             phase_label=phase_label,
         )
+
+    def show(self):
+        fig = plt.figure()
+        ax = fig.add_subplot(projection="3d")
+        ax.scatter(
+            self.position[:, 0],
+            self.position[:, 1],
+            self.position[:, 2],
+        )
+        plt.show()

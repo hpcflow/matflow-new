@@ -1,4 +1,3 @@
-import copy
 import numpy as np
 from damask import Grid
 from damask_parse.utils import validate_volume_element, validate_orientations
@@ -9,6 +8,8 @@ def generate_volume_element_voronoi(
     VE_grid_size,
     homog_label,
     orientations,
+    scale_morphology,
+    scale_update_size,
 ):
     grid_obj = Grid.from_Voronoi_tessellation(
         cells=np.array(VE_grid_size),
@@ -16,6 +17,21 @@ def generate_volume_element_voronoi(
         seeds=np.array(microstructure_seeds.position),
         periodic=True,
     )
+
+    if scale_morphology is not None:
+        scale_morphology = np.array(scale_morphology)
+
+        original_cells = grid_obj.cells
+        new_cells = original_cells * scale_morphology
+        grid_scaled = grid_obj.scale(new_cells)
+
+        if scale_update_size:
+            original_size = grid_obj.size
+            new_size = original_size * scale_morphology
+            grid_scaled.size = new_size
+
+        grid_obj = grid_scaled
+
     # TODO: this needs some more thought.
 
     if orientations is None:

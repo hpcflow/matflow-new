@@ -1,8 +1,11 @@
-# Configuration file for the Sphinx documentation builder.
+# Configuration file for the Sphinx documentation builder -- Common config content
 
 import copy
+import importlib
+import json
+import re
 from pathlib import Path
-import tempfile
+from textwrap import dedent
 from typing import Type
 
 from ruamel.yaml import YAML
@@ -137,18 +140,6 @@ def generate_parameter_validation_schemas(app):
             jinja_contexts["first_ctx"]["tree_files"][param.typ] = str(full_path)
 
 
-def generate_dummy_environments(*env_names):
-    """Add environments to a temporary file and add that file to the config's environment
-    sources."""
-    dummy_envs = [{"name": i} for i in env_names]
-    tmp_dir = Path(tempfile.gettempdir())
-    tmp_envs_file = tmp_dir / "temp_envs.yml"
-    yaml = YAML()
-    with tmp_envs_file.open("wt") as fp:
-        yaml.dump(dummy_envs, fp)
-    app.config.append("environment_sources", str(tmp_envs_file))
-
-
 def copy_all_demo_workflows(app):
     """Load WorkflowTemplate objects and copy template files from all builtin demo
     template files to the reference source directory (adjacent to the workflows.rst file
@@ -167,33 +158,69 @@ def copy_all_demo_workflows(app):
     return out
 
 
-# -------- app-specific content START ----------------------------------------------------
+def prepare_API_reference_stub(app):
+    contents = dedent(
+        f"""\
+        Python API
+        ==========
 
-from matflow import __version__
-from matflow import app
+        .. autosummary::
+          :toctree: _autosummary
+          :template: custom-module-template.rst
+          :recursive:
 
-project = "MatFlow"
-copyright = "2023, MatFlow developers"
-author = "MatFlow developers"
-release = __version__
+          {app.module}
+    """
+    )
+    with Path("reference/api.rst").open("wt") as fp:
+        fp.write(contents)
 
-github_user = "hpcflow"
-github_repo = "matflow-new"
-PyPI_project = "matflow-new"
 
-switcher_JSON_URL = "https://docs.matflow.io/switcher.json"
+def prepare_task_schema_action_info(app):
+    """Write an HTML file for each task schema that lists the actions."""
+    out = {}
+    for ts_i in app.task_schemas:
+        if not ts_i.web_doc:
+            continue
+        html = ts_i.get_info_html()
+        rel_path = f"ts_{ts_i.name}_actions.html"
+        dst = Path(f"reference/{rel_path}")
+        with dst.open("wt", encoding="utf") as fh:
+            fh.write(html)
+        value = {
+            "file_path": str(dst.resolve()),
+            "file_name": dst.name,
+        }
+        if ts_i.objective.name not in out:
+            out[ts_i.objective.name] = {}
 
-html_logo = "_static/images/logo-50dpi.png"
+        out[ts_i.objective.name][
+            ts_i.name if ts_i.method or ts_i.implementation else None
+        ] = value
 
-additional_intersphinx = {"hpcflow": ("https://hpcflow.github.io/docs/stable", None)}
+    return dict(sorted(out.items()))
 
-# allow loading task schemas without these envs defined:
-generate_dummy_environments()
 
-# -------- app-specific content END ------------------------------------------------------
-# ----------------------------------------------------------------------------------------
-# -------- ...the remaining content can be identical for hpcflow and downstream apps -----
+with open("config.jsonc") as fp:
+    jsonc_str = fp.read()
+    json_str = re.sub(
+        r'\/\/(?=([^"]*"[^"]*")*[^"]*$).*', "", jsonc_str, flags=re.MULTILINE
+    )
+    config_dat = json.loads(json_str)
 
+app = importlib.import_module(config_dat["package"], "app")
+release = app.version
+project = config_dat["project"]
+copyright = config_dat["copyright"]
+author = config_dat["author"]
+github_user = config_dat["github_user"]
+github_repo = config_dat["github_repo"]
+PyPI_project = config_dat["PyPI_project"]
+switcher_JSON_URL = config_dat["switcher_JSON_URL"]
+html_logo = config_dat["html_logo"]
+additional_intersphinx = {
+    k: tuple(v) for k, v in config_dat["additional_intersphinx"].items()
+}
 
 Path("./reference/_generated").mkdir(exist_ok=True)
 
@@ -231,11 +258,12 @@ jinja_contexts = {
     "first_ctx": {
         "app_name": app.name,
         "app_version": app.version,
+        "app_description": app.description,
         "app_package_name": app.package_name,
         "app_module": app.module,
         "app_docs_import_conv": app.docs_import_conv,
         "dist_name": dist_name,
-        "parameters": app.parameters,
+        "parameters": sorted(app.parameters),
         "task_schemas": app.task_schemas,
         "command_files": app.command_files,
         "environments": app.envs,
@@ -250,6 +278,7 @@ jinja_globals = {
     "get_classmethods": get_classmethods,
     "parameter_task_schema_map": app.get_parameter_task_schema_map(),
     "demo_workflows": copy_all_demo_workflows(app),
+    "task_schema_actions_html": prepare_task_schema_action_info(app),
 }
 
 # see: https://stackoverflow.com/a/62613202/5042280 for autosummary strategy
@@ -264,13 +293,13 @@ exclude_patterns = []
 text_newlines = "unix"
 html_static_path = ["_static"]
 html_css_files = ["css/custom.css"]
+html_js_files = ["js/custom.js"]
 html_theme = "pydata_sphinx_theme"
 html_theme_options = {
     "external_links": [],
     "switcher": {
         "json_url": switcher_JSON_URL,
-        # "url_template": "https://docs.matflow.io/v{version}/",  # TODO: update switcher.json to include this url
-        "version_match": __version__,
+        "version_match": release,
     },
     "navbar_end": ["theme-switcher", "navbar-icon-links", "version-switcher"],
     "use_edit_page_button": True,
@@ -289,6 +318,7 @@ html_theme_options = {
     ],
 }
 
+prepare_API_reference_stub(app)
 rst_epilog = expose_variables(app)
 generate_config_file_validation_schema(app)
 generate_parameter_validation_schemas(app)

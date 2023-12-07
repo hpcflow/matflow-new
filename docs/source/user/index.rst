@@ -1,10 +1,12 @@
-User Guide
-##########
+.. jinja:: first_ctx
 
-MatFlow is a computational workflow management package for materials science.
+   User Guide
+   ##########
 
-.. toctree::
-   :maxdepth: 3
+   {{ app_description }}
 
-   How-to guides <how_to/index>
-   Tutorials <tutorials>
+   .. toctree::
+      :maxdepth: 3
+
+      How-to guides <how_to/index>
+      Tutorials <tutorials>
