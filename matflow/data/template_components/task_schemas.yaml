@@ -980,8 +980,8 @@
     - parameter: volume_element
     - parameter: buffer_sizes # size of buffer on each face [-x, +x, -y, +y, -z, +z]
     - parameter: phase_ids # phase of each buffer. Relative so 1 is the first new phase and so on
-    - parameter: phase_labels # labels of the new phases
-    - parameter: homog_label # label of the homog type
+    - parameter: phase_labels # labels of the new phases
+    - parameter: homog_label # label of the homog type
     - parameter: order # order to add the zones, default [x, y, z]
       default_value: null
   outputs:
@@ -992,6 +992,23 @@
             type: any
           environment: damask_parse_env
       script: <<script:damask/add_VE_buffer_zones.py>>
+      script_data_in: direct
+      script_data_out: direct
+      script_exe: python_script
+
+- objective: modify_VE
+  method: grid_size
+  inputs:
+    - parameter: volume_element
+    - parameter: new_grid_size
+  outputs:
+    - parameter: volume_element
+  actions:
+    - environments:
+        - scope:
+            type: any
+          environment: damask_parse_env
+      script: <<script:damask/modify_VE_grid_size.py>>
       script_data_in: direct
       script_data_out: direct
       script_exe: python_script
