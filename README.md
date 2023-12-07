@@ -111,7 +111,6 @@ This is a list tracking which workflows/tasks we have reimplemented/tested in th
 | ⇒ method: [fibre/mtex](https://github.com/LightForm-group/UoM-CSF-matflow/blob/569fa7bdc7006d04bd6ed2d4e4b6a114df23492e/task_schemas.yml#L35)                                       | -      | Use [sample_texture_from_model_ODF/mtex](https://docs.matflow.io/stable/reference/template_components/task_schemas.html#id2)                                                                                                                                             |
 | ⇒ method: [random/mtex](https://github.com/LightForm-group/UoM-CSF-matflow/blob/569fa7bdc7006d04bd6ed2d4e4b6a114df23492e/task_schemas.yml#L54)                                      | ❌      | [Pending](https://github.com/hpcflow/matflow-new/issues/180) (as `sample_texture_from_random/mtex`)                                                                                                                                                                      |
 
-
 ## Acknowledgements
 
 MatFlow was developed using funding from the [LightForm](https://lightform.org.uk/) EPSRC programme grant ([EP/R001715/1](https://gow.epsrc.ukri.org/NGBOViewGrant.aspx?GrantRef=EP/R001715/1))
