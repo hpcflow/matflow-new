@@ -1,4 +1,17 @@
 
+<a name="v0.3.0a107"></a>
+## [v0.3.0a107](https://github.com/hpcflow/matflow-new/compare/v0.3.0a106...v0.3.0a107) - 2023.12.08
+
+### 🐛 Bug Fixes
+
+* demo workflow texture symmetry in simulate_yield_surface_2D_brass
+* material parameters in RVE_extrusion demo workflows
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a106"></a>
 ## [v0.3.0a106](https://github.com/hpcflow/matflow-new/compare/v0.3.0a105...v0.3.0a106) - 2023.12.07
 
