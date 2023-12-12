@@ -156,6 +156,10 @@
       default_value: SX
     - parameter: orientations
       default_value: null
+    - parameter: scale_morphology
+      default_value: null
+    - parameter: scale_update_size
+      default_value: true
   outputs:
     - parameter: volume_element
   actions:
@@ -227,6 +231,61 @@
             value.equal_to: true
 
     - script: <<script:mtex/sample_texture_CTF.m>>
+      script_data_in: json
+      script_data_out: hdf5
+      script_exe: run_mtex
+      environments:
+        - scope:
+            type: any
+          environment: matlab_env
+      rules:
+        - path: inputs.compile
+          condition:
+            value.equal_to: false
+
+- objective: sample_texture
+  method: from_CRC_file
+  implementation: mtex
+  inputs:
+    - parameter: compile
+      default_value: false
+      propagation_mode: explicit
+    - parameter: CRC_file_path
+    - parameter: specimen_symmetry
+    - parameter: EBSD_phase
+    - parameter: num_orientations
+    - parameter: EBSD_reference_frame_transformation
+      default_value: euler_to_spatial # or "spatial_to_euler" or null
+    - parameter: EBSD_rotation # dict with keys "euler_angles_deg" list optional "keep_XY" bool, or "keep_euler" bool
+      default_value: null
+  outputs:
+    - parameter: orientations
+  actions:
+    - script: <<script:mtex/sample_texture_CRC.m>>
+      script_exe: compile_mtex
+      environments:
+        - scope:
+            type: any
+          environment: matlab_env
+      rules:
+        - path: inputs.compile
+          condition:
+            value.equal_to: true
+
+    - script: sample_texture_CRC
+      script_data_in: json
+      script_data_out: hdf5
+      script_exe: run_compiled_mtex
+      environments:
+        - scope:
+            type: any
+          environment: matlab_env
+      rules:
+        - path: inputs.compile
+          condition:
+            value.equal_to: true
+
+    - script: <<script:mtex/sample_texture_CRC.m>>
       script_data_in: json
       script_data_out: hdf5
       script_exe: run_mtex
@@ -976,8 +1035,8 @@
     - parameter: volume_element
     - parameter: buffer_sizes # size of buffer on each face [-x, +x, -y, +y, -z, +z]
     - parameter: phase_ids # phase of each buffer. Relative so 1 is the first new phase and so on
-    - parameter: phase_labels # labels of the new phases
-    - parameter: homog_label # label of the homog type
+    - parameter: phase_labels # labels of the new phases
+    - parameter: homog_label # label of the homog type
     - parameter: order # order to add the zones, default [x, y, z]
       default_value: null
   outputs:
@@ -988,6 +1047,23 @@
             type: any
           environment: damask_parse_env
       script: <<script:damask/add_VE_buffer_zones.py>>
+      script_data_in: direct
+      script_data_out: direct
+      script_exe: python_script
+
+- objective: modify_VE
+  method: grid_size
+  inputs:
+    - parameter: volume_element
+    - parameter: new_grid_size
+  outputs:
+    - parameter: volume_element
+  actions:
+    - environments:
+        - scope:
+            type: any
+          environment: damask_parse_env
+      script: <<script:damask/modify_VE_grid_size.py>>
       script_data_in: direct
       script_data_out: direct
       script_exe: python_script

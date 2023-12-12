@@ -1,4 +1,89 @@
 
+<a name="v0.3.0a108"></a>
+## [v0.3.0a108](https://github.com/hpcflow/matflow-new/compare/v0.3.0a107...v0.3.0a108) - 2023.12.12
+
+### ✨ Features
+
+* implement 'sample texture from crc file' using mtex
+
+### 🐛 Bug Fixes
+
+* use demo-data in `sample_texture_CRC_file`
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a107"></a>
+## [v0.3.0a107](https://github.com/hpcflow/matflow-new/compare/v0.3.0a106...v0.3.0a107) - 2023.12.08
+
+### 🐛 Bug Fixes
+
+* demo workflow texture symmetry in simulate_yield_surface_2D_brass
+* material parameters in RVE_extrusion demo workflows
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a106"></a>
+## [v0.3.0a106](https://github.com/hpcflow/matflow-new/compare/v0.3.0a105...v0.3.0a106) - 2023.12.07
+
+### 🐛 Bug Fixes
+
+* whitespace
+
+
+<a name="v0.3.0a105"></a>
+## [v0.3.0a105](https://github.com/hpcflow/matflow-new/compare/v0.3.0a104...v0.3.0a105) - 2023.12.07
+
+### 🐛 Bug Fixes
+
+* whitespace
+
+
+<a name="v0.3.0a104"></a>
+## [v0.3.0a104](https://github.com/hpcflow/matflow-new/compare/v0.3.0a103...v0.3.0a104) - 2023.12.07
+
+### ✨ Features
+
+* modify VE grid size using damask
+
+### 🐛 Bug Fixes
+
+* whitespace and readme table links
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a103"></a>
+## [v0.3.0a103](https://github.com/hpcflow/matflow-new/compare/v0.3.0a102...v0.3.0a103) - 2023.12.07
+
+### ✨ Features
+
+* bump hpcflow version
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a102"></a>
+## [v0.3.0a102](https://github.com/hpcflow/matflow-new/compare/v0.3.0a101...v0.3.0a102) - 2023.12.04
+
+### ✨ Features
+
+* add scale_morphology parameter to generate VE voronoi
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a101"></a>
 ## [v0.3.0a101](https://github.com/hpcflow/matflow-new/compare/v0.3.0a100...v0.3.0a101) - 2023.11.22
 

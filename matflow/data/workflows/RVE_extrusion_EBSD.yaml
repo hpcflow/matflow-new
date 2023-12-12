@@ -76,25 +76,25 @@ tasks:
                         +1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0,
                         +1.0,  1.0,  1.0,  1.0,  1.0,  1.0] # unused entries are indicated by -1.0
         Ti_iso:
-          lattice: cF # TODO: no "aP" as before, what to do?
+          lattice: cF
           mechanical:
             output: [F, P]
             elastic:
               type: Hooke
               C_11: 175.5e9
               C_12: 90.4e9
-              C_44: 90.4e9 # have to specify something
+              C_44: 42.55e9 # isotropic value: 0.5*(C_11-C_12)
             plastic:
               type: none
         Air:
-          lattice: cF # TODO: no "aP" as before, what to do?
+          lattice: cF
           mechanical:
             output: [F, P]
             elastic:
               type: Hooke
               C_11: 1e8
               C_12: 1e6
-              C_44: 1e6  # have to specify something
+              C_44: 49.5e6 # isotropic value: 0.5*(C_11-C_12)
             plastic:
               type: isotropic
               output: [xi, gamma]
