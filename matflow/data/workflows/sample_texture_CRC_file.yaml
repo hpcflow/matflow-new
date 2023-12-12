@@ -1,12 +1,14 @@
 doc:
   - >
     Demonstration of a task to sample texture from a CRC file using MTEX, and produce
-    pole figures of the sampled orientations.
+    pole figures of the sampled orientations. Note that directory to which the
+    `CRC_file_path` points should also contain a CPR file with the same file name stem as
+    the CRC file.
 
 tasks:
   - schema: sample_texture_from_CRC_file_mtex
     inputs:
-      CRC_file_path: /home/mbexegc2/projects/lightform/matflow-development/matflow-new/matflow/data/demo_data/RD-TD Data.crc
+      CRC_file_path: <<demo_data_file:texture_Al_CRC>>/texture_Al.crc
       EBSD_reference_frame_transformation: convertEuler2SpatialReferenceFrame
       specimen_symmetry: cubic
       EBSD_phase: Al
