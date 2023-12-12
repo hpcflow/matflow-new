@@ -7,6 +7,9 @@
 - label: damask_material_file
   name:
     name: material.yaml
+- label: damask_numerics_file
+  name:
+    name: numerics.yaml
 - label: damask_stdout_file
   name:
     name: stdout.log

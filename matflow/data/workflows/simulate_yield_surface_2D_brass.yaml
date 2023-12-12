@@ -6,7 +6,7 @@ doc:
 tasks:
   - schema: sample_texture_from_model_ODF_mtex
     inputs:
-      crystal_symmetry: hexagonal
+      crystal_symmetry: cubic
       specimen_symmetry: orthorhombic
       num_orientations: 1024
       ODF_components:
@@ -15,6 +15,13 @@ tasks:
           modal_orientation_HKL: [1, 1, 0]
           modal_orientation_UVW: [1, -1, 2]
           halfwidth: 5
+      compile: false
+
+  - schema: visualise_orientations_pole_figure_mtex
+    inputs:
+      crystal_symmetry: cubic # so we only see one orientaion on the pole figure
+      pole_figure_directions:
+        - [1, 1, 1]
       compile: false
 
   - schema: generate_microstructure_seeds_from_random
@@ -27,8 +34,9 @@ tasks:
     inputs:
       homog_label: SX
       VE_grid_size: [64, 64, 64]
+      scale_morphology: [1, 0.8, 0.48]
 
-  - schema: visualise_volume_element_VTK
+  - schema: visualise_VE_VTK
 
   - schema: define_load_case
     inputs:

@@ -17,3 +17,5 @@
 - name: matlab_env
 
 - name: dream_3D_env
+
+- name: defdap_env
