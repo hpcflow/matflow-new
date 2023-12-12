@@ -1,4 +1,20 @@
 
+<a name="v0.3.0a108"></a>
+## [v0.3.0a108](https://github.com/hpcflow/matflow-new/compare/v0.3.0a107...v0.3.0a108) - 2023.12.12
+
+### ✨ Features
+
+* implement 'sample texture from crc file' using mtex
+
+### 🐛 Bug Fixes
+
+* use demo-data in `sample_texture_CRC_file`
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a107"></a>
 ## [v0.3.0a107](https://github.com/hpcflow/matflow-new/compare/v0.3.0a106...v0.3.0a107) - 2023.12.08
 
