@@ -1,4 +1,4 @@
-function sample_texture_CRC(inputs_JSON_path, outputs_HDF5_path)
+function sample_orientations_CRC(inputs_JSON_path, outputs_HDF5_path)
 
     all_args = jsondecode(fileread(inputs_JSON_path));
 
