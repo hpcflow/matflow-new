@@ -18,11 +18,6 @@ function ODF = get_random_ODF(crystal_symmetry, specimen_symmetry, num_orientati
     ODF = calcDensity(ori);
 end
 
-function exitcode = export_ODF(ODF, fileName)
-    export(ODF, fileName, 'Bunge', 'MTEX');
-    exitcode = 1;
-end
-
 function export_orientations_HDF5(orientations, fileName)
     alignment = prepare_crystal_alignment(orientations.CS);
     ori_data = [orientations.a, orientations.b, orientations.c, orientations.d];
