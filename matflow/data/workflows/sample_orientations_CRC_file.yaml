@@ -1,9 +1,13 @@
 doc:
   - >
-    Demonstration of a task to sample texture from a CRC file using MTEX, and produce
-    pole figures of the sampled orientations. Note that directory to which the
+    Demonstration of a task to sample a subset of orientations from a CRC file using MTEX,
+    and produce pole figures of the sampled orientations. Note that directory to which the
     `CRC_file_path` points should also contain a CPR file with the same file name stem as
     the CRC file.
+  - >
+    Note that `sample_orientations` schemas pick a random subset of orientations from the
+    EBSD data, whereas the `sample_texture` schemas first construct an orientation
+    distribution function (ODF), from which orientations are then sampled.
 
 tasks:
   - schema: sample_orientations_from_CRC_file_mtex
