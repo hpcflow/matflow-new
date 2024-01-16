@@ -1,4 +1,55 @@
 
+<a name="v0.3.0a112"></a>
+## [v0.3.0a112](https://github.com/hpcflow/matflow-new/compare/v0.3.0a111...v0.3.0a112) - 2024.01.16
+
+### ✨ Features
+
+* implement sample_orientation_from_CRC workflow
+
+### 🐛 Bug Fixes
+
+* add link to documentation
+* update README to show workflow is implemented
+* make function match file name
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a111"></a>
+## [v0.3.0a111](https://github.com/hpcflow/matflow-new/compare/v0.3.0a110...v0.3.0a111) - 2024.01.16
+
+### ✨ Features
+
+* implement sample_orientations_from_CTF workflow
+
+### 🐛 Bug Fixes
+
+* add link to schema documentation
+* update README to indicate implemented workflow
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a110"></a>
+## [v0.3.0a110](https://github.com/hpcflow/matflow-new/compare/v0.3.0a109...v0.3.0a110) - 2024.01.04
+
+### ✨ Features
+
+* bump hpcflow version
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a109"></a>
+## [v0.3.0a109](https://github.com/hpcflow/matflow-new/compare/v0.3.0a108...v0.3.0a109) - 2024.01.03
+
+
 <a name="v0.3.0a108"></a>
 ## [v0.3.0a108](https://github.com/hpcflow/matflow-new/compare/v0.3.0a107...v0.3.0a108) - 2023.12.12
 
