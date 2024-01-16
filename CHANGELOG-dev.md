@@ -1,4 +1,22 @@
 
+<a name="v0.3.0a112"></a>
+## [v0.3.0a112](https://github.com/hpcflow/matflow-new/compare/v0.3.0a111...v0.3.0a112) - 2024.01.16
+
+### ✨ Features
+
+* implement sample_orientation_from_CRC workflow
+
+### 🐛 Bug Fixes
+
+* add link to documentation
+* update README to show workflow is implemented
+* make function match file name
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a111"></a>
 ## [v0.3.0a111](https://github.com/hpcflow/matflow-new/compare/v0.3.0a110...v0.3.0a111) - 2024.01.16
 
