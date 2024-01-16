@@ -1,4 +1,21 @@
 
+<a name="v0.3.0a111"></a>
+## [v0.3.0a111](https://github.com/hpcflow/matflow-new/compare/v0.3.0a110...v0.3.0a111) - 2024.01.16
+
+### ✨ Features
+
+* implement sample_orientations_from_CTF workflow
+
+### 🐛 Bug Fixes
+
+* add link to schema documentation
+* update README to indicate implemented workflow
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a110"></a>
 ## [v0.3.0a110](https://github.com/hpcflow/matflow-new/compare/v0.3.0a109...v0.3.0a110) - 2024.01.04
 
