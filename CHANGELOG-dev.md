@@ -1,4 +1,22 @@
 
+<a name="v0.3.0a113"></a>
+## [v0.3.0a113](https://github.com/hpcflow/matflow-new/compare/v0.3.0a112...v0.3.0a113) - 2024.01.16
+
+### ✨ Features
+
+* implement sample_texture_random using mtex
+
+### 🐛 Bug Fixes
+
+* add link to schema documentation
+* add README tick to show workflow implemented
+* remove unused function
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a112"></a>
 ## [v0.3.0a112](https://github.com/hpcflow/matflow-new/compare/v0.3.0a111...v0.3.0a112) - 2024.01.16
 
