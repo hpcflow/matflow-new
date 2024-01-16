@@ -1178,4 +1178,3 @@
         - path: inputs.compile
           condition:
             value.equal_to: false
-
