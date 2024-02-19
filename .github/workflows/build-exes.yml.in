@@ -1,7 +1,7 @@
 name: build-exes
 
 env:
-  PYTHON_VERSION_BUILD_EXES: "3.11"
+  PYTHON_VERSION_BUILD_EXES: "3.12"
   POETRY_VERSION: "1.4"
 
 on:
