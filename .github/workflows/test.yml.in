@@ -4,7 +4,7 @@ concurrency:
   {% raw %}ci-${{ format('{0}github.head_ref', 'refs/heads') || github.ref }}{% endraw %}
 
 env:
-  PYTHON_VERSION_PRE_COMMIT: "3.11"
+  PYTHON_VERSION_PRE_COMMIT: "3.12"
   POETRY_VERSION: "1.4"
 
 on:
@@ -86,6 +86,7 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
+          - "3.12"
         os:
           - ubuntu-latest
           - macos-latest
@@ -167,6 +168,7 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
+          - "3.12"
         os:
           - ubuntu-latest
           - macos-latest
@@ -248,6 +250,7 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
+          - "3.12"
     steps:
       - uses: actions/checkout@v3
         with:
@@ -350,6 +353,7 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
+          - "3.12"
     steps:
       - uses: actions/checkout@v3
         with:
@@ -452,6 +456,7 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
+          - "3.12"
     steps:
       - uses: actions/checkout@v3
         with:
