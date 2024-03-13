@@ -1120,14 +1120,14 @@ numpy = ">=1.17.3"
 
 [[package]]
 name = "hpcflow-new2"
-version = "0.2.0a155"
+version = "0.2.0a156"
 description = "Computational workflow management"
 category = "main"
 optional = false
 python-versions = ">=3.8,<3.13"
 files = [
-    {file = "hpcflow_new2-0.2.0a155-py3-none-any.whl", hash = "sha256:ef40a644390ebe8958969350237e84d82e167427f94df842cc98ec4ccdab9763"},
-    {file = "hpcflow_new2-0.2.0a155.tar.gz", hash = "sha256:75852d249b670210ec5cc69928b3983b33cc670e2de9aedcb105ef55e61dfd85"},
+    {file = "hpcflow_new2-0.2.0a156-py3-none-any.whl", hash = "sha256:539f6090420b4d762db7e975f27a8308e6fb0f3aabf35736cb1a6c04746c9a26"},
+    {file = "hpcflow_new2-0.2.0a156.tar.gz", hash = "sha256:9440ead6b4ec707c82c1e8643bd9dfefc7b06aaae413af28ace6cc3d50c40332"},
 ]
 
 [package.dependencies]
@@ -3281,14 +3281,14 @@ files = [
 
 [[package]]
 name = "sentry-sdk"
-version = "1.41.0"
+version = "1.42.0"
 description = "Python client for Sentry (https://sentry.io)"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "sentry-sdk-1.41.0.tar.gz", hash = "sha256:4f2d6c43c07925d8cd10dfbd0970ea7cb784f70e79523cca9dbcd72df38e5a46"},
-    {file = "sentry_sdk-1.41.0-py2.py3-none-any.whl", hash = "sha256:be4f8f4b29a80b6a3b71f0f31487beb9e296391da20af8504498a328befed53f"},
+    {file = "sentry-sdk-1.42.0.tar.gz", hash = "sha256:4a8364b8f7edbf47f95f7163e48334c96100d9c098f0ae6606e2e18183c223e6"},
+    {file = "sentry_sdk-1.42.0-py2.py3-none-any.whl", hash = "sha256:a654ee7e497a3f5f6368b36d4f04baeab1fe92b3105f7f6965d6ef0de35a9ba4"},
 ]
 
 [package.dependencies]
@@ -3312,6 +3312,7 @@ grpcio = ["grpcio (>=1.21.1)"]
 httpx = ["httpx (>=0.16.0)"]
 huey = ["huey (>=2)"]
 loguru = ["loguru (>=0.5)"]
+openai = ["openai (>=1.0.0)", "tiktoken (>=0.3.0)"]
 opentelemetry = ["opentelemetry-distro (>=0.35b0)"]
 opentelemetry-experimental = ["opentelemetry-distro (>=0.40b0,<1.0)", "opentelemetry-instrumentation-aiohttp-client (>=0.40b0,<1.0)", "opentelemetry-instrumentation-django (>=0.40b0,<1.0)", "opentelemetry-instrumentation-fastapi (>=0.40b0,<1.0)", "opentelemetry-instrumentation-flask (>=0.40b0,<1.0)", "opentelemetry-instrumentation-requests (>=0.40b0,<1.0)", "opentelemetry-instrumentation-sqlite3 (>=0.40b0,<1.0)", "opentelemetry-instrumentation-urllib (>=0.40b0,<1.0)"]
 pure-eval = ["asttokens", "executing", "pure-eval"]
@@ -4119,4 +4120,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.13"
-content-hash = "5ab6a15c70e875d5d2a3d062ef2c3fcfdf909c389b0b43c33d10c4456ebf26ff"
+content-hash = "97bf0599f443bbd4e87602ea8d13013aff91643c87155c4dd2bafe7d228cd43b"
