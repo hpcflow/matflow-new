@@ -378,7 +378,6 @@ jobs:
           - 1
           - 100
           - 10000
-          - 1000000
     runs-on: {% raw %}${{ matrix.os }}{% endraw %}
     steps:
       - uses: actions/checkout@v4
@@ -430,7 +429,7 @@ jobs:
       - name: zip benchmark results
         run: |
           zip -r ./benchmarks.zip benchmarks
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v3
         with:             
           name: benchmarks.zip
           path: benchmarks.zip
@@ -495,7 +494,7 @@ jobs:
             **/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-win-dir.zip
             **/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-macOS-dir.zip
             **/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}-linux-dir.zip
-            benchmarks.zip
+            **/benchmarks.zip
           prerelease: {{ '${{' }} github.event.pull_request.base.ref == '{{ pre_release_branch }}' {{ '}}' }}
 
       - name: Release info
