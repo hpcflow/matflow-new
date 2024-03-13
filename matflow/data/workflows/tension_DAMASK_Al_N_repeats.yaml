@@ -17,7 +17,7 @@ tasks:
       VE_grid_size: [8, 8, 8]
 
   - schema: simulate_VE_loading_damask
-    repeats: <<var:N>>
+    repeats: <<var:N[default=1]>>
     inputs:
       load_case::uniaxial:
         total_time: 100
