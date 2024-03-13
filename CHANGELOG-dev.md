@@ -1,4 +1,22 @@
 
+<a name="v0.3.0a117"></a>
+## [v0.3.0a117](https://github.com/hpcflow/matflow-new/compare/v0.3.0a116...v0.3.0a117) - 2024.03.13
+
+### ✨ Features
+
+* bump hpcflow version
+
+### 🐛 Bug Fixes
+
+* add default repeats value to string variable substitution workflow
+
+### 👷 Build changes
+
+* sync upstream GHA templates
+* update binary download links file [skip ci]
+* sync upstream GHA templates
+
+
 <a name="v0.3.0a116"></a>
 ## [v0.3.0a116](https://github.com/hpcflow/matflow-new/compare/v0.3.0a115...v0.3.0a116) - 2024.03.13
 
