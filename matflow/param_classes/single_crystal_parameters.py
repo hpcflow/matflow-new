@@ -1,8 +1,5 @@
 import copy
 
-import numpy as np
-from matplotlib import pyplot as plt
-
 from hpcflow.sdk.core.parameters import ParameterValue
 from hpcflow.sdk.core.utils import get_in_container, set_in_container
 from matflow.param_classes.orientations import Orientations
