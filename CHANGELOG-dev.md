@@ -1,4 +1,26 @@
 
+<a name="v0.3.0a118"></a>
+## [v0.3.0a118](https://github.com/hpcflow/matflow-new/compare/v0.3.0a117...v0.3.0a118) - 2024.03.14
+
+### ♻ Code Refactoring
+
+* remove unused sentry dep
+
+### ✨ Features
+
+* bump hpcflow version
+* bump hpcflow version
+
+### 🐛 Bug Fixes
+
+* remove unused imports
+* defer matplotlib import to speed up import time
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a117"></a>
 ## [v0.3.0a117](https://github.com/hpcflow/matflow-new/compare/v0.3.0a116...v0.3.0a117) - 2024.03.13
 
