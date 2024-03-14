@@ -15,9 +15,6 @@ __dir__ = sdk_app.get_app_module_dir()
 config_options = ConfigOptions(
     directory_env_var="MATFLOW_CONFIG_DIR",
     default_directory="~/.matflow-new",
-    sentry_DSN="https://2463b288fd1a40f4bada9f5ff53f6811@o1180430.ingest.sentry.io/6293231",
-    sentry_traces_sample_rate=1.0,
-    sentry_env="main" if "a" in __version__ else "develop",
     default_known_configs_dir="github://hpcflow:matflow-configs@main",
 )
 
