@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Optional
 
 import numpy as np
-from matplotlib import pyplot as plt
 
 from hpcflow.sdk.core.parameters import ParameterValue
 from matflow.param_classes.orientations import Orientations
@@ -89,6 +88,8 @@ class MicrostructureSeeds(ParameterValue):
         )
 
     def show(self):
+        from matplotlib import pyplot as plt
+
         fig = plt.figure()
         ax = fig.add_subplot(projection="3d")
         ax.scatter(
