@@ -18,6 +18,7 @@
     "PYPI_URL": "https://upload.pypi.org/legacy/", // "https://test.pypi.org/legacy/",
     "executable_name": "matflow",
     "pyinstaller_dir": "pyinstaller", // directory containing hooks and make.sh and make.ps1 scripts to invoke
+    "benchmark_make_workflow": "./matflow/data/workflows/tension_DAMASK_Al_N_repeats.yaml", // used to benchmark the workflow make command
     "website_source_org": "hpcflow",
     "website_source_repo": "docs.matflow.io",
     "website_source_token_name": "HPCFLOW_ACTIONS_TOKEN" // as defined within the `secrets` context: PAT of user who has push access and permission to bypass branch protection
