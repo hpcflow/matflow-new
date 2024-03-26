@@ -537,10 +537,9 @@
           script: <<script:damask/write_numerics.py>>
           rules:
             - path: inputs.damask_numerics
-              condition: { value.not_equal_to: null }
       abortable: true
       commands:
-        - command: <<executable:damask_grid>> --load load.yaml --geom geom.vti
+        - command: <<executable:damask_grid>> --load load.yaml --geom geom.vti --material material.yaml --numerics numerics.yaml
           stdout: stdout.log
           stderr: stderr.log
       output_file_parsers:
