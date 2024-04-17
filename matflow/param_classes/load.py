@@ -330,7 +330,7 @@ class LoadStep(ParameterValue):
         """
 
         # TODO this should be called `equibiaxial`? How is this different from `2D_planar`?
-        _method_name = "biaxaial"
+        _method_name = "biaxial"
         _method_args = {
             "total_time": total_time,
             "num_increments": num_increments,
@@ -529,7 +529,7 @@ class LoadStep(ParameterValue):
             dump_frequency=dump_frequency,
         )
         obj._method_name = _method_name
-        obj._method_name = _method_args
+        obj._method_args = _method_args
         return obj
 
     @classmethod
@@ -639,7 +639,7 @@ class LoadStep(ParameterValue):
             dump_frequency=dump_frequency,
         )
         obj._method_name = _method_name
-        obj._method_name = _method_args
+        obj._method_args = _method_args
         return obj
 
     @classmethod
