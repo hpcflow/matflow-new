@@ -535,8 +535,6 @@
         - input_file: damask_numerics_file
           from_inputs: [damask_numerics]
           script: <<script:damask/write_numerics.py>>
-          rules:
-            - path: inputs.damask_numerics
       abortable: true
       commands:
         - command: <<executable:damask_grid>> --load load.yaml --geom geom.vti --material material.yaml --numerics numerics.yaml

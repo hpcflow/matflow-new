@@ -21,7 +21,7 @@
     name: geom_load_material_numerics.hdf5
 - label: damask_viz_files
   name:
-    name: ((?:geom_load_inc\d+|static_outputs).vt(i|r))
+    name: ((?:geom_load_material_numerics_inc\d+|static_outputs).vt(i|r))
     is_regex: true
 - label: mtex_pole_figures
   name:
