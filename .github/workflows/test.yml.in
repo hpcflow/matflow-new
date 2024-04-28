@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' || github.event.inputs.pre_commit == 'true'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           # PAT of user who has permission to bypass branch
           # protection || or standard GITHUB_TOKEN if running on an external fork (won't
@@ -53,7 +53,7 @@ jobs:
           git config user.name {{ bot_account_name }}
           git config user.email {{ bot_account_email }}
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: {% raw %}${{ env.PYTHON_VERSION_PRE_COMMIT }}{% endraw %}
 
@@ -89,16 +89,16 @@ jobs:
           - "3.12"
         os:
           - ubuntu-latest
-          - macos-latest
+          - macos-13
           - windows-latest
 
     runs-on: {% raw %}${{ matrix.os }}{% endraw %}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: {% raw %}${{ github.ref }}{% endraw %}
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: {% raw %}${{ matrix.python-version }}{% endraw %}
 
@@ -109,7 +109,7 @@ jobs:
           poetry config installer.modern-installation false
 
       - name: Cache the virtualenv
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./.venv
           key: {% raw %}${{ runner.os }}-test-${{ matrix.python-version }}-venv-${{ hashFiles('**/poetry.lock') }}{% endraw %}
@@ -171,16 +171,16 @@ jobs:
           - "3.12"
         os:
           - ubuntu-latest
-          - macos-latest
+          - macos-13
           - windows-latest
 
     runs-on: {% raw %}${{ matrix.os }}{% endraw %}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: {% raw %}${{ github.ref }}{% endraw %}
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: {% raw %}${{ matrix.python-version }}{% endraw %}
 
@@ -191,7 +191,7 @@ jobs:
           poetry config installer.modern-installation false
 
       - name: Cache the virtualenv
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./.venv
           key: {% raw %}${{ runner.os }}-test-${{ matrix.python-version }}-venv-${{ hashFiles('**/poetry.lock') }}{% endraw %}
@@ -252,11 +252,11 @@ jobs:
           - "3.11"
           - "3.12"
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: {% raw %}${{ github.ref }}{% endraw %}
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: {% raw %}${{ matrix.python-version }}{% endraw %}
 
@@ -267,7 +267,7 @@ jobs:
           poetry config installer.modern-installation false
 
       - name: Cache the virtualenv
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./.venv
           key: venv-test-invocation-linux{% raw %}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}{% endraw %}
@@ -344,7 +344,7 @@ jobs:
 
   test-invocation-macos:
     if: github.event_name == 'pull_request' || github.event.inputs.invocation_tests == 'true'
-    runs-on: macos-latest
+    runs-on: macos-13
     strategy:
       fail-fast: false
       matrix:
@@ -355,11 +355,11 @@ jobs:
           - "3.11"
           - "3.12"
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: {% raw %}${{ github.ref }}{% endraw %}
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: {% raw %}${{ matrix.python-version }}{% endraw %}
 
@@ -370,7 +370,7 @@ jobs:
           poetry config installer.modern-installation false
 
       - name: Cache the virtualenv
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./.venv
           key: venv-test-invocation-macos{% raw %}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}{% endraw %}
@@ -458,11 +458,11 @@ jobs:
           - "3.11"
           - "3.12"
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: {% raw %}${{ github.ref }}{% endraw %}
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: {% raw %}${{ matrix.python-version }}{% endraw %}
 
@@ -473,7 +473,7 @@ jobs:
           poetry config installer.modern-installation false
 
       - name: Cache the virtualenv
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./.venv
           key: venv-test-invocation-windows{% raw %}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}{% endraw %}
