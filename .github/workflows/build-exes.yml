@@ -42,16 +42,16 @@ jobs:
     if: github.event.inputs.build_windows == 'true'
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # get all history and tags
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION_BUILD_EXES }}
 
       - name: Cache the virtualenv
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./.venv
           key: venv-build-windows-latest-${{ hashFiles('**/poetry.lock') }}
@@ -91,28 +91,28 @@ jobs:
 
       - name: Upload executable artifact (file)
         if:  github.event.inputs.build_onefile == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: matflow-${{ env.vers }}-win.exe
           path: pyinstaller/dist/onefile/matflow-${{ env.vers }}-win.exe
 
       - name: Upload executable artifact (folder)
         if:  github.event.inputs.build_onedir == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: matflow-${{ env.vers }}-win-dir
           path: pyinstaller/dist/onedir/matflow-${{ env.vers }}-win-dir
 
       - name: Upload spec file
         if:  ((github.event.inputs.build_onefile == 'true') || (github.event.inputs.build_onedir == 'true'))
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: matflow-${{ env.vers }}-win.spec
           path: pyinstaller/matflow-${{ env.vers }}-win.spec
 
       - name: Upload build directory
         if:  ((github.event.inputs.build_onefile == 'true') || (github.event.inputs.build_onedir == 'true'))
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: matflow-${{ env.vers }}-win-build
           path: pyinstaller/build/matflow-${{ env.vers }}-win
@@ -140,21 +140,21 @@ jobs:
 
   build-macos-executables:
     if: github.event.inputs.build_macos == 'true'
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # get all history and tags
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION_BUILD_EXES }}
 
       - name: Cache the virtualenv
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./.venv
-          key: venv-build-macos-latest-${{ hashFiles('**/poetry.lock') }}
+          key: venv-build-macos-13-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install poetry
         run: python -m pip install poetry==${{ env.POETRY_VERSION }}
@@ -191,28 +191,28 @@ jobs:
 
       - name: Upload executable artifact (file)
         if:  github.event.inputs.build_onefile == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: matflow-${{ env.vers }}-macOS
           path: pyinstaller/dist/onefile/matflow-${{ env.vers }}-macOS
 
       - name: Upload executable artifact (folder)
         if:  github.event.inputs.build_onedir == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: matflow-${{ env.vers }}-macOS-dir
           path: pyinstaller/dist/onedir/matflow-${{ env.vers }}-macOS-dir
 
       - name: Upload spec file
         if:  ((github.event.inputs.build_onefile == 'true') || (github.event.inputs.build_onedir == 'true'))
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: matflow-${{ env.vers }}-macOS.spec
           path: pyinstaller/matflow-${{ env.vers }}-macOS.spec
 
       - name: Upload build directory
         if:  ((github.event.inputs.build_onefile == 'true') || (github.event.inputs.build_onedir == 'true'))
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: matflow-${{ env.vers }}-macOS-build
           path: pyinstaller/build/matflow-${{ env.vers }}-macOS

@@ -1,4 +1,36 @@
 
+<a name="v0.3.0a122"></a>
+## [v0.3.0a122](https://github.com/hpcflow/matflow-new/compare/v0.3.0a121...v0.3.0a122) - 2024.04.28
+
+### ✨ Features
+
+* bump hpcflow version
+
+### 🐛 Bug Fixes
+
+* add a download-artifact[@v3](https://github.com/v3) step in release-github-PyPI to grab CentOS (docker) built executable which cannot use upload-artifact[@v4](https://github.com/v4)
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a121"></a>
+## [v0.3.0a121](https://github.com/hpcflow/matflow-new/compare/v0.3.0a120...v0.3.0a121) - 2024.04.28
+
+### ✨ Features
+
+* bump hpcflow version
+* bump hpcflow version
+* bump hpcflow version
+* bump hpcflow version
+
+### 👷 Build changes
+
+* sync GHA updates
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a120"></a>
 ## [v0.3.0a120](https://github.com/hpcflow/matflow-new/compare/v0.3.0a119...v0.3.0a120) - 2024.04.09
 

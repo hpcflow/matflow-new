@@ -33,7 +33,7 @@ jobs:
     outputs:
       new_tag_name: {% raw %}${{ steps.get_new_tag.outputs.new_tag_name }}{% endraw %}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # get all history and tags
           ref: {% raw %}${{ github.event.pull_request.base.ref }}{% endraw %}
@@ -43,7 +43,7 @@ jobs:
           git config user.name {{ bot_account_name }}
           git config user.email {{ bot_account_email }}
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: {% raw %}${{ env.PYTHON_VERSION_BUMP }}{% endraw %}
 
@@ -140,7 +140,7 @@ jobs:
           {% raw %}./git-chglog --template .chglog/RELEASE.tpl.md --output CHANGELOG_increment.md ${{ env.new_tag }}{% endraw %}
           cat CHANGELOG_increment.md
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: CHANGELOG_increment
           path: CHANGELOG_increment.md
@@ -150,27 +150,27 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2019, macos-11]
+        os: [windows-2019, macos-13]
         include:
           - os: windows-2019
             executable_ext: .exe
             executable_os: win
-          - os: macos-11
+          - os: macos-13
             executable_ext: ""
             executable_os: macOS
 
     runs-on: {% raw %}${{ matrix.os }}{% endraw %}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: {% raw %}${{ github.event.pull_request.base.ref }}{% endraw %} # otherwise we get the ref when the workflow started (missing above commit)
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: {% raw %}${{ env.PYTHON_VERSION_BUILD_EXES }}{% endraw %}
 
       - name: Cache the virtualenv
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./.venv
           key: {% raw %}venv-build-${{ matrix.os }}-${{ hashFiles('**/poetry.lock') }}{% endraw %}
@@ -269,13 +269,13 @@ jobs:
         run: ./compress.sh {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir 'onedir'{% endraw %}
           
       - name: Upload executable artifact (file)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %}
           path: {{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}${{ matrix.executable_ext }}{% endraw %}
 
       - name: Upload executable artifact (compressed folder)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: {{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %}-dir.zip
           path: {{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}{% endraw %}-dir.zip
@@ -372,7 +372,7 @@ jobs:
           - "3.12"
         os:
           - ubuntu-latest
-          - macos-latest
+          - macos-13
           - windows-latest      
         num_elements: 
           - 1
@@ -429,7 +429,7 @@ jobs:
       - name: zip benchmark results
         run: |
           zip -r ./benchmarks.zip benchmarks
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:             
           name: benchmarks.zip
           path: benchmarks.zip
@@ -442,16 +442,16 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: {% raw %}${{ github.event.pull_request.base.ref }}{% endraw %} # otherwise we get the ref when the workflow started (missing above commit)
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: {% raw %}${{ env.PYTHON_VERSION_RELEASE }}{% endraw %}
 
       - name: Cache the virtualenv
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./.venv
           key: {% raw %}venv-release-${{ hashFiles('**/poetry.lock') }}{% endraw %}
@@ -473,8 +473,11 @@ jobs:
 
       - run: mkdir release-artifacts
 
-      - uses: actions/download-artifact@v3
-        id: download_executables
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
+
+      - uses: actions/download-artifact@v3 # for CentOS (docker) build-exes
         with:
           path: release-artifacts
 
@@ -483,7 +486,7 @@ jobs:
 
       - name: Release
         id: release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           body_path: release-artifacts/CHANGELOG_increment/CHANGELOG_increment.md
           tag_name: {% raw %}${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}
@@ -525,7 +528,7 @@ jobs:
     needs: release-github-PyPI
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # get all history and tags
           ref: {% raw %}${{ github.event.pull_request.base.ref }}{% endraw %} # otherwise we get the ref when the workflow started (missing above commit)
@@ -535,7 +538,7 @@ jobs:
           git config user.name {{ bot_account_name }}
           git config user.email {{ bot_account_email }}
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: {% raw %}${{ env.PYTHON_VERSION_BUILD_DOCS }}{% endraw %}
 
@@ -562,7 +565,7 @@ jobs:
           fi
 
       - name: Cache the virtualenv
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./.venv
           key: {% raw %}venv-release-${{ matrix.os }}-${{ hashFiles('**/poetry.lock') }}{% endraw %}
@@ -585,7 +588,7 @@ jobs:
           poetry run make html
 
       - name: Upload documentation artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: docs_html
           path: docs/build/html
@@ -594,11 +597,11 @@ jobs:
     needs: [bump-version, release-github-PyPI, build-documentation]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: {% raw %}${{ env.PYTHON_VERSION_UPDATE_WEB }}{% endraw %}
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           repository: {{ website_source_org }}/{{ website_source_repo }}
           token: {{ '${{' }} secrets.{{ website_source_token_name }} {{ '}}' }}
@@ -608,7 +611,7 @@ jobs:
           git config user.email {{ bot_account_email }}
 
       - name: Download documentation artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: docs_html
           path: {% raw %}docs/${{ needs.bump-version.outputs.new_tag_name }}{% endraw %}

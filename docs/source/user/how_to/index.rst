@@ -10,3 +10,4 @@ This help snippets guide you through common quick tasks in |app_name|.
    Task Schemas <task_schemas>
    Workflow Templates <workflow_templates>
    Workflows <workflows>
+   Environments <environments>
