@@ -36,6 +36,11 @@ on:
         description: "PyInstaller log level"
         required: true
         default: "INFO"
+      unit_test_args:
+        description: "CLI args to pass verbatim to pytest (unit tests)."
+        required: false
+        type: string
+        default: ""        
 
 jobs:
   build-windows-executables:
@@ -129,13 +134,17 @@ jobs:
 
       - name: Run test suite on the frozen app (file)
         if:  github.event.inputs.build_onefile == 'true'
+        env:
+          GH_TOKEN: {% raw %}${{ secrets.GITHUB_TOKEN }}{% endraw %}
         run: |
-          {{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-win.exe test
+          {{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-win.exe test {% raw %}${{ github.event.inputs.unit_test_args }}{% endraw %}
 
       - name: Run test suite on the frozen app (folder)
         if:  github.event.inputs.build_onedir == 'true'
+        env:
+          GH_TOKEN: {% raw %}${{ secrets.GITHUB_TOKEN }}{% endraw %}
         run: |
-          {{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-win-dir/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-win-dir.exe test
+          {{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-win-dir/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-win-dir.exe test {% raw %}${{ github.event.inputs.unit_test_args }}{% endraw %}
 
 
   build-macos-executables:
@@ -229,13 +238,17 @@ jobs:
 
       - name: Run test suite on the frozen app (file)
         if:  github.event.inputs.build_onefile == 'true'
+        env:
+          GH_TOKEN: {% raw %}${{ secrets.GITHUB_TOKEN }}{% endraw %}
         run: |
-          {{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-macOS test
+          {{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-macOS test {% raw %}${{ github.event.inputs.unit_test_args }}{% endraw %}
 
       - name: Run test suite on the frozen app (folder)
         if:  github.event.inputs.build_onedir == 'true'
+        env:
+          GH_TOKEN: {% raw %}${{ secrets.GITHUB_TOKEN }}{% endraw %}
         run: |
-          {{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-macOS-dir/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-macOS-dir test
+          {{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-macOS-dir/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-macOS-dir test {% raw %}${{ github.event.inputs.unit_test_args }}{% endraw %}
 
 
   build-executables-linux:
@@ -330,10 +343,14 @@ jobs:
 
       - name: Run test suite on the frozen app (file)
         if: github.event.inputs.build_onefile == 'true'
+        env:
+          GH_TOKEN: {% raw %}${{ secrets.GITHUB_TOKEN }}{% endraw %}
         run: |
-          {{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux test
+          {{ pyinstaller_dir }}/dist/onefile/{{ executable_name }}-{% raw %}${{ env.vers }}{% endraw %}-linux test {% raw %}${{ github.event.inputs.unit_test_args }}{% endraw %}
 
       - name: Run test suite on the frozen app (folder)
         if: github.event.inputs.build_onedir == 'true'
+        env:
+          GH_TOKEN: {% raw %}${{ secrets.GITHUB_TOKEN }}{% endraw %}
         run: |
-          {{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ env.vers }}-linux-dir/{% endraw %}{{ executable_name }}-{% raw %}${{ env.vers }}-linux-dir{% endraw %} test
+          {{ pyinstaller_dir }}/dist/onedir/{{ executable_name }}-{% raw %}${{ env.vers }}-linux-dir/{% endraw %}{{ executable_name }}-{% raw %}${{ env.vers }}-linux-dir{% endraw %} test {% raw %}${{ github.event.inputs.unit_test_args }}{% endraw %}

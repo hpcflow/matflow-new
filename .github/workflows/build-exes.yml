@@ -36,6 +36,11 @@ on:
         description: "PyInstaller log level"
         required: true
         default: "INFO"
+      unit_test_args:
+        description: "CLI args to pass verbatim to pytest (unit tests)."
+        required: false
+        type: string
+        default: ""        
 
 jobs:
   build-windows-executables:
@@ -129,13 +134,17 @@ jobs:
 
       - name: Run test suite on the frozen app (file)
         if:  github.event.inputs.build_onefile == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          pyinstaller/dist/onefile/matflow-${{ env.vers }}-win.exe test
+          pyinstaller/dist/onefile/matflow-${{ env.vers }}-win.exe test ${{ github.event.inputs.unit_test_args }}
 
       - name: Run test suite on the frozen app (folder)
         if:  github.event.inputs.build_onedir == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          pyinstaller/dist/onedir/matflow-${{ env.vers }}-win-dir/matflow-${{ env.vers }}-win-dir.exe test
+          pyinstaller/dist/onedir/matflow-${{ env.vers }}-win-dir/matflow-${{ env.vers }}-win-dir.exe test ${{ github.event.inputs.unit_test_args }}
 
 
   build-macos-executables:
@@ -229,13 +238,17 @@ jobs:
 
       - name: Run test suite on the frozen app (file)
         if:  github.event.inputs.build_onefile == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          pyinstaller/dist/onefile/matflow-${{ env.vers }}-macOS test
+          pyinstaller/dist/onefile/matflow-${{ env.vers }}-macOS test ${{ github.event.inputs.unit_test_args }}
 
       - name: Run test suite on the frozen app (folder)
         if:  github.event.inputs.build_onedir == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          pyinstaller/dist/onedir/matflow-${{ env.vers }}-macOS-dir/matflow-${{ env.vers }}-macOS-dir test
+          pyinstaller/dist/onedir/matflow-${{ env.vers }}-macOS-dir/matflow-${{ env.vers }}-macOS-dir test ${{ github.event.inputs.unit_test_args }}
 
 
   build-executables-linux:
@@ -330,10 +343,14 @@ jobs:
 
       - name: Run test suite on the frozen app (file)
         if: github.event.inputs.build_onefile == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          pyinstaller/dist/onefile/matflow-${{ env.vers }}-linux test
+          pyinstaller/dist/onefile/matflow-${{ env.vers }}-linux test ${{ github.event.inputs.unit_test_args }}
 
       - name: Run test suite on the frozen app (folder)
         if: github.event.inputs.build_onedir == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          pyinstaller/dist/onedir/matflow-${{ env.vers }}-linux-dir/matflow-${{ env.vers }}-linux-dir test
+          pyinstaller/dist/onedir/matflow-${{ env.vers }}-linux-dir/matflow-${{ env.vers }}-linux-dir test ${{ github.event.inputs.unit_test_args }}

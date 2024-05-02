@@ -255,6 +255,8 @@ jobs:
           [ "$matflow_vers" = "$matflow_vers_expected" ]
 
       - name: Run test suite on the frozen app (folder)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           pyinstaller/dist/onedir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-${{ matrix.executable_os }}-dir${{ matrix.executable_ext }} test
 
@@ -339,10 +341,14 @@ jobs:
           [ "$matflow_vers" = "$matflow_vers_expected" ]
 
       - name: Run test suite on the frozen app (file)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           pyinstaller/dist/onefile/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux test
 
       - name: Run test suite on the frozen app (folder)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           pyinstaller/dist/onedir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux-dir/matflow-${{ needs.bump-version.outputs.new_tag_name }}-linux-dir test
 
