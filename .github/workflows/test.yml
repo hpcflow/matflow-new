@@ -30,6 +30,16 @@ on:
         required: true
         type: boolean
         default: true
+      unit_test_args:
+        description: "CLI args to pass verbatim to pytest (unit tests)."
+        required: false
+        type: string
+        default: ""
+      integration_test_args:
+        description: "CLI args to pass verbatim to pytest (integration tests)."
+        required: false
+        type: string
+        default: ""         
   pull_request:
     types: [opened, edited, synchronize]
     branches: [main, develop] # have to manually change these
@@ -119,8 +129,10 @@ jobs:
           poetry install --without dev,pyinstaller
 
       - name: Run tests
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          poetry run python -m pytest --verbose --exitfirst
+          poetry run python -m pytest --verbose --exitfirst ${{ github.event.inputs.unit_test_args }}
 
   test-units-CentOS:
     needs: pre-commit
@@ -154,8 +166,10 @@ jobs:
         run: poetry install --without dev,pyinstaller
 
       - name: Run tests
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          poetry run python -m pytest --verbose --exitfirst
+          poetry run python -m pytest --verbose --exitfirst ${{ github.event.inputs.unit_test_args }}
 
   test-integration:
     needs: pre-commit
@@ -201,8 +215,10 @@ jobs:
           poetry install --without dev,pyinstaller
 
       - name: Run tests
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          poetry run matflow test --verbose --exitfirst --integration
+          poetry run matflow test --verbose --exitfirst --integration ${{ github.event.inputs.integration_test_args }}
 
   test-integration-CentOS:
     needs: pre-commit
@@ -236,8 +252,10 @@ jobs:
         run: poetry install --without dev,pyinstaller
 
       - name: Run tests
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          poetry run matflow test --verbose --exitfirst --integration
+          poetry run matflow test --verbose --exitfirst --integration ${{ github.event.inputs.integration_test_args }}
 
   test-invocation-ubuntu:
     if: github.event_name == 'pull_request' || github.event.inputs.invocation_tests == 'true'
