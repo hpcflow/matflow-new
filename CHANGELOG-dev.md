@@ -1,4 +1,16 @@
 
+<a name="v0.3.0a125"></a>
+## [v0.3.0a125](https://github.com/hpcflow/matflow-new/compare/v0.3.0a124...v0.3.0a125) - 2024.05.15
+
+### ✨ Features
+
+* bump hpcflow version
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a124"></a>
 ## [v0.3.0a124](https://github.com/hpcflow/matflow-new/compare/v0.3.0a123...v0.3.0a124) - 2024.05.13
 
