@@ -1,0 +1,171 @@
+template_components:
+  task_schemas:
+    - objective: sample_direct_MC
+      inputs:
+        - parameter: dimension
+      outputs:
+        - parameter: MC_state
+      actions:
+        - script: <<script:uq/sample_direct_MC.py>>
+          script_data_in: direct
+          script_data_out: direct
+          script_exe: python_script
+          environments:
+            - scope:
+                type: any
+              environment: python_env
+
+    - objective: system_analysis
+      inputs:
+        - parameter: MC_state
+        - parameter: g
+          default_value: null
+      outputs:
+        - parameter: g
+        - parameter: MC_state
+      actions:
+        - script: <<script:uq/system_analysis.py>>
+          script_data_in: direct
+          script_data_out: direct
+          script_exe: python_script
+          environments:
+            - scope:
+                type: any
+              environment: python_env
+
+    - objective: collate_results
+      inputs:
+        - parameter: g
+          group: all
+        - parameter: MC_state
+          group: all
+        - parameter: p_0
+      outputs:
+        - parameter: seeds
+        - parameter: evals
+        - parameter: threshold
+        - parameter: num_chains
+        - parameter: num_failed
+      actions:
+        - script: <<script:uq/collate_results.py>>
+          script_data_in:
+            g: { format: direct, all_iterations: true }
+            MC_state: { format: direct, all_iterations: true }
+            "*": { format: direct }
+          script_data_out: direct
+          script_exe: python_script
+          environments:
+            - scope:
+                type: any
+              environment: python_env
+
+    - objective: initialise_markov_chains
+      inputs:
+        - parameter: chain_index
+        - parameter: seeds
+        - parameter: evals
+      outputs:
+        - parameter: MC_state
+        - parameter: g
+      actions:
+        - script: <<script:uq/initialise_chains.py>>
+          script_data_in: direct
+          script_data_out: direct
+          script_exe: python_script
+          environments:
+            - scope:
+                type: any
+              environment: python_env
+
+    - objective: generate_next_state
+      inputs:
+        - parameter: MC_state
+        - parameter: g
+      outputs:
+        - parameter: MC_state
+        - parameter: g
+      actions:
+        - script: <<script:uq/modified_metropolis_generate_candidate.py>>
+          script_data_in: direct
+          script_data_out: direct
+          script_exe: python_script
+          environments:
+            - scope:
+                type: any
+              environment: python_env
+
+    - objective: increment_chain
+      inputs:
+        - parameter: MC_state
+        - parameter: g
+        - parameter: threshold
+        - parameter: chain_index
+      outputs:
+        - parameter: MC_state
+        - parameter: g
+      actions:
+        - script: <<script:uq/increment_chain.py>>
+          script_data_in:
+            g: { format: direct, all_iterations: true }
+            MC_state: { format: direct, all_iterations: true }
+            "*": { format: direct }
+          script_data_out: direct
+          script_exe: python_script
+          environments:
+            - scope:
+                type: any
+              environment: python_env
+
+    - objective: collate_chains
+      inputs:
+        - parameter: MC_state
+          group: all
+        - parameter: g
+          group: all
+      actions:
+        - script: <<script:uq/collate_chains.py>>
+          script_data_in:
+            g: { format: direct, all_iterations: true }
+            MC_state: { format: direct, all_iterations: true }
+          script_data_out: direct
+          script_exe: python_script
+          environments:
+            - scope:
+                type: any
+              environment: python_env
+
+# variables:
+#   num_states: 1000
+#   p_0: 0.1
+
+loops:
+  - name: markov_chain_state # [inner loop]
+    tasks: [4, 5, 6]
+    num_iterations: 4 # num_states - 1: (1 / p_0) - 1
+  - name: levels # [outer loop]
+    tasks: [2, 3, 4, 5, 6]
+    num_iterations: 2
+
+tasks:
+  - schema: sample_direct_MC # inputs: (dimension); outputs; (MC_state)
+    inputs:
+      dimension: 2
+    repeats: 10 # num_samples
+  - schema: system_analysis # inputs; (MC_state, g); outputs; (MC_state, g)
+    groups:
+      - name: all
+  - schema: collate_results # [outer loop]; inputs: (g[all], MC_state[all], p_0); outputs: (seeds,evals,threshold,num_chains,num_failed)
+    inputs:
+      p_0: 0.2
+  - schema: initialise_markov_chains # [outer loop]; inputs: (chain_idx,seeds,evals); outputs: (MC_state, g)
+    sequences:
+      - path: inputs.chain_index
+        values::from_range:
+          start: 0
+          stop: 2 # num_chains: num_samples * p_0
+          step: 1
+  - schema: generate_next_state # [inner loop]; inputs: (MC_state array, g array); outputs: (MC_state array, g array)
+  - schema: system_analysis # [inner loop]; inputs: # inputs; (MC_state, g); outputs; (MC_state, g)
+  - schema: increment_chain # [inner loop]; inputs: (MC_state array,g array,threshold); outputs: (MC_state array, g array)
+    groups:
+      - name: all
