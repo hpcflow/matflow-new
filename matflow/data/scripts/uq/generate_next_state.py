@@ -6,7 +6,7 @@ from numpy.typing import NDArray
 from scipy.stats import norm
 
 
-def modified_metropolis_generate_candidate(MC_state: NDArray, g):
+def generate_next_state(x):
     """Generate the next candidate state in a modified Metropolis algorithm.
 
     Parameters
@@ -21,29 +21,17 @@ def modified_metropolis_generate_candidate(MC_state: NDArray, g):
             Generated candidate state.
     """
 
-    print(f"generate_next_state: A MC_state")
-    pprint.pp(MC_state)
+    print(f"generate_next_state: A x")
+    pprint.pp(x)
 
-    print(f"generate_next_state: A g")
-    pprint.pp(g)
+    x = x[:]  # convert to numpy array
 
-    if MC_state.ndim == 1:
-        MC_state = MC_state[:][None]
-
-    if isinstance(g, float):
-        g = np.array([g])
-    else:
-        g = g[:]
-
-    print(f"generate_next_state: B MC_state")
-    pprint.pp(MC_state)
-
-    print(f"generate_next_state: B g")
-    pprint.pp(g)
+    print(f"generate_next_state: B x")
+    pprint.pp(x)
 
     # TODO: add marginals as parameter
 
-    current_state = MC_state[-1]  # final row
+    current_state = x
 
     print(f"generate_next_state: current_state")
     pprint.pp(current_state)
@@ -76,8 +64,10 @@ def modified_metropolis_generate_candidate(MC_state: NDArray, g):
             # reject candidate, use previous for this component:
             xi[k] = current_state[k]
 
-    MC_state = np.vstack([MC_state, xi[None]])
-    print(f"generate_next_state: C MC_state")
-    pprint.pp(MC_state)
+    x = xi
 
-    return {"MC_state": MC_state, "g": g}
+    # MC_state = np.vstack([MC_state, xi[None]])
+    print(f"generate_next_state: C x")
+    pprint.pp(x)
+
+    return {"x": x}
