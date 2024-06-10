@@ -1,3 +1,20 @@
+- objective: get_3dvae_fingerprint
+  web_doc: false
+  inputs:
+    - parameter: volume_element
+    - parameter: checkpoint_path
+  outputs:
+    - parameter: fingerprint
+  actions:
+    - script: <<script:pytorch/get_3dvae_fingerprint.py>>
+      script_data_in: direct
+      script_data_out: direct
+      script_exe: python_script
+      environments:
+      - scope:
+          type: any
+        environment: pytorch_env
+
 - objective: test_t1_bash
   web_doc: false
   inputs:
