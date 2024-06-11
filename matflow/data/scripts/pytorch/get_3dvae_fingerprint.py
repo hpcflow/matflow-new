@@ -32,11 +32,13 @@ def get_3dvae_fingerprint(volume_element, checkpoint_path):
     eulers_image = np.moveaxis(eulers_image, 3, 0)
     eulers_image = torch.from_numpy(eulers_image)
 
+    eulers_image = torch.unsqueeze(eulers_image, 0)
+    eulers_image = eulers_image.float()
     vae = LightningVAE_3D.load_from_checkpoint(checkpoint_path)
     vae.eval()
     _, _, _, fingerprint = vae(eulers_image)
 
-    return {"fingerprint": torch.asarray(fingerprint)}
+    return {"fingerprint": fingerprint.cpu().detach().numpy()}
 
 
 def convert_ori_rep(ori_dict, type_out='euler'):
