@@ -20,22 +20,21 @@ def get_3dvae_fingerprint(volume_element, checkpoint_path):
     fingerprint: torch.Tensor
         Fingerprint from the trained VAE encoder.
     """
+    oris = convert_ori_rep(volume_element['orientations'])
+    assert not oris['euler_degrees']
+    euler_angles = oris['eulers']
+    euler_angles /= np.pi * np.array([2, 1, 2])
 
-    # euler_angles = volume_element['DataContainers']['SyntheticVolumeDataContainer']['CellData']['EulerAngles']
-    volume_element['orientations'] = convert_ori_rep(volume_element['orientations'])
-    euler_angles = volume_element['orientations']['eulers']
-    assert not volume_element['orientations']['euler_degrees']
-    euler_angles_norm = np.zeros(euler_angles.shape)
-    euler_angles_norm[:, :, :, 0] = euler_angles[:, :, :, 0] / (2 * np.pi)
-    euler_angles_norm[:, :, :, 1] = euler_angles[:, :, :, 1] / (np.pi)
-    euler_angles_norm[:, :, :, 2] = euler_angles[:, :, :, 2] / (2 * np.pi)
-    euler_angles_norm = np.moveaxis(euler_angles_norm, 3, 0)
-    euler_angles_norm = torch.from_numpy(euler_angles_norm)
+    grain_image = volume_element['element_material_idx'][:]
+    eulers_image = np.zeros(grain_image.shape + (3, ))
+    for grain_i in range(len(euler_angles)):
+        eulers_image[grain_image == grain_i] = euler_angles[grain_i]
+    eulers_image = np.moveaxis(eulers_image, 3, 0)
+    eulers_image = torch.from_numpy(eulers_image)
 
     vae = LightningVAE_3D.load_from_checkpoint(checkpoint_path)
     vae.eval()
-
-    _, _, _, fingerprint = vae(euler_angles_norm)
+    _, _, _, fingerprint = vae(eulers_image)
 
     return {"fingerprint": torch.asarray(fingerprint)}
 
