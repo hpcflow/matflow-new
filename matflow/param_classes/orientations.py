@@ -178,6 +178,7 @@ class Orientations(ParameterValue):
 
     @classmethod
     def from_random(cls, number):
+        # TODO: save method_name and method_args like in load?
         return cls(
             data=cls.quat_sample_random(number),
             unit_cell_alignment=UnitCellAlignment.from_hex_convention_DAMASK(),

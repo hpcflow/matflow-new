@@ -1,21 +1,41 @@
 doc:
+  - WIP! May not be functional!
   - >
     A simple crystal plasticity simulation using DAMASK. A volume element generated from a
     random voronoi tessellation is loaded uniaxially, using aluminium (Al) material
     parameters.
 tasks:
-  - schema: generate_microstructure_seeds_from_random
+  - schema: define_volume_element
     inputs:
-      VE_size: [1, 1, 1]
-      num_grains: 4
-      phase_label: Al
+      volume_element::from_random_voronoi:
+        size: [1, 1, 1]
+        grid_size: [8, 8, 8]
+        num_grains: 4
+        homog_label: SX
+        phase_labels: [Al]
+        orientations: <<parameter:orientations>>
+        orientations::from_random:
+          number: 4
 
-  - schema: generate_volume_element_from_voronoi
+  - schema: generate_volume_element
     inputs:
-      homog_label: SX
+      microstructure_seeds::from_random:
+        num_seeds: 4
+        box_size: [1, 1, 1]
       VE_grid_size: [8, 8, 8]
+      homog_label: SX
+      orientations::from_random:
+        number: 4
 
   - schema: simulate_VE_loading_damask
+    sequences:
+      - path: inputs.load_case.num_increments
+        values::from_range: [0, 100, 2]
+        nesting_order: 0
+      - path: inputs.load_case.num_increments
+        values::from_normal: [0, 100, 2]
+        nesting_order: 0
+
     inputs:
       load_case::uniaxial:
         total_time: 100

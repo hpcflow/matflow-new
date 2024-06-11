@@ -147,6 +147,10 @@
             type: any
           environment: damask_parse_env
 
+- objective: define_volume_element
+  inputs:
+    - parameter: volume_element
+
 - objective: generate_volume_element
   method: from_voronoi
   inputs:
@@ -1122,7 +1126,6 @@
         - path: inputs.compile
           condition:
             value.equal_to: false
-
 
 - objective: sample_orientations
   method: from_CRC_file
