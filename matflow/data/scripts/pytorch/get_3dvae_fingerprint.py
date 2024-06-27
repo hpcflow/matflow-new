@@ -1,9 +1,10 @@
 import numpy as np
 import torch
-from mftools.fingerprint.LightningVAE.LightningVAETrainer import LightningVAE_3D
+from lvae3d.LightningVAETrainers import ResNet18VAE_alpha
+from lvae3d.util.MetadataDicts import MetadataAlpha
 
 
-def get_3dvae_fingerprint(volume_element, checkpoint_path):
+def get_3dvae_fingerprint(volume_element, checkpoint_path, metadata_path):
     """Get fingerprint from PyTorch tensor of normalised Euler angles.
 
     Parameters
@@ -12,6 +13,8 @@ def get_3dvae_fingerprint(volume_element, checkpoint_path):
         Dream3D volume element (output from generate_volume_element schema).
     checkpoint_path : str
         Path to checkpoint. Should be a .ckpt file.
+    metadata_path : str
+        Path to metadata. Should be a .yaml file.
 
     Returns
     -------
@@ -34,9 +37,12 @@ def get_3dvae_fingerprint(volume_element, checkpoint_path):
 
     eulers_image = torch.unsqueeze(eulers_image, 0)
     eulers_image = eulers_image.float()
-    vae = LightningVAE_3D.load_from_checkpoint(checkpoint_path)
-    vae.eval()
-    _, _, _, fingerprint = vae(eulers_image)
+
+    metadata = MetadataAlpha()
+    metadata.load(metadata_path)
+    model = ResNet18VAE_alpha.load_from_checkpoint(checkpoint_path, metadata=metadata)
+    model.eval()
+    _, _, _, fingerprint = model(eulers_image)
 
     return {"fingerprint": fingerprint.cpu().detach().numpy()}
 

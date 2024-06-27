@@ -3,6 +3,7 @@
   inputs:
     - parameter: volume_element
     - parameter: checkpoint_path
+    - parameter: metadata_path
   outputs:
     - parameter: fingerprint
   actions:
