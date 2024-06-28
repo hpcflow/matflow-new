@@ -33,22 +33,22 @@ def generate_next_state(x):
             Generated candidate state.
     """
 
-    logger = set_up_logger()
+    #logger = set_up_logger()
 
-    print(f"generate_next_state: A x")
-    pprint.pp(x)
+    #print(f"generate_next_state: A x")
+    #pprint.pp(x)
 
     x = x[:]  # convert to numpy array
 
-    print(f"generate_next_state: B x")
-    pprint.pp(x)
+    #print(f"generate_next_state: B x")
+    #pprint.pp(x)
 
     # TODO: add marginals as parameter
 
     current_state = x
 
-    print(f"generate_next_state: current_state")
-    pprint.pp(current_state)
+    #print(f"generate_next_state: current_state")
+    #pprint.pp(current_state)
 
     rng = np.random.default_rng()
     dim = len(current_state)
@@ -62,14 +62,14 @@ def generate_next_state(x):
         proposal = norm(loc=current_state[k])  # TODO: parametrise spread?
 
         xi_hat_k = proposal.rvs()
-        logger.debug(
-            f"MMA: markov chain state: trial component {k}: xi_hat_k = {xi_hat_k}"
-        )
+        #logger.debug(
+        #    f"MMA: markov chain state: trial component {k}: xi_hat_k = {xi_hat_k}"
+        #)
 
         # acceptance ratio:
         r = marginals[k].pdf(xi_hat_k) / marginals[k].pdf(current_state[k])
 
-        logger.debug(f"MMA: markov chain state: trial component {k}: r = {r}")
+        #logger.debug(f"MMA: markov chain state: trial component {k}: r = {r}")
 
         if rng.random() < min(1, r):
             # accept candidate:
@@ -81,7 +81,7 @@ def generate_next_state(x):
     x = xi
 
     # MC_state = np.vstack([MC_state, xi[None]])
-    print(f"generate_next_state: C x")
-    pprint.pp(x)
+    #print(f"generate_next_state: C x")
+    #pprint.pp(x)
 
     return {"x": x}

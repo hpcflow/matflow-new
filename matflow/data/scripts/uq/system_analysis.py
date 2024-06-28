@@ -10,21 +10,21 @@ def model(x):
 
 def system_analysis(x: NDArray):
     """`x` is within the failure domain if the return is greater than zero."""
-    print(f"system_analysis: A x")
-    pprint.pp(x)
+    #print(f"system_analysis: A x")
+    #pprint.pp(x)
 
     x = x[:]  # convert to numpy array
 
-    print(f"system_analysis: B x")
-    pprint.pp(x)
+    #print(f"system_analysis: B x")
+    #pprint.pp(x)
 
     # print(f"system_analysis: A g")
     # pprint.pp(g)
 
     g_i = model(x) - 9
 
-    print(f"system_analysis: g_i")
-    pprint.pp(g_i)
+    #print(f"system_analysis: g_i")
+    #pprint.pp(g_i)
 
     # if g is None:
     #     g_new = g_i
