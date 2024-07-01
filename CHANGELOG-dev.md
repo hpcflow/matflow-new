@@ -1,4 +1,20 @@
 
+<a name="v0.3.0a127"></a>
+## [v0.3.0a127](https://github.com/hpcflow/matflow-new/compare/v0.3.0a126...v0.3.0a127) - 2024.07.01
+
+### 🐛 Bug Fixes
+
+* quaternion vector sign in MTEX scripts
+
+### 👷 Build changes
+
+* merge branch 'fix/mtex-oris' of https://github.com/hpcflow/matflow-new into fix/mtex-oris
+* change back to LF endings
+* merge develop
+* bump deps
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a126"></a>
 ## [v0.3.0a126](https://github.com/hpcflow/matflow-new/compare/v0.3.0a125...v0.3.0a126) - 2024.06.30
 
