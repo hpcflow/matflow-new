@@ -1,4 +1,12 @@
 
+<a name="v0.3.0a128"></a>
+## [v0.3.0a128](https://github.com/hpcflow/matflow-new/compare/v0.3.0a127...v0.3.0a128) - 2024.07.01
+
+### 🐛 Bug Fixes
+
+* bump pyinstaller, try to fix build error
+
+
 <a name="v0.3.0a127"></a>
 ## [v0.3.0a127](https://github.com/hpcflow/matflow-new/compare/v0.3.0a126...v0.3.0a127) - 2024.07.01
 
