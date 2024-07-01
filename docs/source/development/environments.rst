@@ -9,7 +9,8 @@ Environments
 * This is controlled by the `compile` input parameter, which is `False` by default. When `compile` is `False`, the `run_mtex` executable must be defined in the `matlab_env`. When `compile` is `True`, the `compile_mtex` and `run_compiled_mtex` exectuables must both be fined in the `matlab_env`.
 * In the examples below, all executables are defined, meaning MTEX tasks can be run with `compile=True` or `compile=False`.
 * For direct script execution (`compiled=False`), the MATLAB `-batch` switch is used, and is documented here for `Windows <https://uk.mathworks.com/help/matlab/ref/matlabwindows.html>`_, `MacOS <https://uk.mathworks.com/help/matlab/ref/matlabmacos.html>`_, and `Linux <https://uk.mathworks.com/help/matlab/ref/matlablinux.html>`_.
-  * TODO: This is currently tested only on Windows
+* Note: use of the `compile_mtex` executable requires that the Matlab Compiler add-on is installed, which can be performed via the Add-on explorer within the Matlab GUI.
+* TODO: This is currently tested only on Windows
 
 Example environment definition - Windows
 ----------------------------------------
