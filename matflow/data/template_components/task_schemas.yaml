@@ -568,6 +568,56 @@
             - path: inputs.damask_viz
               condition: { value.not_equal_to: null }
 
+- objective: simulate_VE_loading
+  implementation: damask_HC # high concurrency
+  inputs:
+    - parameter: volume_element
+    - parameter: load_case
+    - parameter: homogenization
+    - parameter: damask_phases
+    - parameter: damask_post_processing
+    - parameter: VE_response_data
+    - parameter: damask_viz
+      default_value: null
+    - parameter: single_crystal_parameters
+      default_value: null
+    - parameter: damask_solver
+      default_value: null
+    - parameter: damask_numerics
+      default_value: null
+  outputs:
+    - parameter: VE_response
+  actions:
+    - environments:
+        - scope:
+            type: processing
+          environment: damask_parse_env
+        - scope:
+            type: main
+          environment: damask_env
+      input_file_generators:
+        - input_file: damask_geom_file # this actually writes all input files
+          from_inputs:
+            - volume_element
+            - load_case
+            - damask_solver
+            - homogenization
+            - damask_phases
+            - single_crystal_parameters
+            - damask_numerics
+          script: <<script:damask/high_concurrency/write_input_files.py>>
+      abortable: true
+      commands:
+        - command: <<executable:damask_grid>> --load load.yaml --geom geom.vti
+          stdout: stdout.log
+          stderr: stderr.log
+      output_file_parsers:
+        VE_response: # this generates VTK files as well if requested
+          from_files: [damask_hdf5_file]
+          save_files: false
+          script: <<script:damask/high_concurrency/process_HDF5.py>>
+          inputs: [damask_post_processing, VE_response_data, damask_viz]
+
 - objective: read_tensile_test
   method: from_CSV
   inputs:
@@ -1122,7 +1172,6 @@
         - path: inputs.compile
           condition:
             value.equal_to: false
-
 
 - objective: sample_orientations
   method: from_CRC_file

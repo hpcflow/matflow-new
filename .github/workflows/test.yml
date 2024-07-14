@@ -39,7 +39,7 @@ on:
         description: "CLI args to pass verbatim to pytest (integration tests)."
         required: false
         type: string
-        default: ""         
+        default: ""
   pull_request:
     types: [opened, edited, synchronize]
     branches: [main, develop] # have to manually change these
@@ -137,6 +137,9 @@ jobs:
   test-units-CentOS:
     needs: pre-commit
     runs-on: ubuntu-latest
+    env:
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "true"
+      ACTIONS_RUNNER_FORCE_ACTIONS_NODE_VERSION: node16
     if: github.event_name == 'pull_request' || github.event.inputs.unit_tests == 'true'
     container:
       image: ghcr.io/hpcflow/centos7-poetry:latest
@@ -223,6 +226,9 @@ jobs:
   test-integration-CentOS:
     needs: pre-commit
     runs-on: ubuntu-latest
+    env:
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "true"
+      ACTIONS_RUNNER_FORCE_ACTIONS_NODE_VERSION: node16
     if: github.event_name == 'pull_request' || github.event.inputs.integration_tests == 'true'
     container:
       image: ghcr.io/hpcflow/centos7-poetry:latest
