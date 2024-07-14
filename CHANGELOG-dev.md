@@ -1,4 +1,22 @@
 
+<a name="v0.3.0a129"></a>
+## [v0.3.0a129](https://github.com/hpcflow/matflow-new/compare/v0.3.0a128...v0.3.0a129) - 2024.07.14
+
+### ✨ Features
+
+* bump hpcflow version
+* add a task schema for damask simulation that uses fewer parameters (and so files)
+
+### 🐛 Bug Fixes
+
+* update GHA workflows
+* update GHA workflows
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a128"></a>
 ## [v0.3.0a128](https://github.com/hpcflow/matflow-new/compare/v0.3.0a127...v0.3.0a128) - 2024.07.01
 
