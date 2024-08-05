@@ -50,6 +50,7 @@ template_components:
         - parameter: num_chains
         - parameter: num_failed
         - parameter: pf
+        - parameter: is_finished
       actions:
         - script: <<script:uq/collate_results.py>>
           script_data_in:
@@ -125,7 +126,15 @@ loops:
     num_iterations: 9 # num_states - 1: (1 / p_0) - 1
   - name: levels # [outer loop]
     tasks: [2, 3, 4, 5, 6]
-    num_iterations: 10
+    num_iterations: 15
+    termination_task: 2
+    termination:
+      path: outputs.is_finished
+      condition: { value.equal_to: true }
+
+resources:
+  any:
+    combine_scripts: true
 
 tasks:
   - schema: sample_direct_MC
