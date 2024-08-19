@@ -15,13 +15,15 @@ template_components:
                 type: any
               environment: python_env
 
-    - objective: system_analysis
+    - objective: system_analysis_toy_model
       inputs:
         - parameter: x
+        - parameter: target_pf
+        - parameter: dimension
       outputs:
         - parameter: g
       actions:
-        - script: <<script:uq/system_analysis.py>>
+        - script: <<script:uq/system_analysis_toy_model.py>>
           script_data_in: direct
           script_data_out: direct
           script_exe: python_script
@@ -49,6 +51,7 @@ template_components:
         - parameter: threshold
         - parameter: num_chains
         - parameter: num_failed
+        - parameter: level_pf
         - parameter: pf
         - parameter: is_finished
       actions:
@@ -141,7 +144,10 @@ tasks:
     inputs:
       dimension: 2
     repeats: 100 # num_samples
-  - schema: system_analysis
+  - schema: system_analysis_toy_model
+    inputs:
+      dimension: 2
+      target_pf: 1.0e-4
     groups:
       - name: all
   - schema: collate_results # [outer loop]
@@ -155,7 +161,10 @@ tasks:
           stop: 10 # num_chains: num_samples * p_0
           step: 1
   - schema: generate_next_state # [inner loop]
-  - schema: system_analysis # [inner loop]
+  - schema: system_analysis_toy_model # [inner loop]
+    inputs:
+      dimension: 2
+      target_pf: 1.0e-4
   - schema: increment_chain # [inner loop]
     groups:
       - name: all
