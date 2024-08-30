@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "matflow-new"
-version = "0.3.0a125"
+version = "0.3.0a129"
 description = "Computational workflows for materials science"
 authors = ["aplowman <adam.plowman@manchester.ac.uk>"]
 license = "MIT"
@@ -14,7 +14,7 @@ exclude = ["matflow/data/demo_data"]
 python = ">=3.8,<3.13"
 pytest = {version = "^7.2.0", optional = true}
 matplotlib = "^3.7"
-hpcflow-new2 = "^0.2.0a176"
+hpcflow-new2 = "^0.2.0a178"
 
 [tool.poetry.group.dev.dependencies]
 pylint = "^2.12.2"
@@ -30,6 +30,10 @@ sphinx-copybutton = "^0.5.0"
 sphinx-design = "^0.4.1"
 sphinx-togglebutton = "^0.3.2"
 pydata-sphinx-theme = "^0.13.3"
+myst-nb = [
+    {version = "0.17.2", python = "<3.9"},
+    {version = "1.1.1", python = ">=3.9"}
+]
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.2.0"
@@ -38,7 +42,7 @@ papermill = "^2.5.0"
 ipykernel = "^6.25.1"
 
 [tool.poetry.group.pyinstaller.dependencies]
-pyinstaller = "^5.13.0"
+pyinstaller = "^6.8.0"
 
 [tool.poetry.extras]
 test = ["pytest"]
@@ -51,7 +55,7 @@ hook-dirs = "matflow.__pyinstaller:get_hook_dirs"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.3.0a125"
+version = "0.3.0a129"
 tag_format = "v$version"
 version_files = [ 
     "pyproject.toml:version",
