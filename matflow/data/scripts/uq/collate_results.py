@@ -1,6 +1,38 @@
 import numpy as np
 
 
+def estimate_cov(indicator, p_i: float) -> float:
+    """Estimate the coefficient of variation at a given conditional level of the subset
+    simulation."""
+
+    num_chains, num_states = indicator.shape
+    N = num_chains * num_states  # samples per level
+
+    # covariance sequence (estimated), Eq. 29
+    r = np.zeros(num_states - 1)
+    for k in range(num_states - 1):
+        r_k = 0
+        for l in range(num_states - (k + 1)):
+            i_1 = indicator[:, l]
+            i_2 = indicator[:, l + k + 1]
+            r_k_i = np.dot(i_1, i_2)
+            r_k += r_k_i
+        r[k] = (r_k / (N - (k + 1) * num_chains)) - p_i**2
+
+    r_0 = np.sum(indicator**2) / N - p_i**2  # autocovariance at lag zero (exact)
+    r_0 = p_i * (1 - p_i)
+
+    rho = r / r_0
+
+    gamma = 2 * sum(
+        (1 - (k + 1) * num_chains / N) * rho[k] for k in range(num_states - 1)
+    )
+
+    delta = np.sqrt((1 - p_i) / (p_i * N) * (1 + gamma))
+
+    return delta
+
+
 def collate_results(g, x, p_0, all_g, all_x):
 
     # all iterations of g are passed just to get the level index:
@@ -21,6 +53,7 @@ def collate_results(g, x, p_0, all_g, all_x):
 
     num_failed = int(np.sum(g > 0))
     num_chains = int(len(g) * p_0)
+    num_states = int(num_samples / num_chains)
 
     # sort responses
     srt_idx = np.argsort(g)[::-1]  # sort by closest-to-failure first
@@ -40,6 +73,16 @@ def collate_results(g, x, p_0, all_g, all_x):
 
     pf = p_0**level_idx * num_failed / num_samples
 
+    if all_g:
+        # from multiple Markov chains:
+        indicator = np.reshape(
+            g > np.minimum(threshold, 0), (num_chains, num_states)
+        ).astype(int)
+        level_cov = estimate_cov(indicator, level_pf)
+    else:
+        # from initial direct Monte Carlo samples:
+        level_cov = np.sqrt((1 - level_pf) / (num_samples * level_pf))
+
     return {
         "chain_seeds": chain_seeds,
         "chain_g": chain_g,
@@ -47,6 +90,7 @@ def collate_results(g, x, p_0, all_g, all_x):
         "num_chains": num_chains,
         "num_failed": num_failed,
         "level_pf": level_pf,
+        "level_cov": level_cov,
         "pf": pf,
         "is_finished": is_finished,
     }

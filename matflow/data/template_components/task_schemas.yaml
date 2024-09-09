@@ -505,11 +505,14 @@
       default_value: null
     - parameter: damask_numerics
       default_value: null
+    - parameter: calculate_yield_stress
+      default_value: null
   outputs:
     - parameter: damask_log
     - parameter: damask_post_processing_result
     - parameter: VE_response
     - parameter: damask_viz_result
+    - parameter: yield_stress
   actions:
     - environments:
         - scope:
@@ -566,6 +569,14 @@
           script: <<script:damask/viz_damask_HDF5.py>>
           rules:
             - path: inputs.damask_viz
+              condition: { value.not_equal_to: null }
+        yield_stress:
+          from_files: [damask_hdf5_file]
+          inputs: [calculate_yield_stress]
+          outputs: [VE_response]
+          script: <<script:damask/get_yield_stress.py>>
+          rules:
+            - path: inputs.calculate_yield_stress
               condition: { value.not_equal_to: null }
 
 - objective: read_tensile_test
@@ -1122,7 +1133,6 @@
         - path: inputs.compile
           condition:
             value.equal_to: false
-
 
 - objective: sample_orientations
   method: from_CRC_file

@@ -15,23 +15,6 @@ template_components:
                 type: any
               environment: python_env
 
-    - objective: system_analysis_toy_model
-      inputs:
-        - parameter: x
-        - parameter: target_pf
-        - parameter: dimension
-      outputs:
-        - parameter: g
-      actions:
-        - script: <<script:uq/system_analysis_toy_model.py>>
-          script_data_in: direct
-          script_data_out: direct
-          script_exe: python_script
-          environments:
-            - scope:
-                type: any
-              environment: python_env
-
     - objective: collate_results
       inputs:
         - parameter: g
@@ -52,6 +35,7 @@ template_components:
         - parameter: num_chains
         - parameter: num_failed
         - parameter: level_pf
+        - parameter: level_cov
         - parameter: pf
         - parameter: is_finished
       actions:
@@ -123,13 +107,63 @@ template_components:
                 type: any
               environment: python_env
 
+    - objective: dummy_pre_processor
+      inputs:
+        - parameter: x
+      outputs:
+        - parameter: "y"
+      actions:
+        - script: <<script:uq/dummy_pre_processor.py>>
+          script_data_in: direct
+          script_data_out: direct
+          script_exe: python_script
+          environments:
+            - scope:
+                type: any
+              environment: python_env
+
+    - objective: model_sum_x
+      inputs:
+        - parameter: "y"
+      outputs:
+        - parameter: sum_y
+      actions:
+        - commands:
+            - command: Write-Output $(<<join[delim=" + "](parameter:y)>>)
+              stdout: <<float(parameter:sum_y)>>
+
+    - objective: evaluate_limit_state_normal_sum
+      inputs:
+        - parameter: x # required to ensure group defined on input x (not needed by this task)
+        - parameter: sum_y
+        - parameter: target_pf
+        - parameter: dimension
+      outputs:
+        - parameter: g
+      actions:
+        - script: <<script:uq/evaluate_limit_state_normal_sum.py>>
+          script_data_in: direct
+          script_data_out: direct
+          script_exe: python_script
+          environments:
+            - scope:
+                type: any
+              environment: python_env
+
+  meta_task_schemas:
+    - objective: system_analysis
+      inputs:
+        - parameter: x
+      outputs:
+        - parameter: g
+
 loops:
   - name: markov_chain_state # [inner loop]
     tasks: [4, 5, 6]
     num_iterations: 9 # num_states - 1: (1 / p_0) - 1
   - name: levels # [outer loop]
     tasks: [2, 3, 4, 5, 6]
-    num_iterations: 15
+    num_iterations: 8
     termination_task: 2
     termination:
       path: outputs.is_finished
@@ -138,18 +172,28 @@ loops:
 resources:
   any:
     combine_scripts: true
+    # write_app_logs: true
+
+# config:
+#   log_file_level: debug
+
+meta_tasks:
+  system_analysis:
+    - schema: dummy_pre_processor # x -> y # python script
+    - schema: model_sum_x # y -> sum_y via shell
+    - schema: evaluate_limit_state_normal_sum # sum_y -> g # python script
+      inputs:
+        dimension: 200
+        target_pf: 1e-4
+      groups:
+        - name: all
 
 tasks:
   - schema: sample_direct_MC
     inputs:
-      dimension: 2
+      dimension: 200
     repeats: 100 # num_samples
-  - schema: system_analysis_toy_model
-    inputs:
-      dimension: 2
-      target_pf: 1.0e-4
-    groups:
-      - name: all
+  - schema: system_analysis
   - schema: collate_results # [outer loop]
     inputs:
       p_0: 0.1
@@ -161,10 +205,7 @@ tasks:
           stop: 10 # num_chains: num_samples * p_0
           step: 1
   - schema: generate_next_state # [inner loop]
-  - schema: system_analysis_toy_model # [inner loop]
-    inputs:
-      dimension: 2
-      target_pf: 1.0e-4
+  - schema: system_analysis # [inner loop]
   - schema: increment_chain # [inner loop]
     groups:
       - name: all

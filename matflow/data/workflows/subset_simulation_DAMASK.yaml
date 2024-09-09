@@ -1,0 +1,281 @@
+template_components:
+  task_schemas:
+    - objective: sample_direct_MC
+      inputs:
+        - parameter: dimension
+      outputs:
+        - parameter: x
+      actions:
+        - script: <<script:uq/sample_direct_MC.py>>
+          script_data_in: direct
+          script_data_out: direct
+          script_exe: python_script
+          environments:
+            - scope:
+                type: any
+              environment: python_env
+
+    - objective: evaluate_yield_stress_limit_state
+      inputs:
+        - parameter: x # required to ensure group defined on input x (not needed by this task)
+        - parameter: threshold
+        - parameter: yield_stress
+      outputs:
+        - parameter: g
+      actions:
+        - script: <<script:uq/evaluate_yield_stress_limit_state.py>>
+          script_data_in: direct
+          script_data_out: direct
+          script_exe: python_script
+          environments:
+            - scope:
+                type: any
+              environment: python_env
+
+    - objective: collate_results
+      inputs:
+        - parameter: g
+          group: all
+        - parameter: x
+          group: all
+        - parameter: all_g
+          group: all
+          default_value: null
+        - parameter: all_x
+          group: all
+          default_value: null
+        - parameter: p_0
+      outputs:
+        - parameter: chain_seeds
+        - parameter: chain_g
+        - parameter: threshold
+        - parameter: num_chains
+        - parameter: num_failed
+        - parameter: level_pf
+        - parameter: level_cov
+        - parameter: pf
+        - parameter: is_finished
+      actions:
+        - script: <<script:uq/collate_results.py>>
+          script_data_in:
+            g: { format: direct, all_iterations: true }
+            "*": direct
+          script_data_out: direct
+          script_exe: python_script
+          environments:
+            - scope:
+                type: any
+              environment: python_env
+
+    - objective: initialise_markov_chains
+      inputs:
+        - parameter: chain_index
+        - parameter: chain_seeds
+        - parameter: chain_g
+      outputs:
+        - parameter: x
+        - parameter: g
+        - parameter: all_x
+        - parameter: all_g
+      actions:
+        - script: <<script:uq/initialise_markov_chains.py>>
+          script_data_in: direct
+          script_data_out: direct
+          script_exe: python_script
+          environments:
+            - scope:
+                type: any
+              environment: python_env
+
+    - objective: generate_next_state
+      inputs:
+        - parameter: x
+      outputs:
+        - parameter: x
+      actions:
+        - script: <<script:uq/generate_next_state.py>>
+          script_data_in: direct
+          script_data_out: direct
+          script_exe: python_script
+          environments:
+            - scope:
+                type: any
+              environment: python_env
+
+    - objective: increment_chain
+      inputs:
+        - parameter: x
+        - parameter: g
+        - parameter: all_x
+        - parameter: all_g
+        - parameter: threshold
+      outputs:
+        - parameter: x
+        - parameter: g
+        - parameter: all_x
+        - parameter: all_g
+      actions:
+        - script: <<script:uq/increment_chain.py>>
+          script_data_in: direct
+          script_data_out: direct
+          script_exe: python_script
+          environments:
+            - scope:
+                type: any
+              environment: python_env
+
+    - objective: generate_volume_element
+      method: from_voronoi_random_variates
+      inputs:
+        - parameter: x # random variates
+        - parameter: VE_grid_size
+        - parameter: VE_size
+        - parameter: phase_label
+        - parameter: homog_label
+          default_value: SX
+        - parameter: scale_morphology
+          default_value: null
+        - parameter: scale_update_size
+          default_value: true
+      outputs:
+        - parameter: volume_element
+      actions:
+        - script: <<script:damask/generate_volume_element_voronoi_variates.py>>
+          script_data_in: direct
+          script_data_out: direct
+          script_exe: python_script
+          environments:
+            - scope:
+                type: any
+              environment: damask_parse_env
+
+  meta_task_schemas:
+    - objective: system_analysis
+      inputs:
+        - parameter: x
+      outputs:
+        - parameter: g
+
+loops:
+  - name: markov_chain_state # [inner loop]
+    tasks: [4, 5, 6]
+    num_iterations: 9 # num_states - 1: (1 / p_0) - 1
+  - name: levels # [outer loop]
+    tasks: [2, 3, 4, 5, 6]
+    num_iterations: 2
+    termination_task: 2
+    termination:
+      path: outputs.is_finished
+      condition: { value.equal_to: true }
+
+resources:
+  any:
+    combine_scripts: true
+
+meta_tasks:
+  system_analysis:
+    - schema: generate_volume_element_from_voronoi_random_variates
+      inputs:
+        VE_grid_size: [8, 8, 8]
+        VE_size: [1, 1, 1]
+        phase_label: Al
+    - schema: simulate_VE_loading_damask
+      inputs:
+        load_case::uniaxial:
+          total_time: 100
+          num_increments: 200
+          direction: x
+          target_def_grad_rate: 1.0e-3
+          dump_frequency: 1
+        homogenization:
+          SX:
+            mechanical: { type: "pass" }
+            N_constituents: 1
+        damask_phases:
+          Al:
+            lattice: cF
+            mechanical:
+              output: [F, P, F_e, F_p, L_p, O]
+              elastic:
+                type: Hooke
+                C_11: 106750000000
+                C_12: 60410000000
+                C_44: 28340000000
+              plastic:
+                type: phenopowerlaw
+                N_sl: [12]
+                a_sl: 2.25
+                atol_xi: 1
+                dot_gamma_0_sl: 0.001
+                h_0_sl-sl: 75.0e+6
+                h_sl-sl: [1, 1, 1.4, 1.4, 1.4, 1.4, 1.4]
+                n_sl: 20
+                output: [xi_sl]
+                xi_0_sl: [31.0e+6]
+                xi_inf_sl: [63.0e+6]
+        damask_post_processing:
+          - name: add_stress_Cauchy
+            args: { P: P, F: F }
+            opts: { add_Mises: true }
+          - name: add_strain
+            args: { F: F, t: V, m: 0 }
+            opts: { add_Mises: true }
+          - name: add_strain
+            args: { F: F_p, t: V, m: 0 }
+            opts: { add_Mises: true }
+          - name: add_IPF_color
+            args: { l: [0, 0, 1] }
+        VE_response_data:
+          phase_data:
+            - field_name: sigma_vM
+              phase_name: Al
+              out_name: vol_avg_equivalent_stress
+              transforms: [{ mean_along_axes: 1 }]
+            - field_name: epsilon_V^0(F)_vM
+              phase_name: Al
+              out_name: vol_avg_equivalent_strain
+              transforms: [{ mean_along_axes: 1 }]
+            - field_name: epsilon_V^0(F_p)_vM
+              phase_name: Al
+              out_name: vol_avg_equivalent_plastic_strain
+              transforms: [{ mean_along_axes: 1 }]
+          field_data:
+            - field_name: phase
+            - field_name: O
+          grain_data:
+            - field_name: O
+              increments: [{ values: [0, -1] }]
+        damask_viz:
+          fields:
+            [F, F_p, P, sigma_vM, epsilon_V^0(F_p)_vM, IPFcolor_(0 0 1), phase]
+          increments:
+            - step: 20
+        calculate_yield_stress:
+          yield_point: 0.002
+    - schema: evaluate_yield_stress_limit_state
+      inputs:
+        threshold: 70 # MPa
+      groups:
+        - name: all
+
+tasks:
+  - schema: sample_direct_MC
+    inputs:
+      dimension: 120 # 20 grains * (3 seed point dimensions + 3 orientation dimensions)
+    repeats: 100 # num_samples
+  - schema: system_analysis
+  - schema: collate_results # [outer loop]
+    inputs:
+      p_0: 0.1
+  - schema: initialise_markov_chains # [outer loop]
+    sequences:
+      - path: inputs.chain_index
+        values::from_range:
+          start: 0
+          stop: 10 # num_chains: num_samples * p_0
+          step: 1
+  - schema: generate_next_state # [inner loop]
+  - schema: system_analysis # [inner loop]
+  - schema: increment_chain # [inner loop]
+    groups:
+      - name: all
