@@ -572,6 +572,7 @@
               condition: { value.not_equal_to: null }
         yield_stress:
           from_files: [damask_hdf5_file]
+          save_files: false
           inputs: [calculate_yield_stress]
           outputs: [VE_response]
           script: <<script:damask/get_yield_stress.py>>
