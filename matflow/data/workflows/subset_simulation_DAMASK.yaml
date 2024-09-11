@@ -13,12 +13,12 @@ template_components:
           environments:
             - scope:
                 type: any
-              environment: python_env
+              environment: damask_parse_env
 
     - objective: evaluate_yield_stress_limit_state
       inputs:
         - parameter: x # required to ensure group defined on input x (not needed by this task)
-        - parameter: threshold
+        - parameter: threshold_yield_stress
         - parameter: yield_stress
       outputs:
         - parameter: g
@@ -30,7 +30,7 @@ template_components:
           environments:
             - scope:
                 type: any
-              environment: python_env
+              environment: damask_parse_env
 
     - objective: collate_results
       inputs:
@@ -65,7 +65,7 @@ template_components:
           environments:
             - scope:
                 type: any
-              environment: python_env
+              environment: damask_parse_env
 
     - objective: initialise_markov_chains
       inputs:
@@ -85,7 +85,7 @@ template_components:
           environments:
             - scope:
                 type: any
-              environment: python_env
+              environment: damask_parse_env
 
     - objective: generate_next_state
       inputs:
@@ -100,7 +100,7 @@ template_components:
           environments:
             - scope:
                 type: any
-              environment: python_env
+              environment: damask_parse_env
 
     - objective: increment_chain
       inputs:
@@ -122,7 +122,7 @@ template_components:
           environments:
             - scope:
                 type: any
-              environment: python_env
+              environment: damask_parse_env
 
     - objective: generate_volume_element
       method: from_voronoi_random_variates
@@ -176,14 +176,19 @@ meta_tasks:
   system_analysis:
     - schema: generate_volume_element_from_voronoi_random_variates
       inputs:
-        VE_grid_size: [8, 8, 8]
+        VE_grid_size: [32, 32, 32]
         VE_size: [1, 1, 1]
         phase_label: Al
     - schema: simulate_VE_loading_damask
+      resources:
+        any:
+          combine_scripts: false
+        main:
+          num_cores: 4
       inputs:
         load_case::uniaxial:
-          total_time: 100
-          num_increments: 200
+          total_time: 5
+          num_increments: 20
           direction: x
           target_def_grad_rate: 1.0e-3
           dump_frequency: 1
@@ -195,7 +200,7 @@ meta_tasks:
           Al:
             lattice: cF
             mechanical:
-              output: [F, P, F_e, F_p, L_p, O]
+              output: [F, P, F_p]
               elastic:
                 type: Hooke
                 C_11: 106750000000
@@ -218,43 +223,23 @@ meta_tasks:
             args: { P: P, F: F }
             opts: { add_Mises: true }
           - name: add_strain
-            args: { F: F, t: V, m: 0 }
-            opts: { add_Mises: true }
-          - name: add_strain
             args: { F: F_p, t: V, m: 0 }
             opts: { add_Mises: true }
-          - name: add_IPF_color
-            args: { l: [0, 0, 1] }
         VE_response_data:
           phase_data:
             - field_name: sigma_vM
               phase_name: Al
               out_name: vol_avg_equivalent_stress
               transforms: [{ mean_along_axes: 1 }]
-            - field_name: epsilon_V^0(F)_vM
-              phase_name: Al
-              out_name: vol_avg_equivalent_strain
-              transforms: [{ mean_along_axes: 1 }]
             - field_name: epsilon_V^0(F_p)_vM
               phase_name: Al
               out_name: vol_avg_equivalent_plastic_strain
               transforms: [{ mean_along_axes: 1 }]
-          field_data:
-            - field_name: phase
-            - field_name: O
-          grain_data:
-            - field_name: O
-              increments: [{ values: [0, -1] }]
-        damask_viz:
-          fields:
-            [F, F_p, P, sigma_vM, epsilon_V^0(F_p)_vM, IPFcolor_(0 0 1), phase]
-          increments:
-            - step: 20
         calculate_yield_stress:
           yield_point: 0.002
     - schema: evaluate_yield_stress_limit_state
       inputs:
-        threshold: 70 # MPa
+        threshold_yield_stress: 75 # MPa
       groups:
         - name: all
 
