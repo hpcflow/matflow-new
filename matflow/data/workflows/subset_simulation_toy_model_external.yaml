@@ -27,6 +27,9 @@ template_components:
         - parameter: all_x
           group: all
           default_value: null
+        - parameter: all_accept
+          group: all
+          default_value: null
         - parameter: p_0
       outputs:
         - parameter: chain_seeds
@@ -38,6 +41,7 @@ template_components:
         - parameter: level_cov
         - parameter: pf
         - parameter: is_finished
+        - parameter: accept_rate
       actions:
         - script: <<script:uq/collate_results.py>>
           script_data_in:
@@ -60,6 +64,7 @@ template_components:
         - parameter: g
         - parameter: all_x
         - parameter: all_g
+        - parameter: all_accept
       actions:
         - script: <<script:uq/initialise_markov_chains.py>>
           script_data_in: direct
@@ -73,6 +78,7 @@ template_components:
     - objective: generate_next_state
       inputs:
         - parameter: x
+        - parameter: prop_std
       outputs:
         - parameter: x
       actions:
@@ -91,12 +97,14 @@ template_components:
         - parameter: g
         - parameter: all_x
         - parameter: all_g
+        - parameter: all_accept
         - parameter: threshold
       outputs:
         - parameter: x
         - parameter: g
         - parameter: all_x
         - parameter: all_g
+        - parameter: all_accept
       actions:
         - script: <<script:uq/increment_chain.py>>
           script_data_in: direct
@@ -128,9 +136,18 @@ template_components:
       outputs:
         - parameter: sum_y
       actions:
-        - commands:
-            - command: Write-Output $(<<join[delim=" + "](parameter:y)>>)
-              stdout: <<float(parameter:sum_y)>>
+        - rules:
+            - path: resources.os_name
+              condition: { value.equal_to: nt }
+          commands:
+            - command: 'Write-Output $(<<join[delim=" + "](parameter:y)>>)'
+              stdout: "<<float(parameter:sum_y)>>"
+        - rules:
+            - path: resources.os_name
+              condition: { value.equal_to: posix }
+          commands:
+            - command: echo 'print(<<join[delim=" + "](parameter:y)>>)' | python
+              stdout: "<<float(parameter:sum_y)>>"
 
     - objective: evaluate_limit_state_normal_sum
       inputs:
@@ -205,6 +222,8 @@ tasks:
           stop: 10 # num_chains: num_samples * p_0
           step: 1
   - schema: generate_next_state # [inner loop]
+    inputs:
+      prop_std: 0.5
   - schema: system_analysis # [inner loop]
   - schema: increment_chain # [inner loop]
     groups:

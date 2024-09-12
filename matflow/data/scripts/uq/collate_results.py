@@ -33,7 +33,7 @@ def estimate_cov(indicator, p_i: float) -> float:
     return delta
 
 
-def collate_results(g, x, p_0, all_g, all_x):
+def collate_results(g, x, p_0, all_g, all_x, all_accept):
 
     # all iterations of g are passed just to get the level index:
     # TODO: in future set and read loop_idx from environment variable?
@@ -45,11 +45,14 @@ def collate_results(g, x, p_0, all_g, all_x):
     if all_g:
         # from multiple Markov chains:
         g = np.concatenate([i[:] for i in all_g])
+        accept = np.vstack([i[:] for i in all_accept])
         x = np.vstack([i[:] for i in all_x])
+        accept_rate = np.mean(accept)
     else:
         # from initial direct Monte Carlo samples:
         g = np.array(g)
         x = np.vstack([i[:] for i in x])
+        accept_rate = None
 
     num_failed = int(np.sum(g > 0))
     num_chains = int(len(g) * p_0)
@@ -93,4 +96,5 @@ def collate_results(g, x, p_0, all_g, all_x):
         "level_cov": level_cov,
         "pf": pf,
         "is_finished": is_finished,
+        "accept_rate": accept_rate,
     }

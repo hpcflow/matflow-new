@@ -17,7 +17,7 @@ def set_up_logger():
     return logger
 
 
-def generate_next_state(x):
+def generate_next_state(x, prop_std):
     """Generate the next candidate state in a modified Metropolis algorithm.
 
     Parameters
@@ -38,7 +38,7 @@ def generate_next_state(x):
     rng = np.random.default_rng()
     xi = np.empty(dim)
 
-    proposal = norm(loc=current_state)
+    proposal = norm(loc=current_state, scale=prop_std)
     xi_hat = proposal.rvs()
     accept_ratios = np.divide(*norm.pdf([xi_hat, current_state]))
     accept_idx = rng.random(len(accept_ratios)) < np.minimum(1, accept_ratios)
