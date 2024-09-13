@@ -38,3 +38,6 @@
 - label: dream_3D_XDMF_file
   name:
     name: pipeline.xdmf
+- label: moose_input_deck
+  name:
+    name: input.i
