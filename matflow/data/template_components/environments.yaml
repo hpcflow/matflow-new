@@ -4,7 +4,7 @@
   executables:
     - label: python_script
       instances:
-        - command: python <<script_path>> <<args>>
+        - command: python "<<script_path>>" <<args>>
           num_cores: 1
           parallel_mode: null
 

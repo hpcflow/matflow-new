@@ -179,7 +179,8 @@
     - parameter: path
       default_value: geom.vti
   actions:
-    - script: <<script:damask/write_geom.py>>
+    - requires_dir: true
+      script: <<script:damask/write_geom.py>>
       script_data_in: direct
       script_exe: python_script
       save_files: [damask_geom_file]
@@ -206,7 +207,8 @@
   outputs:
     - parameter: orientations
   actions:
-    - script: <<script:mtex/sample_texture_CTF.m>>
+    - requires_dir: true
+      script: <<script:mtex/sample_texture_CTF.m>>
       script_exe: compile_mtex
       environments:
         - scope:
@@ -217,7 +219,8 @@
           condition:
             value.equal_to: true
 
-    - script: sample_texture_CTF
+    - requires_dir: true
+      script: sample_texture_CTF
       script_data_in: json
       script_data_out: hdf5
       script_exe: run_compiled_mtex
@@ -230,7 +233,8 @@
           condition:
             value.equal_to: true
 
-    - script: <<script:mtex/sample_texture_CTF.m>>
+    - requires_dir: true
+      script: <<script:mtex/sample_texture_CTF.m>>
       script_data_in: json
       script_data_out: hdf5
       script_exe: run_mtex
@@ -261,7 +265,8 @@
   outputs:
     - parameter: orientations
   actions:
-    - script: <<script:mtex/sample_texture_CRC.m>>
+    - requires_dir: true
+      script: <<script:mtex/sample_texture_CRC.m>>
       script_exe: compile_mtex
       environments:
         - scope:
@@ -272,7 +277,8 @@
           condition:
             value.equal_to: true
 
-    - script: sample_texture_CRC
+    - requires_dir: true
+      script: sample_texture_CRC
       script_data_in: json
       script_data_out: hdf5
       script_exe: run_compiled_mtex
@@ -285,7 +291,8 @@
           condition:
             value.equal_to: true
 
-    - script: <<script:mtex/sample_texture_CRC.m>>
+    - requires_dir: true
+      script: <<script:mtex/sample_texture_CRC.m>>
       script_data_in: json
       script_data_out: hdf5
       script_exe: run_mtex
@@ -310,7 +317,8 @@
   outputs:
     - parameter: orientations
   actions:
-    - script: <<script:mtex/sample_texture_ODF_mat.m>>
+    - requires_dir: true
+      script: <<script:mtex/sample_texture_ODF_mat.m>>
       script_exe: compile_mtex
       environments:
         - scope:
@@ -321,7 +329,8 @@
           condition:
             value.equal_to: true
 
-    - script: sample_texture_ODF_mat
+    - requires_dir: true
+      script: sample_texture_ODF_mat
       script_data_in: json
       script_data_out: hdf5
       script_exe: run_compiled_mtex
@@ -334,7 +343,8 @@
           condition:
             value.equal_to: true
 
-    - script: <<script:mtex/sample_texture_ODF_mat.m>>
+    - requires_dir: true
+      script: <<script:mtex/sample_texture_ODF_mat.m>>
       script_data_in: json
       script_data_out: hdf5
       script_exe: run_mtex
@@ -361,7 +371,8 @@
   outputs:
     - parameter: orientations
   actions:
-    - script: <<script:mtex/sample_texture_model_ODF.m>>
+    - requires_dir: true
+      script: <<script:mtex/sample_texture_model_ODF.m>>
       script_exe: compile_mtex
       environments:
         - scope:
@@ -372,7 +383,8 @@
           condition:
             value.equal_to: true
 
-    - script: sample_texture_model_ODF
+    - requires_dir: true
+      script: sample_texture_model_ODF
       script_data_in: json
       script_data_out: hdf5
       script_exe: run_compiled_mtex
@@ -385,7 +397,8 @@
           condition:
             value.equal_to: true
 
-    - script: <<script:mtex/sample_texture_model_ODF.m>>
+    - requires_dir: true
+      script: <<script:mtex/sample_texture_model_ODF.m>>
       script_data_in: json
       script_data_out: hdf5
       script_exe: run_mtex
@@ -413,10 +426,13 @@
       default_value: null
     - parameter: use_one_colourbar
       default_value: False
+    - parameter: plot_IPF_key
+      default_value: true
     - parameter: compile
       default_value: false
   actions:
-    - script: <<script:mtex/plot_pole_figures.m>>
+    - requires_dir: true
+      script: <<script:mtex/plot_pole_figures.m>>
       script_exe: compile_mtex
       environments:
         - scope:
@@ -427,7 +443,8 @@
           condition:
             value.equal_to: true
 
-    - script: plot_pole_figures
+    - requires_dir: true
+      script: plot_pole_figures
       script_data_in:
         orientations: hdf5
         "*": json
@@ -436,13 +453,14 @@
         - scope:
             type: any
           environment: matlab_env
-      save_files: [mtex_pole_figures, mtex_IPF_figure]
+      save_files: [mtex_pole_figures, mtex_IPF_key]
       rules:
         - path: inputs.compile
           condition:
             value.equal_to: true
 
-    - script: <<script:mtex/plot_pole_figures.m>>
+    - requires_dir: true
+      script: <<script:mtex/plot_pole_figures.m>>
       script_data_in:
         orientations: hdf5
         "*": json
@@ -451,7 +469,128 @@
         - scope:
             type: any
           environment: matlab_env
-      save_files: [mtex_pole_figures, mtex_IPF_figure]
+      save_files: [mtex_pole_figures, mtex_IPF_key]
+      rules:
+        - path: inputs.compile
+          condition:
+            value.equal_to: false
+
+- objective: visualise_orientations
+  method: inverse_pole_figure
+  implementation: mtex
+  inputs:
+    - parameter: orientations
+    - parameter: crystal_symmetry
+    - parameter: IPF_reference_directions
+      default_value: ["z"]
+    - parameter: use_contours
+      default_value: true
+    - parameter: plot_IPF_key
+      default_value: true
+    - parameter: compile
+      default_value: false
+  actions:
+    - requires_dir: true
+      script: <<script:mtex/plot_inverse_pole_figures.m>>
+      script_exe: compile_mtex
+      environments:
+        - scope:
+            type: any
+          environment: matlab_env
+      rules:
+        - path: inputs.compile
+          condition:
+            value.equal_to: true
+
+    - requires_dir: true
+      script: plot_inverse_pole_figures
+      script_data_in:
+        orientations: hdf5
+        "*": json
+      script_exe: run_compiled_mtex
+      environments:
+        - scope:
+            type: any
+          environment: matlab_env
+      save_files: [mtex_inverse_pole_figures, mtex_IPF_key]
+      rules:
+        - path: inputs.compile
+          condition:
+            value.equal_to: true
+
+    - requires_dir: true
+      script: <<script:mtex/plot_inverse_pole_figures.m>>
+      script_data_in:
+        orientations: hdf5
+        "*": json
+      script_exe: run_mtex
+      environments:
+        - scope:
+            type: any
+          environment: matlab_env
+      save_files: [mtex_inverse_pole_figures, mtex_IPF_key]
+      rules:
+        - path: inputs.compile
+          condition:
+            value.equal_to: false
+
+- objective: visualise_multi_orientations
+  # Note: this should be made redundant by some sort of built-in hpcflow functionality to
+  # source from a group (with some rules about how the parameters are merged?).
+  method: inverse_pole_figure
+  implementation: mtex
+  inputs:
+    - parameter: orientations
+      group: orientations_group # only difference from visualise_orientations above is the group defined here
+    - parameter: crystal_symmetry
+    - parameter: IPF_reference_directions
+      default_value: ["z"]
+    - parameter: use_contours
+      default_value: true
+    - parameter: plot_IPF_key
+      default_value: true
+    - parameter: compile
+      default_value: false
+  actions:
+    - requires_dir: true
+      script: <<script:mtex/plot_inverse_pole_figures.m>>
+      script_exe: compile_mtex
+      environments:
+        - scope:
+            type: any
+          environment: matlab_env
+      rules:
+        - path: inputs.compile
+          condition:
+            value.equal_to: true
+
+    - requires_dir: true
+      script: plot_inverse_pole_figures
+      script_data_in:
+        orientations: hdf5
+        "*": json
+      script_exe: run_compiled_mtex
+      environments:
+        - scope:
+            type: any
+          environment: matlab_env
+      save_files: [mtex_inverse_pole_figures, mtex_IPF_key]
+      rules:
+        - path: inputs.compile
+          condition:
+            value.equal_to: true
+
+    - requires_dir: true
+      script: <<script:mtex/plot_inverse_pole_figures.m>>
+      script_data_in:
+        orientations: hdf5
+        "*": json
+      script_exe: run_mtex
+      environments:
+        - scope:
+            type: any
+          environment: matlab_env
+      save_files: [mtex_inverse_pole_figures, mtex_IPF_key]
       rules:
         - path: inputs.compile
           condition:
@@ -1098,7 +1237,8 @@
   outputs:
     - parameter: orientations
   actions:
-    - script: <<script:mtex/sample_orientations_CTF.m>>
+    - requires_dir: true
+      script: <<script:mtex/sample_orientations_CTF.m>>
       script_exe: compile_mtex
       environments:
         - scope:
@@ -1109,7 +1249,8 @@
           condition:
             value.equal_to: true
 
-    - script: sample_orientations_CTF
+    - requires_dir: true
+      script: sample_orientations_CTF
       script_data_in: json
       script_data_out: hdf5
       script_exe: run_compiled_mtex
@@ -1122,7 +1263,8 @@
           condition:
             value.equal_to: true
 
-    - script: <<script:mtex/sample_orientations_CTF.m>>
+    - requires_dir: true
+      script: <<script:mtex/sample_orientations_CTF.m>>
       script_data_in: json
       script_data_out: hdf5
       script_exe: run_mtex
@@ -1153,7 +1295,8 @@
   outputs:
     - parameter: orientations
   actions:
-    - script: <<script:mtex/sample_orientations_CRC.m>>
+    - requires_dir: true
+      script: <<script:mtex/sample_orientations_CRC.m>>
       script_exe: compile_mtex
       environments:
         - scope:
@@ -1164,7 +1307,8 @@
           condition:
             value.equal_to: true
 
-    - script: sample_orientations_CRC
+    - requires_dir: true
+      script: sample_orientations_CRC
       script_data_in: json
       script_data_out: hdf5
       script_exe: run_compiled_mtex
@@ -1177,7 +1321,8 @@
           condition:
             value.equal_to: true
 
-    - script: <<script:mtex/sample_orientations_CRC.m>>
+    - requires_dir: true
+      script: <<script:mtex/sample_orientations_CRC.m>>
       script_data_in: json
       script_data_out: hdf5
       script_exe: run_mtex
@@ -1203,7 +1348,8 @@
   outputs:
     - parameter: orientations
   actions:
-    - script: <<script:mtex/sample_texture_random.m>>
+    - requires_dir: true
+      script: <<script:mtex/sample_texture_random.m>>
       script_exe: compile_mtex
       environments:
         - scope:
@@ -1214,7 +1360,8 @@
           condition:
             value.equal_to: true
 
-    - script: sample_texture_random
+    - requires_dir: true
+      script: sample_texture_random
       script_data_in: json
       script_data_out: hdf5
       script_exe: run_compiled_mtex
@@ -1227,7 +1374,8 @@
           condition:
             value.equal_to: true
 
-    - script: <<script:mtex/sample_texture_random.m>>
+    - requires_dir: true
+      script: <<script:mtex/sample_texture_random.m>>
       script_data_in: json
       script_data_out: hdf5
       script_exe: run_mtex
