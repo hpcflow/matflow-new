@@ -22,13 +22,13 @@ def generate_next_state(x, prop_std):
 
     Parameters
     ----------
-    MC_state
+    x
         Current state on which the candidate state will depend.
 
     Returns
     -------
     dict:
-        MC_state:
+        x:
             Generated candidate state.
     """
 

@@ -99,7 +99,7 @@ template_components:
       outputs:
         - parameter: x
       actions:
-        - script: <<script:uq/generate_next_state.py>>
+        - script: <<script:uq/generate_next_state_CS.py>>
           script_data_in: direct
           script_data_out: direct
           script_exe: python_script
