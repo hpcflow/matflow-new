@@ -1,4 +1,58 @@
 
+<a name="v0.3.0a129"></a>
+## [v0.3.0a129](https://github.com/hpcflow/matflow-new/compare/v0.3.0a128...v0.3.0a129) - 2024.07.14
+
+### ✨ Features
+
+* bump hpcflow version
+* add a task schema for damask simulation that uses fewer parameters (and so files)
+
+### 🐛 Bug Fixes
+
+* update GHA workflows
+* update GHA workflows
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a128"></a>
+## [v0.3.0a128](https://github.com/hpcflow/matflow-new/compare/v0.3.0a127...v0.3.0a128) - 2024.07.01
+
+### 🐛 Bug Fixes
+
+* bump pyinstaller, try to fix build error
+
+
+<a name="v0.3.0a127"></a>
+## [v0.3.0a127](https://github.com/hpcflow/matflow-new/compare/v0.3.0a126...v0.3.0a127) - 2024.07.01
+
+### 🐛 Bug Fixes
+
+* quaternion vector sign in MTEX scripts
+
+### 👷 Build changes
+
+* merge branch 'fix/mtex-oris' of https://github.com/hpcflow/matflow-new into fix/mtex-oris
+* change back to LF endings
+* merge develop
+* bump deps
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0a126"></a>
+## [v0.3.0a126](https://github.com/hpcflow/matflow-new/compare/v0.3.0a125...v0.3.0a126) - 2024.06.30
+
+### ✨ Features
+
+* bump hpcflow version
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a125"></a>
 ## [v0.3.0a125](https://github.com/hpcflow/matflow-new/compare/v0.3.0a124...v0.3.0a125) - 2024.05.15
 
