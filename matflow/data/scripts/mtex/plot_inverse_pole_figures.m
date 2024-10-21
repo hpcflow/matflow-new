@@ -31,6 +31,10 @@ function exitcode = plot_inverse_pole_figures(inputs_HDF5_path, inputs_JSON_path
     end
     
     data = h5read(inputs_HDF5_path, '/orientations/data');
+
+    % TODO: why?
+    data(2:end, :) = data(2:end, :) * -1;
+
     quat_data = quaternion(data);
     
     if strcmp(oriQuatOrder, 'vector-scalar')
