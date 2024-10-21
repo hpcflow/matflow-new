@@ -3,7 +3,13 @@ from pathlib import Path
 import numpy as np
 
 
-def get_yield_stress(damask_hdf5_file, calculate_yield_stress, VE_response):
+def get_yield_stress(
+    damask_hdf5_file, calculate_yield_stress, VE_response, remove_damask_hdf5
+):
+
+    # remove damask HDF5 file (TODO: needs to be a better way to do this in hpcflow)
+    if remove_damask_hdf5:
+        damask_hdf5_file.unlink()
 
     yield_point = calculate_yield_stress["yield_point"]
 
