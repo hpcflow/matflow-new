@@ -255,6 +255,7 @@ meta_tasks:
               transforms: [{ mean_along_axes: 1 }]
         calculate_yield_stress:
           yield_point: 0.002
+        remove_damask_hdf5: true
     - schema: evaluate_yield_stress_limit_state
       inputs:
         threshold_yield_stress: 75 # MPa
