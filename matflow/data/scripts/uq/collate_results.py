@@ -37,7 +37,10 @@ def collate_results(g, x, p_0, all_g, all_x, all_accept):
 
     # all iterations of g are passed just to get the level index:
     # TODO: in future set and read loop_idx from environment variable?
-    level_idx = sorted(g.items(), key=lambda x: x[0])[-1][1]["loop_idx"]["levels"]
+
+    level_idx = sorted(g.items(), key=lambda x: int(x[0].split("_")[1]))[-1][1][
+        "loop_idx"
+    ]["levels"]
 
     g = g["iteration_0"]["value"]
     num_samples = len(g)
