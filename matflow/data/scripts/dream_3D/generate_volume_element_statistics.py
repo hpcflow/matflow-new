@@ -22,6 +22,10 @@ def generate_volume_element_statistics(
 ):
     """'path' is the file path for 'pipeline.json'"""
 
+    if orientations is not None:
+        # convert to old-matflow format:
+        orientations = convert_orientations_to_old_matflow_format(orientations)
+
     if resolution is None:
         resolution = [i / j for i, j in zip(size, grid_size)]
 
@@ -1010,6 +1014,42 @@ def generate_volume_element_statistics(
 
     with Path(path).open("w") as fh:
         json.dump(pipeline, fh, indent=4)
+
+
+def convert_orientations_to_old_matflow_format(orientations):
+    # see `LatticeDirection` enum:
+    align_lookup = {
+        "A": "a",
+        "B": "b",
+        "C": "c",
+        "A_STAR": "a*",
+        "B_STAR": "b*",
+        "C_STAR": "c*",
+    }
+    unit_cell_alignment = {
+        "x": align_lookup[orientations.unit_cell_alignment.x.name],
+        "y": align_lookup[orientations.unit_cell_alignment.y.name],
+        "z": align_lookup[orientations.unit_cell_alignment.z.name],
+    }
+    type_lookup = {
+        "QUATERNION": "quat",
+        "EULER": "euler",
+    }
+    type_ = type_lookup[orientations.representation.type.name]
+    oris = {
+        "type": type_,
+        "unit_cell_alignment": unit_cell_alignment,
+    }
+
+    if type_ == "quat":
+        quat_order = orientations.representation.quat_order.name.lower().replace("_", "-")
+        oris["quaternions"] = np.array(orientations.data)
+        oris["quat_component_ordering"] = quat_order
+    elif type_ == "euler":
+        oris["euler_angles"] = np.array(orientations.data)
+        oris["euler_degrees"] = orientations.representation.euler_is_degrees
+
+    return oris
 
 
 ## These next two functions are from matflow.matflow_dream3d.utilities
