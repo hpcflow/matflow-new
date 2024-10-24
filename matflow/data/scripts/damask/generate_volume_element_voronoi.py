@@ -1,4 +1,5 @@
 import numpy as np
+
 try:
     from damask import GeomGrid as grid_cls
 except ImportError:
