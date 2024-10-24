@@ -1,6 +1,9 @@
 import numpy as np
 import torch
-from lvae3d.LightningVAETrainers import ResNet18VAE_alpha
+from lightning.pytorch import seed_everything
+
+from lvae3d.models.ResNetVAE_3Deu import ResNet18_3DVAEeu
+from lvae3d.LightningVAETrainers import VAETrainerAlpha
 from lvae3d.util.MetadataDicts import MetadataAlpha
 
 
@@ -23,6 +26,8 @@ def get_3dvae_fingerprint(volume_element, checkpoint_path, metadata_path):
     fingerprint: torch.Tensor
         Fingerprint from the trained VAE encoder.
     """
+    seed_everything(42, workers=True)
+    vae = ResNet18_3DVAEeu
     oris = convert_ori_rep(volume_element['orientations'])
     assert not oris['euler_degrees']
     euler_angles = oris['eulers']
@@ -40,11 +45,11 @@ def get_3dvae_fingerprint(volume_element, checkpoint_path, metadata_path):
 
     metadata = MetadataAlpha()
     metadata.load(metadata_path)
-    model = ResNet18VAE_alpha.load_from_checkpoint(checkpoint_path, metadata=metadata)
+    model = VAETrainerAlpha.load_from_checkpoint(checkpoint_path, vae=vae,  metadata=metadata, weights_only=True)
     model.eval()
-    _, _, _, fingerprint = model(eulers_image)
+    _, mu, _ = model.vae.module.encoder(eulers_image)
 
-    return {"fingerprint": fingerprint.cpu().detach().numpy()}
+    return {"fingerprint": mu.cpu().detach().numpy()}
 
 
 def convert_ori_rep(ori_dict, type_out='euler'):
