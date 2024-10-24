@@ -1,4 +1,16 @@
 
+<a name="v0.3.0a131"></a>
+## [v0.3.0a131](https://github.com/hpcflow/matflow-new/compare/v0.3.0a130...v0.3.0a131) - 2024.10.24
+
+### 🐛 Bug Fixes
+
+* enable compatibility with new DAMASK Grid variable
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a130"></a>
 ## [v0.3.0a130](https://github.com/hpcflow/matflow-new/compare/v0.3.0a129...v0.3.0a130) - 2024.10.23
 
