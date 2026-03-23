@@ -138,4 +138,7 @@ docs/source/reference/demo_workflow*
 docs/source/reference/ts_*.html
 docs/source/reference/api.rst
 
+# macOS
+.DS_Store
+
 problems/

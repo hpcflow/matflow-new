@@ -6,8 +6,9 @@ doc:
 tasks:
   - schema: sample_texture_from_ODF_mat_file_mtex
     inputs:
-      ODF_mat_file_path: <<demo_data_file:ODF.mat>>
+      ODF_mat_file_path: /Users/michaelwhite/Documents/matflow_workflows/tension_DAMASK_Al_mtex_odf_gen_2026-03-20_164523/execute/t_1/cubic_ODF_samples.mat
       num_orientations: 1000
+      execution_mode: script
 
   - schema: visualise_orientations_pole_figure_mtex
     inputs:
