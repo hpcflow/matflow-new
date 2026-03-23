@@ -11,11 +11,11 @@
   .. code-block:: yaml
 
       resources:
-      any:
-        scheduler_args:
-          directives:
-            --time: 1:00:00
-            --partition: multicore
+        any:
+          scheduler_args:
+            directives:
+              --time: 1:00:00
+              --partition: multicore
 
   or at the task level
 
@@ -102,13 +102,13 @@
 
       tasks:
       - schema: my_schema
-      sequences:
-      - path: inputs.conductance_value
-      values:
-      - 0
-      - 100
-      - 200
-      nesting_order: 0
+        sequences:
+        - path: inputs.conductance_value
+          values:
+          - 0
+          - 100
+          - 200
+          nesting_order: 0
 
   Groups
   -------
