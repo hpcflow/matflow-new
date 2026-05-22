@@ -1,4 +1,6 @@
-function generate_cubic_ODF_samples(inputs_JSON_path, outputs_HDF5_path)
+function generate_cubic_ODF_samples(inputs_JSON_path, outputs_HDF5_path, outputs_JSON_path)
+
+    rng(str2double(getenv('MATFLOW_RUN_RANDOM_SEED')));
 
     all_args = jsondecode(fileread(inputs_JSON_path));
 
@@ -27,22 +29,27 @@ function generate_cubic_ODF_samples(inputs_JSON_path, outputs_HDF5_path)
     r = r(1:n_components);
     halfwidth = rand(n_components,1) * (halfwidth_max - halfwidth_min) + halfwidth_min;
     weights = randfixedsum(n_components+1, 1, 1, 0, 1);
-
     for n = 1:n_components+1
         if n == 1
-            odf_temp = uniformODF(CS);
-            odf = weights(n) * SO3FunHarmonic(odf_temp, 'bandwidth', 16);
+            odf = weights(n) * uniformODF(CS);
         else
-            odf_temp = unimodalODF(components(r(n-1)), 'halfwidth', halfwidth(n-1)*degree);
-            odf = odf + weights(n) * SO3FunHarmonic(odf_temp, 'bandwidth', 16);
+            odf = odf + weights(n) * unimodalODF(components(r(n-1)),CS,'halfwidth',halfwidth(n-1)*degree);
         end
     end
 
-    ori = odf.discreteSample(100000);
-    odf = calcDensity(ori);
-    odf = SO3FunHarmonic(odf, 'bandwidth', 16);
+    % Optional: sample the ODF and reconstruct with calcDensity
+    % ori = odf.discreteSample(100000);
+    % odf = calcDensity(ori);
+
+    % ODF representation option 1: SO3FunHarmonic
+    % odf = SO3FunHarmonic(odf, 'bandwidth', 16);
+
+    % ODF representation option 2: SO3FunRBF
+    odf = SO3FunRBF(odf);
+
+    rng("shuffle");
     orientations = odf.discreteSample(num_grains);
-    export_orientations_HDF5(orientations, outputs_HDF5_path);
+    export_orientations_HDF5(orientations, r, halfwidth, weights, outputs_HDF5_path, outputs_JSON_path);
 
     save(odf_fname, 'odf');
 
@@ -73,7 +80,7 @@ function alignment = prepare_crystal_alignment(crystalSym)
 
 end
 
-function export_orientations_HDF5(orientations, fileName)
+function export_orientations_HDF5(orientations, r, halfwidth, weights, hdf5_fileName, JSON_fileName)
     alignment = prepare_crystal_alignment(orientations.CS);
     ori_data = [orientations.a, orientations.b, orientations.c, orientations.d];
 
@@ -81,11 +88,25 @@ function export_orientations_HDF5(orientations, fileName)
     ori_data(:, 2:end) = ori_data(:, 2:end) * -1;
 
     ori_data = ori_data';
-    h5create(fileName, '/orientations/data', size(ori_data));
-    h5write(fileName, '/orientations/data', ori_data);
-    h5writeatt(fileName, '/orientations', 'representation_type', 0);
-    h5writeatt(fileName, '/orientations', 'representation_quat_order', 0);
-    h5writeatt(fileName, '/orientations', 'unit_cell_alignment', alignment);
+    h5create(hdf5_fileName, '/orientations/data', size(ori_data));
+    h5write(hdf5_fileName, '/orientations/data', ori_data);
+    h5writeatt(hdf5_fileName, '/orientations', 'representation_type', 0);
+    h5writeatt(hdf5_fileName, '/orientations', 'representation_quat_order', 0);
+    h5writeatt(hdf5_fileName, '/orientations', 'unit_cell_alignment', alignment);
+    % h5create(fileName, '/odf_parameters/components', size(r'));
+    % h5write(fileName, '/odf_parameters/components', r');
+    % h5create(fileName, '/odf_parameters/halfwidths', size(halfwidth));
+    % h5write(fileName, '/odf_parameters/halfwidths', halfwidth);
+    % h5create(fileName, '/odf_parameters/weights', size(weights));
+    % h5write(fileName, '/odf_parameters/weights', weights);
+    odf_parameters.components = r';
+    odf_parameters.halfwidths = halfwidth;
+    odf_parameters.weights = weights;
+    s = struct('odf_parameters', odf_parameters);
+    json_str = jsonencode(s);
+    fid = fopen(strrep(JSON_fileName, '.hdf5', '_odf_parameters.json'), 'w');
+    fprintf(fid, json_str);
+    fclose(fid);
 end
 
 function [x,v] = randfixedsum(n,m,s,a,b)

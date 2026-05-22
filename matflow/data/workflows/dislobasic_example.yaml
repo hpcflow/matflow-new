@@ -1,0 +1,124 @@
+tasks:
+- schema: generate_volume_element_from_statistics
+  repeats: 10
+  inputs:
+    orientations::from_file:
+      path: /mnt/iusers01/jf01/d39391se/scratch/calibration/ukaea/texture/Rad_200_samples.csv
+      delimiter: ","
+      representation:
+        type: euler
+        euler_is_degrees: false
+        euler_definition: bunge
+      unit_cell_alignment: { "x": "a", "y": "b", "z": "c" }
+    grid_size: [32, 32, 32]
+    size: [100, 100, 100]
+    periodic: True
+    phase_statistics:
+      - type: primary
+        name: Cu
+        crystal_structure: cubic
+        volume_fraction: 1.00 # `volume_fraction` for all phases must sum to 1!
+        size_distribution:
+          ESD_mean: 18.12 # Specify either `ESD_mean` or `ESD_log_mean`
+          ESD_log_stddev: 0.61
+          ESD_log_stddev_min_cut_off: 0.75
+          ESD_log_stddev_max_cut_off: 2.00
+          b/a:
+            alpha: 4.06
+            beta: 3.78
+          num_bins: 100 # Specify either `num_bins` or `bin_step_size`
+
+- schema: simulate_VE_loading_damask
+  nesting_order:
+    inputs.volume_element: 1
+  resources:
+    main:
+      scheduler_args:
+        directives:
+          --time: 20:00:00
+          --partition: multicore
+      num_cores: 8
+  sequences:
+    - path: inputs.initial_conditions.T
+      nesting_order: 0
+      values:
+        - 128.0
+        - 198.0
+        - 293.0
+        - 348.0
+        - 423.0
+  inputs:
+    damask_solver:
+      mechanical: spectral_polarization
+      thermal: spectral
+    initial_conditions: {T: 293}
+    load_case::uniaxial:
+      total_time: 1200
+      num_increments: 600
+      direction: z
+      target_def_grad_rate: 8.0e-5
+      dump_frequency: 6
+    homogenization:
+      SX:
+        mechanical: {type: pass}
+        thermal: {type: pass}
+        N_constituents: 1
+    damask_phases:
+      Cu:
+        lattice: cF
+        rho: 8960.0
+        thermal:
+          type: isotemperature
+          K_11: 0
+          K_33: 0
+          C_p: 1
+        mechanical:
+          output: [F, P]
+          elastic:
+            type: Hooke
+            C_11: 168.9e+9
+            C_11,T: -3.332e+7
+            C_11,T^2: -1.074e+4
+            C_12: 121.8e+9
+            C_12,T: -1.402e+7
+            C_12,T^2: -9.003e+3
+            C_44: 75.8e+9
+            C_44,T: -2.555e+7
+            C_44,T^2: -2.188e+3
+            T_ref: 293.15
+          plastic:
+            type: dislobasic
+            N_sl: [12]
+            A: [1.758e-5]
+            B: [6.23e-7]
+            delta_Q: [2.92e-21]
+            k_1: [1.895]
+            k_2: [663.8]
+            alpha_n: [0.416]
+            G_0: 47.4e+9
+            b_sl: [2.56e-10]
+            tau_0: [1.0e+6]
+            rho_ssd_0: [1.0e+13]
+    damask_post_processing:
+    - name: add_stress_Cauchy
+      args: {P: P, F: F}
+      opts: {add_Mises: false}
+    - name: add_strain
+      args: {F: F, t: V, m: 0}
+      opts: {add_Mises: false}
+    VE_response_data:
+      phase_data:
+      - field_name: sigma
+        phase_name: Cu
+        out_name: vol_avg_equivalent_stress
+        transforms: [mean_along_axes: 1]
+      - field_name: epsilon_V^0(F)
+        phase_name: Cu
+        out_name: vol_avg_equivalent_strain
+        transforms: [mean_along_axes: 1]
+    damask_numerics:
+      solver:
+        grid:
+          mechanical:
+            N_iter_min: 2
+            N_iter_max: 250

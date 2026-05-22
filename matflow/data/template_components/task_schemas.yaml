@@ -169,11 +169,14 @@
       default_value: "cubic_ODF_samples.mat"
   outputs:
     - parameter: orientations
+    - parameter: odf_parameters
   actions:
     - requires_dir: true
       script: <<script:mtex/generate_cubic_ODF_samples.m>>
       script_data_in: json
-      script_data_out: hdf5
+      script_data_out:
+        orientations: hdf5
+        odf_parameters: json
       script_exe: run_mtex
       environments:
         - scope:

@@ -1,0 +1,122 @@
+doc:
+  - >
+    A simple crystal plasticity simulation using DAMASK. A volume element generated from a
+    random voronoi tessellation, with orientations sampled from an ODF generated in MTEX
+    is loaded uniaxially, using aluminium (Al) material parameters.
+tasks:
+  - schema: generate_microstructure_seeds_from_random
+    inputs:
+      num_grains: 200
+      VE_size: [1, 1, 1]
+      phase_label: Cu
+
+  - schema: generate_cubic_ODF_samples_mtex
+    resources:
+      main:
+        scheduler_args:
+          directives:
+            -A: UKAEA-AP002-CPU
+            -p: ukaea-icl
+            --nodes: 1
+            --ntasks: 1
+            --cpus-per-task: 8
+            --time: 01:00:00
+    repeats:
+      number: 1000
+      master_seed: 42
+      generate_seed_sequence: true
+    inputs:
+      max_components: 3
+      halfwidth_min: 7
+      halfwidth_max: 12
+      execution_mode: script
+
+  - schema: generate_volume_element_from_voronoi
+    inputs:
+      homog_label: SX
+      VE_grid_size: [32, 32, 32]
+
+  - schema: simulate_VE_loading_damask
+    resources:
+      main:
+        scheduler_args:
+          directives:
+            -A: UKAEA-AP002-CPU
+            -p: ukaea-icl
+            --time: 01:00:00
+        num_cores: 4
+    inputs:
+      damask_solver:
+        mechanical: spectral_polarization
+        thermal: spectral
+      initial_conditions: {T: 293}
+      load_case::uniaxial:
+        total_time: 1200
+        num_increments: 600
+        direction: z
+        target_def_grad_rate: 8.0e-5
+        dump_frequency: 6
+      homogenization:
+        SX:
+          mechanical: {type: pass}
+          thermal: {type: pass}
+          N_constituents: 1
+      damask_phases:
+        Cu:
+          lattice: cF
+          rho: 8960.0
+          thermal:
+            type: isotemperature
+            K_11: 0
+            K_33: 0
+            C_p: 1
+          mechanical:
+            output: [F, P]
+            elastic:
+              type: Hooke
+              C_11: 168.9e+9
+              C_11,T: -3.332e+7
+              C_11,T^2: -1.074e+4
+              C_12: 121.8e+9
+              C_12,T: -1.402e+7
+              C_12,T^2: -9.003e+3
+              C_44: 75.8e+9
+              C_44,T: -2.555e+7
+              C_44,T^2: -2.188e+3
+              T_ref: 293.15
+            plastic:
+              type: dislobasic
+              N_sl: [12]
+              A: [1.758e-5]
+              B: [6.23e-7]
+              delta_Q: [2.92e-21]
+              k_1: [1.895]
+              k_2: [663.8]
+              alpha_n: [0.416]
+              G_0: 47.4e+9
+              b_sl: [2.56e-10]
+              tau_0: [1.0e+6]
+              rho_ssd_0: [1.0e+13]
+      damask_post_processing:
+      - name: add_stress_Cauchy
+        args: {P: P, F: F}
+        opts: {add_Mises: false}
+      - name: add_strain
+        args: {F: F, t: V, m: 0}
+        opts: {add_Mises: false}
+      VE_response_data:
+        phase_data:
+        - field_name: sigma
+          phase_name: Cu
+          out_name: vol_avg_equivalent_stress
+          transforms: [mean_along_axes: 1]
+        - field_name: epsilon_V^0(F)
+          phase_name: Cu
+          out_name: vol_avg_equivalent_strain
+          transforms: [mean_along_axes: 1]
+      damask_numerics:
+        solver:
+          grid:
+            mechanical:
+              N_iter_min: 2
+              N_iter_max: 250

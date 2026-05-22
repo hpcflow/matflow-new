@@ -9,6 +9,7 @@ function sample_texture_ODF_mat(inputs_JSON_path, outputs_HDF5_path)
 
     ODF = get_ODF_from_mat_file(ODFMatFilePath);
     orientations = discreteSample(ODF, numOrientations);
+    disp(orientations);
     export_orientations_HDF5(orientations, outputs_HDF5_path);
 
 end
