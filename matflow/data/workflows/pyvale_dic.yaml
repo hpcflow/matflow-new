@@ -1,0 +1,22 @@
+tasks:
+  - schema: run_DIC_pyvale
+    inputs:
+      # reference_image_path: /Users/xg3401/software/defdap_data/DIC_images/small/Step_0_centre3x3.tif
+      # deformed_image_path: /Users/xg3401/software/defdap_data/DIC_images/small/Step_*_centre3x3.tif
+      reference_image_path: /Users/xg3401/software/defdap_data/DIC_images/medium/0.bmp
+      deformed_image_path: /Users/xg3401/software/defdap_data/DIC_images/medium/*.bmp
+      subset_size: 15
+      subset_step: 15
+      max_displacement: 2000
+      fft_mad: true
+      fft_mad_scale: 5.0
+      correlation_criteria: ZNSSD
+      shape_function: AFFINE
+      threshold: 0.8
+      method: MULTIWINDOW
+    sequences:
+      - path: inputs.subset_size
+        values:
+          - 15
+          - 31
+          - 45
