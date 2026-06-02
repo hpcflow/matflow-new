@@ -765,6 +765,28 @@
         If True, subset results with cost values that did not exceed the cost threshold 
         will still be present in output (default: False).
       condition: { value.is_instance: [bool] }
+- type: dic_seed
+  _validation:
+    - path: []
+      doc: >
+        Coordinates `[x, y]` of the seed point for Reliability-Guided (RG) scanning, 
+        default is centre of image.
+      condition:
+        and:
+          - value.is_instance: [list]
+          - value.length.equal_to: 2
+    - path: [{ "type": "list_value" }]
+      condition: { value.is_instance: [int] }
+- type: crop_dists
+  _validation:
+    - path: []
+      doc: Number of px to exclude from each edge of image (`left`, `right`, `top`, `bottom`).
+      condition:
+        and:
+          - value.is_instance: [dict]
+          - key.in: ["left", "right", "top", "bottom"]
+    - path: [{ "type": "map_value" }]
+      condition: { value.is_instance: [int] }
 
 # Types only used to transfer values between tasks
 - type: damask_post_processing_result

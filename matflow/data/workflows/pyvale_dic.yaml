@@ -1,12 +1,14 @@
 tasks:
+  - schema: create_DIC_ROI_from_rect_boundary_pyvale
+    inputs:
+      reference_image_path: path/to/dic/images/0.bmp
+      crop_dists:
+        left: 100
+        right: 100
+
   - schema: run_DIC_pyvale
     inputs:
-      # reference_image_path: /Users/xg3401/software/defdap_data/DIC_images/small/Step_0_centre3x3.tif
-      # deformed_image_path: /Users/xg3401/software/defdap_data/DIC_images/small/Step_*_centre3x3.tif
-      reference_image_path: /Users/xg3401/software/defdap_data/DIC_images/medium/0.bmp
-      deformed_image_path: /Users/xg3401/software/defdap_data/DIC_images/medium/*.bmp
-      subset_size: 15
-      subset_step: 15
+      deformed_image_path: path/to/dic/images/*.bmp
       max_displacement: 2000
       fft_mad: true
       fft_mad_scale: 5.0

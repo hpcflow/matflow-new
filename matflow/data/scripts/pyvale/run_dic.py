@@ -9,7 +9,8 @@ Image.MAX_IMAGE_PIXELS = None
 def run_dic(
     reference_image_path: str,
     deformed_image_path: str,
-    # DIC_ROI,
+    DIC_mask: np.ndarray | None = None,
+    DIC_seed: list[int] | None = None,
     **kwargs
 ):
     reference_image_path = Path(reference_image_path)
@@ -26,16 +27,20 @@ def run_dic(
         def_images.append(np.array(Image.open(deformed_image_path)))
     def_images = np.array(def_images)
 
-    roi = dic.RegionOfInterest(ref_image=ref_image)
-    roi.rect_boundary(left=0, right=0, top=0, bottom=0)
-    roi.seed = [1000, 1000]
+    if DIC_seed is None:
+        DIC_seed = [ref_image.shape[1]//2, ref_image.shape[0]//2]
+
+    if DIC_mask is None:
+        roi = dic.RegionOfInterest(ref_image=ref_image)
+        roi.rect_boundary(left=0, right=0, top=0, bottom=0)
+        DIC_mask = roi.mask
 
     dic_args = {k: v for k, v in kwargs.items() if v is not None}
     dic.calculate_2d(
         reference=ref_image,
         deformed=def_images,
-        roi_mask=roi.mask,
-        seed=roi.seed,
+        roi_mask=DIC_mask,
+        seed=DIC_seed,
         output_at_end=True,
         output_binary=True,
         output_below_threshold=True,

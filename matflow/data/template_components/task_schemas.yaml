@@ -2788,26 +2788,24 @@
       environments:
         any: python_env
 
-# - objective: generate_DIC_ROI
-#   doc: Generate seeds for the crystalline microstructure.
-#   implementation: pyvale
-#   inputs:
-#     - parameter: VE_size
-#     - parameter: num_grains
-#     - parameter: phase_label
-#     - parameter: random_seed
-#       default_value: resource_value
-#   outputs:
-#     - parameter: DIC_ROI
-#   actions:
-#     - script: <<script:damask/seeds_from_random.py>>
-#       script_data_in: direct
-#       script_data_out: direct
-#       script_exe: python_script
-#       environments:
-#         - scope:
-#             type: any
-#           environment: damask_parse_env
+- objective: create_DIC_ROI
+  implementation: pyvale
+  method: from_rect_boundary
+  inputs:
+    - parameter: reference_image_path
+    - parameter: crop_dists
+      default_value: null
+  outputs:
+    - parameter: DIC_mask
+  actions:
+    - script: <<script:pyvale/create_dic_roi_from_rect_boundary.py>>
+      script_data_in: direct
+      script_data_out: direct
+      script_exe: python_script
+      environments:
+        - scope:
+            type: any
+          environment: pyvale_env
 
 - objective: run_DIC
   doc: Run digital image correlation on two images
@@ -2815,7 +2813,10 @@
   inputs:
     - parameter: reference_image_path
     - parameter: deformed_image_path
-    # - parameter: DIC_ROI
+    - parameter: DIC_mask
+      default_value: null
+    - parameter: DIC_seed
+      default_value: null
     - parameter: subset_size
       default_value: null
     - parameter: subset_step
@@ -2862,4 +2863,4 @@
         DIC_results:
           from_files: [pyvale_dic_result_files]
           save_files: [pyvale_dic_result_files]
-          script: <<script:pyvale/extract_pyvale_dic_result.py>>
+          script: <<script:pyvale/extract_dic_result.py>>

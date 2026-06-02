@@ -2,7 +2,7 @@ from pathlib import Path
 from natsort import natsorted
 import pyvale.dic as dic
 
-def extract_pyvale_dic_result(pyvale_dic_result_files: list[Path]):
+def extract_dic_result(pyvale_dic_result_files: list[Path]):
     dicdata = dic.import_2d(
         natsorted(pyvale_dic_result_files), binary=True, layout="matrix"
     )
