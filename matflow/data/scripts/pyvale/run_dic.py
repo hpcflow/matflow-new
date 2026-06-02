@@ -3,6 +3,7 @@ from natsort import natsorted
 import pyvale.dic as dic
 import numpy as np
 from PIL import Image
+
 Image.MAX_IMAGE_PIXELS = None
 
 
@@ -28,7 +29,7 @@ def run_dic(
     def_images = np.array(def_images)
 
     if DIC_seed is None:
-        DIC_seed = [ref_image.shape[1]//2, ref_image.shape[0]//2]
+        DIC_seed = [ref_image.shape[1] // 2, ref_image.shape[0] // 2]
 
     if DIC_mask is None:
         roi = dic.RegionOfInterest(ref_image=ref_image)
