@@ -65,7 +65,7 @@ matflow = 'matflow.cli:cli'
 hook-dirs = "matflow.__pyinstaller:get_hook_dirs"
 
 [tool.commitizen]
-name = "cz_conventional_commits"
+name = "cz_customize"
 version = "0.3.0"
 tag_format = "v$version"
 version_files = [ 
@@ -73,6 +73,28 @@ version_files = [
     "matflow/_version.py"
 ]
 bump_message = "bump: $current_version → $new_version [skip ci]"
+
+[tool.commitizen.customize]
+bump_pattern = "^(BREAKING[ -]CHANGE|feat|fix|build|change|chore|ci|deprecate|docs|perf|refactor|remove|revert|security|style|test)(\\(.+\\))?(!)?:"
+
+[tool.commitizen.customize.bump_map]
+"BREAKING CHANGE" = "MAJOR"
+"BREAKING-CHANGE" = "MAJOR"
+feat = "MINOR"
+fix = "PATCH"
+build = "PATCH"
+change = "PATCH"
+chore = "PATCH"
+ci = "PATCH"
+deprecate = "PATCH"
+docs = "PATCH"
+perf = "PATCH"
+refactor = "PATCH"
+remove = "PATCH"
+revert = "PATCH"
+security = "PATCH"
+style = "PATCH"
+test = "PATCH"
 
 [tool.black]
 line-length = 90
