@@ -1,4 +1,29 @@
 
+<a name="v0.3.1a0"></a>
+## [v0.3.1a0](https://github.com/hpcflow/matflow/compare/v0.3.0...v0.3.1a0) - 2026.06.15
+
+### 👷 Build changes
+
+* set PATCH level bumps for other commit types including build
+* update binary download links file [skip ci]
+
+
+<a name="v0.3.0"></a>
+## [v0.3.0](https://github.com/hpcflow/matflow/compare/v0.3.0a248...v0.3.0) - 2026.05.05
+
+### ✨ Features
+
+* test-pre-python workflow to allow dispatch from dev branch
+
+### 🐛 Bug Fixes
+
+* docs link in README
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.0a248"></a>
 ## [v0.3.0a248](https://github.com/hpcflow/matflow/compare/v0.3.0a247...v0.3.0a248) - 2026.05.05
 
