@@ -1,4 +1,16 @@
 
+<a name="v0.4.0a0"></a>
+## [v0.4.0a0](https://github.com/hpcflow/matflow/compare/v0.3.1a1...v0.4.0a0) - 2026.06.15
+
+### ✨ Features
+
+* bump hpcflow version
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.3.1a1"></a>
 ## [v0.3.1a1](https://github.com/hpcflow/matflow/compare/v0.3.1a0...v0.3.1a1) - 2026.06.15
 
