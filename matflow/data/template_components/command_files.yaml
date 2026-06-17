@@ -108,3 +108,8 @@
     name: (.*\.e)
     is_regex: true
   doc: Moose output file in the Exodus (NetCDF) format.
+
+- label: pyvale_dic_result_files
+  name:
+    name: (.*\.dic2d)
+    is_regex: true
