@@ -5,8 +5,8 @@ doc:
 tasks:
 - schema: generate_rve_from_damask_input_files
   inputs:
-    geom_path: /home/mbexegc2/projects/lightform/3D_EBSD_workflow/example_data/geom_example.vti 
-    material_path: /home/mbexegc2/projects/lightform/3D_EBSD_workflow/example_data/material_example.yaml
+    geom_path: <<demo_data_file:Zr_cooling_data>>/geom_example.vti
+    material_path: <<demo_data_file:Zr_cooling_data>>/material_example.yaml
 - schema: modify_VE_add_buffer_zones
   inputs:
     buffer_sizes: [10,10, 10,10, 10,10]
