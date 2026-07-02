@@ -6,10 +6,10 @@ doc:
 tasks:
 - schema: damask_geom_file_from_dream3D
   inputs:
-    dream_3D_hdf5_file_path: /home/mbexegc2/projects/lightform/3D_EBSD_workflow/example_data/Experimental_example.dream3d
+    dream_3D_hdf5_file_path: <<demo_data_file:3D_EBSD_example_data>>/Experimental_example.dream3d
 - schema: generate_rve_from_damask_input_files
   inputs:
-    material_path: /home/mbexegc2/projects/lightform/3D_EBSD_workflow/example_data/material_example.yaml
+    material_path: <<demo_data_file:3D_EBSD_example_data>>/material_example.yaml
 - schema: modify_VE_add_buffer_zones
   inputs:
     buffer_sizes: [10,10, 10,10, 10,10]
