@@ -26,11 +26,11 @@ def sample_direct_MC(
     if mimic_matflow:
         # convoluted to mimic the MatFlow implementation where individual samples
         # are separate elements, with distinct RNG spawn keys.
+        # TODO: this can be avoided once we support multi-element Python scripts in MatFlow
         samples = []
         for sample_idx in range(num_samples):
-            seed_seq = np.random.SeedSequence(
-                seed, spawn_key=tuple([*spawn_key, sample_idx])
-            )
+            spawn_key_ = tuple([*spawn_key, sample_idx])
+            seed_seq = np.random.SeedSequence(seed, spawn_key=spawn_key_)
             rng = np.random.default_rng(seed_seq)
             pi = multivariate_normal(mean=np.zeros(dimension), cov=None, seed=rng)
             samples.append(np.atleast_1d(pi.rvs()))
@@ -140,6 +140,7 @@ def generate_next_level_samples(
     target_pf,
     threshold,
     proposal,
+    debug: bool = False,
 ):
 
     subset_accept_arr = np.zeros((num_chains, num_states - 1)).astype(bool)
@@ -201,6 +202,7 @@ def generate_next_level_samples_CS(
     target_pf,
     threshold,
     prop_std,
+    debug: bool = False,
 ):
     """Conditional sampling algorithm for generating states in the subset simulation level
     (aka subset infinity).
@@ -264,6 +266,7 @@ def generate_next_level_samples_ACS(
     chains_per_update,
     prop_std=1.0,
     lambda_=1.0,
+    debug: bool = False,
 ):
     """Adaptive conditional sampling algorithm for generating states in the subset
     simulation level (aka adaptive subset infinity).
@@ -345,6 +348,127 @@ def generate_next_level_samples_ACS(
     return {"lambda_": lambda_, "subset_accept": subset_accept}
 
 
+def generate_next_level_samples_MLDA(
+    num_chains,
+    num_states,
+    dimension,
+    chain_seeds,
+    chain_g,
+    all_x,
+    all_g,
+    level_idx,
+    master_seed,
+    target_pf,
+    threshold,
+    proposal,
+    debug: bool = False,
+):
+    subset_accept_arr = np.zeros((num_chains, num_states - 1)).astype(bool)
+    mcmc_accept_arr = np.zeros((num_chains, num_states - 1))
+
+    debug_chain_states = []
+    debug_trial_x = []
+    debug_current_x = []
+    debug_indices = []
+    for chain_index in range(num_chains):
+
+        debug_trial_x_chain_i = []
+        debug_current_x_chain_i = []
+        debug_indices_chain_i = []
+        # proceed this Markov chain until all states have been generated
+        all_x[chain_index, 0] = chain_seeds[chain_index]
+        all_g[chain_index, 0] = chain_g[chain_index]
+
+        chain_rng = None
+        for state_idx in range(1, num_states):
+
+            # RNG seed sequence for Markov chains:
+            if state_idx == 1:
+                # spawn key to match the task ID in the matflow workflow
+                spawn_key = (4, level_idx, chain_index)
+                chain_rng = np.random.default_rng(
+                    np.random.SeedSequence(master_seed, spawn_key=spawn_key)
+                )
+
+            x = all_x[chain_index, state_idx - 1]
+            g = all_g[chain_index, state_idx - 1]
+
+            x_inner = [x]
+            g_inner = [g]
+            for inner_state_idx in range(4):
+
+                current_x_inner = x_inner[-1]
+                current_g_inner = g_inner[-1]
+
+                trial_x_inner, mcmc_accept_rate = generate_next_state(
+                    x=current_x_inner,
+                    proposal=proposal,
+                    rng=chain_rng,
+                )
+
+                if debug:
+                    debug_indices_chain_i.append(
+                        {
+                            "chain_index": chain_index,
+                            "level_idx": level_idx,
+                            "state_idx": state_idx,
+                            "inner_state_idx": inner_state_idx,
+                        }
+                    )
+                    debug_current_x_chain_i.append(current_x_inner)
+                    debug_trial_x_chain_i.append(trial_x_inner)
+
+                trial_g_inner = system_analysis_toy_model(
+                    trial_x_inner, dimension, target_pf=target_pf
+                )
+
+                is_ss_accept_inner = trial_g_inner > threshold
+
+                new_x_inner = trial_x_inner if is_ss_accept_inner else current_x_inner
+                new_g_inner = trial_g_inner if is_ss_accept_inner else current_g_inner
+
+                x_inner.append(new_x_inner)
+                g_inner.append(new_g_inner)
+
+            trial_x = x_inner[-1]
+
+            mcmc_accept_arr[chain_index, state_idx - 1] = mcmc_accept_rate
+            trial_g = system_analysis_toy_model(trial_x, dimension, target_pf=target_pf)
+
+            current_x = x
+            current_g = g
+            is_ss_accept = trial_g > threshold
+            subset_accept_arr[chain_index, state_idx - 1] = is_ss_accept
+            new_x = trial_x if is_ss_accept else current_x
+            new_g = trial_g if is_ss_accept else current_g
+
+            all_x[chain_index, state_idx] = new_x
+            all_g[chain_index, state_idx] = new_g
+
+        if debug:
+            debug_chain_states.append(chain_rng.bit_generator.state["state"]["state"])
+            debug_indices.append(debug_indices_chain_i)
+            debug_trial_x.append(debug_trial_x_chain_i)
+            debug_current_x.append(debug_current_x_chain_i)
+
+    subset_accept = np.mean(subset_accept_arr).item()
+    mcmc_accept = np.mean(mcmc_accept_arr).item()
+    out = {
+        "subset_accept": subset_accept,
+        "mcmc_accept": mcmc_accept,
+    }
+    if debug:
+        out.update(
+            {
+                "debug_chain_states": debug_chain_states,
+                "debug_trial_x": np.array(debug_trial_x),
+                "debug_current_x": np.array(debug_current_x),
+                "debug_indices": debug_indices,
+            }
+        )
+    return out
+
+
 def subset_simulation(
     dimension=200,
     target_pf=1e-4,
@@ -355,6 +479,7 @@ def subset_simulation(
     sampling_method=generate_next_level_samples,
     sampling_method_kwargs=None,
     mimic_matflow: bool = False,
+    debug: bool = False,
 ):
 
     x = sample_direct_MC(
@@ -367,10 +492,15 @@ def subset_simulation(
     g = system_analysis_toy_model(x, dimension, target_pf=target_pf)
     sampling_method_kwargs = copy.deepcopy(sampling_method_kwargs)
 
+    if debug:
+        x_original = x.copy()
+
     level_covs = []
     subset_accepts = []
     mcmc_accepts = []
     ret = None
+    all_x = None
+    all_g = None
     for level_idx in range(num_levels):
         num_failed = int(np.sum(g > 0))
         num_chains = int(len(g) * p_0)
@@ -402,6 +532,26 @@ def subset_simulation(
 
         if is_finished := threshold > 0:
             cov = np.sqrt(sum(np.pow(level_covs, 2))).item()
+            if debug:
+                return {
+                    "pf": pf,
+                    "cov": cov,
+                    "subset_accepts": subset_accepts,
+                    "mcmc_accepts": mcmc_accepts,
+                    "x_original": x_original,
+                    "debug_chain_states": (ret or {}).get("debug_chain_states"),
+                    "debug_current_x": (ret or {}).get("debug_current_x"),
+                    "debug_trial_x": (ret or {}).get("debug_trial_x"),
+                    "debug_indices": (ret or {}).get("debug_indices"),
+                    "chain_seeds": chain_seeds,
+                    "chain_g": chain_g,
+                    "all_x": all_x,
+                    "all_g": all_g,
+                    "num_failed": num_failed,
+                    "threshold": threshold,
+                    "level_pf": level_pf,
+                    "level_cov": level_cov,
+                }
             return pf, cov, subset_accepts, mcmc_accepts
 
         all_x = np.ones((num_chains, num_states, dimension)) * np.nan
@@ -418,6 +568,7 @@ def subset_simulation(
             master_seed=master_seed,
             target_pf=target_pf,
             threshold=threshold,
+            debug=debug,
             **sampling_method_kwargs,
         )
         subset_accepts.append(ret["subset_accept"])
@@ -431,10 +582,32 @@ def subset_simulation(
         g = all_g.reshape((num_samples))
         x = all_x.reshape((num_samples, dimension))
 
-    raise RuntimeError(f"Failed to estimate in {num_levels} levels. Try increasing.")
+    if debug:
+        print(
+            f"Failed to estimate in {num_levels} levels. Try increasing. Debug info "
+            f"is returned."
+        )
+        return {
+            "pf": pf,
+            "x_original": x_original,
+            "debug_chain_states": (ret or {}).get("debug_chain_states"),
+            "debug_current_x": (ret or {}).get("debug_current_x"),
+            "debug_trial_x": (ret or {}).get("debug_trial_x"),
+            "debug_indices": (ret or {}).get("debug_indices"),
+            "chain_seeds": chain_seeds,
+            "chain_g": chain_g,
+            "all_x": all_x,
+            "all_g": all_g,
+            "num_failed": num_failed,
+            "threshold": threshold,
+            "level_pf": level_pf,
+            "level_cov": level_cov,
+        }
+    else:
+        raise RuntimeError(f"Failed to estimate in {num_levels} levels. Try increasing.")
 
 
-def get_stats(all_pf, all_cov):
+def get_stats(all_pf, all_cov, all_sus_acc, all_mcmc_acc):
 
     pf_mean = np.mean(all_pf).item()
     cov_empirical = np.std(all_pf) / pf_mean
@@ -448,6 +621,8 @@ def get_stats(all_pf, all_cov):
         "cov_empirical": cov_empirical,
         "cov_estimate": cov_estimate,
         "cov_estimate_std": cov_estimate_std,
+        "all_sus_accept": all_sus_acc,
+        "all_mcmc_accept": all_mcmc_acc,
     }
 
 
@@ -465,13 +640,15 @@ def run_repeats(
     seeds = np.random.SeedSequence().generate_state(num_repeats)
     all_pf = []
     all_cov = []
+    all_sus_acc = []
+    all_mcmc_acc = []
     for repeat_idx in range(num_repeats):
         pc = (100 * (repeat_idx + 1)) // num_repeats
         if pc % 1 == 0:
             print(
                 f"\rrunning {num_repeats} repeats with N={num_samples}...{pc:3d}%", end=""
             )
-        pf, cov = subset_simulation(
+        pf, cov, SuS_acc, mcmc_acc = subset_simulation(
             dimension=dimension,
             target_pf=target_pf,
             p_0=p_0,
@@ -484,8 +661,10 @@ def run_repeats(
         )
         all_pf.append(pf)
         all_cov.append(cov)
+        all_sus_acc.append(SuS_acc)
+        all_mcmc_acc.append(mcmc_acc)
     print()
-    return get_stats(all_pf, all_cov)
+    return get_stats(all_pf, all_cov, all_sus_acc, all_mcmc_acc)
 
 
 def dist_to_str(dist):
@@ -502,7 +681,7 @@ def run_convergence(
     series: list[int],
     sampling_method: callable,
     sampling_method_kwargs: dict,
-    mimic_matflow: bool,
+    mimic_matflow: bool = False,
 ):
     """Run a convergence test on the toy model subset simulation, for either number of samples per level, N, or number of repeats, R.
 
