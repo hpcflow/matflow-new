@@ -2787,3 +2787,80 @@
       script_pass_workflow: true
       environments:
         any: python_env
+
+- objective: create_DIC_ROI
+  implementation: pyvale
+  method: from_rect_boundary
+  inputs:
+    - parameter: reference_image_path
+    - parameter: crop_dists
+      default_value: null
+  outputs:
+    - parameter: DIC_mask
+  actions:
+    - script: <<script:pyvale/create_dic_roi_from_rect_boundary.py>>
+      script_data_in: direct
+      script_data_out: direct
+      script_exe: python_script
+      environments:
+        - scope:
+            type: any
+          environment: pyvale_env
+
+- objective: run_DIC
+  doc: Run digital image correlation on two images
+  implementation: pyvale
+  inputs:
+    - parameter: reference_image_path
+    - parameter: deformed_image_path
+    - parameter: DIC_mask
+      default_value: null
+    - parameter: DIC_seed
+      default_value: null
+    - parameter: subset_size
+      default_value: null
+    - parameter: subset_step
+      default_value: null
+    - parameter: correlation_criteria
+      default_value: null
+    - parameter: shape_function
+      default_value: null
+    - parameter: interpolation_routine
+      default_value: null
+    - parameter: max_iterations
+      default_value: null
+    - parameter: precision
+      default_value: null
+    - parameter: threshold
+      default_value: null
+    - parameter: bf_threshold
+      default_value: null
+    - parameter: max_displacement
+      default_value: null
+    - parameter: method
+      default_value: null
+    - parameter: fft_mad
+      default_value: null
+    - parameter: fft_mad_scale
+      default_value: null
+    - parameter: output_delimiter
+      default_value: null
+    - parameter: output_below_threshold
+      default_value: null
+    - parameter: debug_level
+      default_value: 0
+  outputs:
+    - parameter: DIC_results
+  actions:
+    - script: <<script:pyvale/run_dic.py>>
+      script_data_in: direct
+      script_exe: python_script
+      environments:
+        - scope:
+            type: any
+          environment: pyvale_env
+      output_file_parsers:
+        DIC_results:
+          from_files: [pyvale_dic_result_files]
+          save_files: [pyvale_dic_result_files]
+          script: <<script:pyvale/extract_dic_result.py>>
