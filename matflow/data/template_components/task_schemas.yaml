@@ -187,6 +187,39 @@
           condition:
             value.equal_to: script
 
+- objective: load_texture_component
+  doc: Generate ODF samples for a cubic material by loading texture components.
+  implementation: mtex
+  inputs:
+    - parameter: execution_mode
+      default_value: script
+      propagation_mode: explicit
+    - parameter: filename
+    - parameter: num_grains
+    - parameter: index
+      default_value: 1
+    - parameter: odf_fname
+      default_value: "cubic_ODF_samples.mat"
+  outputs:
+    - parameter: orientations
+    - parameter: odf_parameters
+  actions:
+    - requires_dir: true
+      script: <<script:mtex/load_texture_component.m>>
+      script_data_in: json
+      script_data_out:
+        orientations: hdf5
+        odf_parameters: json
+      script_exe: run_mtex
+      environments:
+        - scope:
+            type: any
+          environment: matlab_env
+      rules:
+        - path: inputs.execution_mode
+          condition:
+            value.equal_to: script
+
 - objective: generate_volume_element
   doc: Generate a volume element from microstructure seeds using a Voronoi diagram.
   method: from_voronoi
