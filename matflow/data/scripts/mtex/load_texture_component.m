@@ -10,7 +10,7 @@ function load_texture_component(inputs_JSON_path, outputs_HDF5_path, outputs_JSO
     filename = all_args.filename
 
     CS = crystalSymmetry('cubic');
-    SS = specimenSymmetry('triclinic')
+    SS = specimenSymmetry('triclinic');
 
     components = [...
     orientation.goss(CS),...
@@ -51,7 +51,7 @@ function load_texture_component(inputs_JSON_path, outputs_HDF5_path, outputs_JSO
 
     rng("shuffle");
     orientations = odf.discreteSample(num_grains);
-    export_orientations_HDF5(orientations, r, halfwidth, weights, outputs_HDF5_path, outputs_JSON_path);
+    export_orientations_HDF5(orientations, halfwidth, weights, outputs_HDF5_path, outputs_JSON_path);
 
     save(odf_fname, 'odf');
 
@@ -82,7 +82,7 @@ function alignment = prepare_crystal_alignment(crystalSym)
 
 end
 
-function export_orientations_HDF5(orientations, r, halfwidth, weights, hdf5_fileName, JSON_fileName)
+function export_orientations_HDF5(orientations, halfwidth, weights, hdf5_fileName, JSON_fileName)
     alignment = prepare_crystal_alignment(orientations.CS);
     ori_data = [orientations.a, orientations.b, orientations.c, orientations.d];
 
@@ -95,13 +95,10 @@ function export_orientations_HDF5(orientations, r, halfwidth, weights, hdf5_file
     h5writeatt(hdf5_fileName, '/orientations', 'representation_type', 0);
     h5writeatt(hdf5_fileName, '/orientations', 'representation_quat_order', 0);
     h5writeatt(hdf5_fileName, '/orientations', 'unit_cell_alignment', alignment);
-    % h5create(fileName, '/odf_parameters/components', size(r'));
-    % h5write(fileName, '/odf_parameters/components', r');
     % h5create(fileName, '/odf_parameters/halfwidths', size(halfwidth));
     % h5write(fileName, '/odf_parameters/halfwidths', halfwidth);
     % h5create(fileName, '/odf_parameters/weights', size(weights));
     % h5write(fileName, '/odf_parameters/weights', weights);
-    odf_parameters.components = r';
     odf_parameters.halfwidths = halfwidth;
     odf_parameters.weights = weights;
     s = struct('odf_parameters', odf_parameters);
