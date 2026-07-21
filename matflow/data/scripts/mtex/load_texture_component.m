@@ -51,7 +51,7 @@ function load_texture_component(inputs_JSON_path, outputs_HDF5_path, outputs_JSO
 
     rng("shuffle");
     orientations = odf.discreteSample(num_grains);
-    export_orientations_HDF5(orientations, halfwidth, weights, outputs_HDF5_path, outputs_JSON_path);
+    export_orientations_HDF5(orientations, halfwidths, weights, outputs_HDF5_path, outputs_JSON_path);
 
     save(odf_fname, 'odf');
 
