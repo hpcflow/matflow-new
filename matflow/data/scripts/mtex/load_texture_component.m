@@ -10,7 +10,6 @@ function load_texture_component(inputs_JSON_path, outputs_HDF5_path, outputs_JSO
     filename = all_args.filename
 
     CS = crystalSymmetry('cubic');
-    SS = specimenSymmetry('triclinic');
 
     components = [...
     orientation.goss(CS),...
@@ -29,13 +28,13 @@ function load_texture_component(inputs_JSON_path, outputs_HDF5_path, outputs_JSO
     halfwidths = data(index,1:9);
     weights = data(index,10:end);
 
-    odf = weights(:,end) * uniformODF(CS,SS);
+    odf = weights(:,end) * uniformODF(CS);
     
     for n = 1:length(halfwidths);
     
         if halfwidths(n) ~= 0;
     
-            odf = odf + weights(n) * unimodalODF(components(n),CS,SS,'halfwidth',halfwidths(n)*degree);
+            odf = odf + weights(n) * unimodalODF(components(n),CS,'halfwidth',halfwidths(n)*degree);
         end
     end
 
