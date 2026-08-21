@@ -1,4 +1,16 @@
 
+<a name="v0.4.0a5"></a>
+## [v0.4.0a5](https://github.com/hpcflow/matflow/compare/v0.4.0a4...v0.4.0a5) - 2026.08.21
+
+### 🐛 Bug Fixes
+
+* increase number of load incs in Mg DAMASK example
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.4.0a4"></a>
 ## [v0.4.0a4](https://github.com/hpcflow/matflow/compare/v0.4.0a3...v0.4.0a4) - 2026.08.21
 
