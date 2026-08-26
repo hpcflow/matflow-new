@@ -5,6 +5,7 @@ import copy
 from datetime import datetime
 import pickle
 from pathlib import Path
+from typing import Callable
 
 from matplotlib import pyplot as plt
 import numpy as np
@@ -58,6 +59,70 @@ def system_analysis_toy_model(x, dimension: int, target_pf: float):
     y_star = get_y_star(target_pf, dimension)
     g_i = model(x) - y_star
     return g_i
+
+
+def get_y_star_max_system(target_pf: float, dimension: int) -> float:
+    """Analytic failure threshold for a 'weakest-link' (series-system) toy model: the
+    system response is the maximum over `dimension` iid standard normal components, so
+    P(max(X) <= y) = Phi(y)**dimension, giving an exact threshold for a target failure
+    probability.
+    """
+    return norm.ppf((1 - target_pf) ** (1 / dimension))
+
+
+def get_approx_pf_random_walk(sigma, dimension, y_star):
+    # if a sufficiently fine random walk, we assume Brownian motion, plus a continuity
+    # correction:
+    return 2 * (1 - norm.cdf((y_star + 0.5826 * sigma) / (sigma * np.sqrt(dimension))))
+
+
+def get_approx_y_star_random_walk(sigma, dimension, target_pf):
+    z = norm.ppf(1 - target_pf / 2)
+    return sigma * (np.sqrt(dimension) * z - 0.5826)
+
+
+def make_voxel_grouping(dimension: int, block_size: int):
+    """Partition `dimension` fine grid points into contiguous blocks of `block_size`
+    (the last block may be smaller), representing a coarser mesh voxelisation."""
+    if block_size < 1:
+        raise ValueError("block_size must be >= 1")
+    n_blocks = int(np.ceil(dimension / block_size))
+    return np.repeat(np.arange(n_blocks), block_size)[:dimension]
+
+
+def voxel_block_average(x, group_idx):
+    """Coarse-grain `x` (..., dimension) by averaging within each block defined by
+    `group_idx`, broadcasting each block's mean back over its fine positions (so fine
+    and coarse fields live in the same space)."""
+    x = np.asarray(x)
+    out = np.empty_like(x, dtype=float)
+    for block_idx in range(group_idx.max() + 1):
+        mask = group_idx == block_idx
+        out[..., mask] = x[..., mask].mean(axis=-1, keepdims=True)
+    return out
+
+
+def weakest_link_performance_fine(x, y_star):
+    """'Fine mesh' weakest-link performance: the system fails if the peak local
+    response (max over all `dimension` fine grid points) exceeds `y_star` -- e.g. a
+    localised stress/strain concentration triggering failure anywhere in the domain.
+    """
+    return np.max(x, axis=-1) - y_star
+
+
+def weakest_link_performance_coarse(x, y_star, group_idx):
+    """'Coarse mesh' weakest-link performance: as `weakest_link_performance_fine`, but
+    evaluated on a block-averaged (coarser-voxelised) version of the field. Averaging
+    smooths out sub-block fluctuations, so the coarse peak response never exceeds the
+    fine one (`max(block_average(x)) <= max(x)`, by convexity of the mean) -- exactly
+    mirroring how a coarser FE mesh smooths out local stress/strain concentrations
+    relative to a finer one. This guarantees the coarse model can only *underestimate*
+    peak failure severity relative to the fine model, never overestimate it, so
+    `estimate_conservative_threshold_coarse`'s margin is always well-defined and finite
+    (no risk of unbounded extrapolation error, unlike a curve-fit surrogate).
+    """
+    x_coarse = voxel_block_average(x, group_idx)
+    return np.max(x_coarse, axis=-1) - y_star
 
 
 def estimate_cov(indicator, p_i: float) -> float:
@@ -128,6 +193,7 @@ def generate_next_state_ACS(x, prop_std, lambda_, rng):
 
 
 def generate_next_level_samples(
+    performance,
     num_chains,
     num_states,
     dimension,
@@ -137,9 +203,9 @@ def generate_next_level_samples(
     all_g,
     level_idx,
     master_seed,
-    target_pf,
     threshold,
     proposal,
+    transformation: Callable | None = None,
     debug: bool = False,
 ):
 
@@ -172,7 +238,8 @@ def generate_next_level_samples(
                 rng=chain_rng,
             )
             mcmc_accept_arr[chain_index, state_idx - 1] = mcmc_accept_rate
-            trial_g = system_analysis_toy_model(trial_x, dimension, target_pf=target_pf)
+            trial_x_t = transformation(trial_x) if transformation else trial_x
+            trial_g = performance(trial_x_t)
 
             current_x = x
             current_g = g
@@ -186,10 +253,17 @@ def generate_next_level_samples(
 
     subset_accept = np.mean(subset_accept_arr).item()
     mcmc_accept = np.mean(mcmc_accept_arr).item()
-    return {"subset_accept": subset_accept, "mcmc_accept": mcmc_accept}
+    num_fine_evals = num_chains * (num_states - 1)
+    return {
+        "subset_accept": subset_accept,
+        "mcmc_accept": mcmc_accept,
+        "num_fine_evals": num_fine_evals,
+        "num_coarse_evals": 0,
+    }
 
 
 def generate_next_level_samples_CS(
+    performance,
     num_chains,
     num_states,
     dimension,
@@ -199,9 +273,9 @@ def generate_next_level_samples_CS(
     all_g,
     level_idx,
     master_seed,
-    target_pf,
     threshold,
     prop_std,
+    transformation: Callable | None = None,
     debug: bool = False,
 ):
     """Conditional sampling algorithm for generating states in the subset simulation level
@@ -234,7 +308,8 @@ def generate_next_level_samples_CS(
                 prop_std=prop_std,
                 rng=chain_rng,
             )
-            trial_g = system_analysis_toy_model(trial_x, dimension, target_pf=target_pf)
+            trial_x_t = transformation(trial_x) if transformation else trial_x
+            trial_g = performance(trial_x_t)
 
             current_x = x
             current_g = g
@@ -248,10 +323,16 @@ def generate_next_level_samples_CS(
             all_g[chain_index, state_idx] = new_g
 
     subset_accept = np.mean(subset_accept_arr).item()
-    return {"subset_accept": subset_accept}
+    num_fine_evals = num_chains * (num_states - 1)
+    return {
+        "subset_accept": subset_accept,
+        "num_fine_evals": num_fine_evals,
+        "num_coarse_evals": 0,
+    }
 
 
 def generate_next_level_samples_ACS(
+    performance,
     num_chains,
     num_states,
     dimension,
@@ -261,9 +342,9 @@ def generate_next_level_samples_ACS(
     all_g,
     level_idx,
     master_seed,
-    target_pf,
     threshold,
     chains_per_update,
+    transformation: Callable | None = None,
     prop_std=1.0,
     lambda_=1.0,
     debug: bool = False,
@@ -321,10 +402,8 @@ def generate_next_level_samples_ACS(
                 g = all_g[chain_index, state_idx - 1]
 
                 trial_x = norm.rvs(loc=x * rho, scale=sigma, random_state=chain_rng)
-
-                trial_g = system_analysis_toy_model(
-                    trial_x, dimension, target_pf=target_pf
-                )
+                trial_x_t = transformation(trial_x) if transformation else trial_x
+                trial_g = performance(trial_x_t)
 
                 current_x = x
                 current_g = g
@@ -345,10 +424,18 @@ def generate_next_level_samples_ACS(
         lambda_ *= np.exp(zeta * (accept_batch_avg - A_STAR))
 
     subset_accept = np.mean(batch_avgs).item()
-    return {"lambda_": lambda_, "subset_accept": subset_accept}
+    num_fine_evals = num_chains * (num_states - 1)
+    return {
+        "lambda_": lambda_,
+        "subset_accept": subset_accept,
+        "num_fine_evals": num_fine_evals,
+        "num_coarse_evals": 0,
+    }
 
 
-def generate_next_level_samples_MLDA(
+def generate_next_level_samples_MLDA_incorrect(
+    performance,
+    performance_coarse,
     num_chains,
     num_states,
     dimension,
@@ -358,13 +445,23 @@ def generate_next_level_samples_MLDA(
     all_g,
     level_idx,
     master_seed,
-    target_pf,
     threshold,
     proposal,
+    num_coarse_states,
+    transformation: Callable | None = None,
+    threshold_coarse=None,
     debug: bool = False,
 ):
+    """
+    Incorrect! Multilevel delayed-acceptance (MLDA) modified Metropolis algorithm.
+    """
+    if threshold_coarse is None:
+        threshold_coarse = threshold
+
     subset_accept_arr = np.zeros((num_chains, num_states - 1)).astype(bool)
     mcmc_accept_arr = np.zeros((num_chains, num_states - 1))
+    fine_eval_arr = np.zeros((num_chains, num_states - 1)).astype(bool)
+    coarse_eval_count_arr = np.zeros((num_chains, num_states - 1)).astype(int)
 
     debug_chain_states = []
     debug_trial_x = []
@@ -395,7 +492,7 @@ def generate_next_level_samples_MLDA(
 
             x_inner = [x]
             g_inner = [g]
-            for inner_state_idx in range(4):
+            for inner_state_idx in range(num_coarse_states):
 
                 current_x_inner = x_inner[-1]
                 current_g_inner = g_inner[-1]
@@ -418,11 +515,12 @@ def generate_next_level_samples_MLDA(
                     debug_current_x_chain_i.append(current_x_inner)
                     debug_trial_x_chain_i.append(trial_x_inner)
 
-                trial_g_inner = system_analysis_toy_model(
-                    trial_x_inner, dimension, target_pf=target_pf
+                trial_x_inner_t = (
+                    transformation(trial_x_inner) if transformation else trial_x_inner
                 )
-
-                is_ss_accept_inner = trial_g_inner > threshold
+                trial_g_inner = performance_coarse(trial_x_inner_t)
+                is_ss_accept_inner = trial_g_inner > threshold_coarse
+                coarse_eval_count_arr[chain_index, state_idx - 1] += 1
 
                 new_x_inner = trial_x_inner if is_ss_accept_inner else current_x_inner
                 new_g_inner = trial_g_inner if is_ss_accept_inner else current_g_inner
@@ -433,11 +531,14 @@ def generate_next_level_samples_MLDA(
             trial_x = x_inner[-1]
 
             mcmc_accept_arr[chain_index, state_idx - 1] = mcmc_accept_rate
-            trial_g = system_analysis_toy_model(trial_x, dimension, target_pf=target_pf)
 
             current_x = x
             current_g = g
+            fine_eval_arr[chain_index, state_idx - 1] = True
+            trial_x_t = transformation(trial_x) if transformation else trial_x
+            trial_g = performance(trial_x_t)
             is_ss_accept = trial_g > threshold
+
             subset_accept_arr[chain_index, state_idx - 1] = is_ss_accept
             new_x = trial_x if is_ss_accept else current_x
             new_g = trial_g if is_ss_accept else current_g
@@ -456,28 +557,916 @@ def generate_next_level_samples_MLDA(
     out = {
         "subset_accept": subset_accept,
         "mcmc_accept": mcmc_accept,
+        "fine_eval_rate": fine_eval_arr.mean().item(),
+        "num_fine_evals": int(fine_eval_arr.sum()),
+        "num_coarse_evals": int(coarse_eval_count_arr.sum()),
     }
     if debug:
         out.update(
             {
                 "debug_chain_states": debug_chain_states,
-                "debug_trial_x": np.array(debug_trial_x),
-                "debug_current_x": np.array(debug_current_x),
+                # early_stop makes the number of inner hops per state vary, so the
+                # per-chain trial/current-x lists are ragged -- use dtype=object
+                # rather than assuming a uniform (num_states, num_coarse_states) shape.
+                "debug_trial_x": np.array(debug_trial_x, dtype=object),
+                "debug_current_x": np.array(debug_current_x, dtype=object),
                 "debug_indices": debug_indices,
             }
         )
     return out
 
 
+def weakest_link_coarse_gradient_xt(x_t, group_idx):
+    """Analytic gradient of `weakest_link_performance_coarse` (i.e. of
+    `max(block_average(x_t)) - y_star`) with respect to `x_t` (the *transformed*/
+    physical-space input), for a single state vector `x_t` (1D, shape (dimension,)).
+
+    The block-average-then-max function is piecewise linear: within the block that
+    currently achieves the max, d(max)/d(x_t_i) = 1/block_size for every fine index i
+    in that block (since averaging distributes the derivative equally across the
+    block), and 0 for indices in any other block. Ties (multiple blocks achieving the
+    same max) are broken by taking the first such block -- a measure-zero event for
+    continuous inputs, so this doesn't affect correctness in practice.
+    """
+    x_t = np.asarray(x_t)
+    x_avg = voxel_block_average(x_t, group_idx)
+    max_block = np.argmax(x_avg)  # first occurrence on ties
+    mask = group_idx == max_block
+    block_size = mask.sum()
+    grad = np.zeros_like(x_t, dtype=float)
+    grad[mask] = 1.0 / block_size
+    return grad
+
+
+def cumsum_transformation_adjoint(grad_xt):
+    """Adjoint (transpose-Jacobian action) for `transformation = lambda x:
+    np.cumsum(x, axis=-1)`. Since cumsum is linear with Jacobian J_ij = 1 if j <= i
+    else 0, J^T @ v is a *reversed* cumulative sum -- maps a gradient computed in the
+    transformed ("physical") space back to the original (untransformed) sampling
+    space. Required whenever a proposal/gradient-based correction is computed in
+    transformed space but applied to untransformed states (as in
+    `generate_next_level_samples_MLDA_gradient`/`_spsa`).
+    """
+    grad_xt = np.asarray(grad_xt)
+    return np.cumsum(grad_xt[::-1])[::-1]
+
+
+def estimate_conservative_threshold_coarse(
+    performance,
+    performance_coarse,
+    chain_seeds,
+    proposal,
+    threshold,
+    transformation: Callable | None = None,
+    num_pilot_trials: int = 500,
+    quantile: float = 0.99,
+    window_width_std: float = 1.0,
+    min_window_count: int = 30,
+    rng=None,
+):
+    """Calibrate a conservative coarse-stage threshold via pilot sampling.
+
+    Draws pilot MCMC trial proposals from the *current level's* chain seeds
+    (i.e. the actual states the real kernel will propose from), evaluates
+    both fine and coarse performance, and sets
+
+        threshold_coarse = threshold - margin
+
+    where margin is a high quantile of the gap g_fine - g_coarse, restricted
+    to trials whose coarse response falls near the tail boundary -- the
+    region where the screening decision is actually consequential.
+
+    Because g_coarse <= g_fine always (block-averaging can only smooth, per
+    weakest_link_performance_coarse's docstring), this gap is >= 0, and a
+    sufficiently large margin makes the false-rejection event
+    {g_coarse <= threshold_coarse and g_fine > threshold} arbitrarily rare
+    -- at the cost of accepting more coarse trials to the fine stage (lower
+    screening efficiency).
+
+    Returns
+    -------
+    threshold_coarse : float
+    margin : float
+    diagnostics : dict with 'gap', 'g_fine', 'g_coarse', 'window_mask'
+    """
+    if rng is None:
+        rng = np.random.default_rng()
+
+    num_chains = len(chain_seeds)
+    reps = int(np.ceil(num_pilot_trials / num_chains))
+
+    trial_xs = []
+    for _ in range(reps):
+        for seed in chain_seeds:
+            trial_x, _ = generate_next_state(x=seed, proposal=proposal, rng=rng)
+            trial_xs.append(trial_x)
+    trial_xs = np.asarray(trial_xs[:num_pilot_trials])
+
+    trial_x_t = transformation(trial_xs) if transformation else trial_xs
+    g_fine = performance(trial_x_t)
+    g_coarse = performance_coarse(trial_x_t)
+    gap = g_fine - g_coarse  # >= 0 by construction
+
+    # restrict to trials near the tail boundary, where the coarse
+    # accept/reject decision is actually live. Trials far below threshold
+    # are uninformative (they'll be correctly rejected either way, and
+    # including them would let a heavy low-gap bulk dilute the quantile).
+    window_mask = np.abs(g_coarse - threshold) < window_width_std * np.std(g_coarse)
+    if (window_count := window_mask.sum()) < min_window_count:
+        window_mask = np.ones_like(gap, dtype=bool)  # fallback: use all pilots
+
+    margin = np.quantile(gap[window_mask], quantile)
+    threshold_coarse = threshold - margin
+
+    return (
+        threshold_coarse,
+        margin,
+        {
+            "gap": gap,
+            "g_fine": g_fine,
+            "g_coarse": g_coarse,
+            "window_count": window_count,
+            "window_mask": window_mask,
+        },
+    )
+
+
+def generate_next_level_samples_DA_threshold_calibration(
+    performance,
+    performance_coarse,
+    num_chains,
+    num_states,
+    dimension,
+    chain_seeds,
+    chain_g,
+    all_x,
+    all_g,
+    level_idx,
+    master_seed,
+    threshold,
+    proposal,
+    transformation: Callable | None = None,
+    threshold_coarse=None,
+    previous_threshold_coarse_margin=None,
+    num_pilot_trials: int = 0,
+    threshold_coarse_quantile: float = 0.99,
+    debug: bool = False,
+):
+    """Delayed-acceptance modified Metropolis algorithm for subset simulation."""
+
+    add_fine_evals = 0
+    add_coarse_evals = 0
+    calib_diag = None
+    if threshold_coarse is None:
+        # estimate the coarse threshold only for the first subset level:
+        if level_idx == 0:
+            if not num_pilot_trials:
+                threshold_coarse = threshold
+                margin = 0
+            else:
+                (
+                    threshold_coarse,
+                    margin,
+                    calib_diag,
+                ) = estimate_conservative_threshold_coarse(
+                    performance=performance,
+                    performance_coarse=performance_coarse,
+                    chain_seeds=chain_seeds,
+                    proposal=proposal,
+                    threshold=threshold,
+                    transformation=transformation,
+                    num_pilot_trials=num_pilot_trials,
+                    quantile=threshold_coarse_quantile,
+                )
+                add_fine_evals += num_pilot_trials
+                add_coarse_evals += num_pilot_trials
+        else:
+            threshold_coarse = threshold - previous_threshold_coarse_margin
+            margin = previous_threshold_coarse_margin
+        # print(f"{threshold=!r} => {threshold_coarse=!r}")
+
+    subset_accept_arr = np.zeros((num_chains, num_states - 1)).astype(bool)
+    debug_subset_accept_arr = np.zeros((num_chains, num_states - 1)).astype(bool)
+    coarse_accept_arr = np.zeros((num_chains, num_states - 1)).astype(bool)
+    mcmc_accept_arr = np.zeros((num_chains, num_states - 1))
+    fine_eval_arr = np.zeros((num_chains, num_states - 1)).astype(bool)
+
+    for chain_index in range(num_chains):
+
+        # proceed this Markov chain until all states have been generated
+        all_x[chain_index, 0] = chain_seeds[chain_index]
+        all_g[chain_index, 0] = chain_g[chain_index]
+
+        chain_rng = None
+        for state_idx in range(1, num_states):
+
+            # RNG seed sequence for Markov chains:
+            if state_idx == 1:
+                # spawn key to match the task ID in the matflow workflow
+                spawn_key = (4, level_idx, chain_index)
+                chain_rng = np.random.default_rng(
+                    np.random.SeedSequence(master_seed, spawn_key=spawn_key)
+                )
+
+            x = all_x[chain_index, state_idx - 1]
+            g = all_g[chain_index, state_idx - 1]
+
+            trial_x, mcmc_accept_rate = generate_next_state(
+                x=x,
+                proposal=proposal,
+                rng=chain_rng,
+            )
+            mcmc_accept_arr[chain_index, state_idx - 1] = mcmc_accept_rate
+
+            # stage 1: cheap coarse-model screening -- only proceed to the expensive
+            # fine model if the trial looks promising according to the coarse model.
+            trial_x_t = transformation(trial_x) if transformation else trial_x
+            trial_g_coarse = performance_coarse(trial_x_t)
+            is_coarse_accept = trial_g_coarse > threshold_coarse
+            coarse_accept_arr[chain_index, state_idx - 1] = is_coarse_accept
+
+            current_x = x
+            current_g = g
+
+            if is_coarse_accept:
+                # stage 2: expensive fine-model evaluation
+                fine_eval_arr[chain_index, state_idx - 1] = True
+                trial_x_t = transformation(trial_x) if transformation else trial_x
+                trial_g = performance(trial_x_t)
+                is_ss_accept = trial_g > threshold
+                new_x = trial_x if is_ss_accept else current_x
+                new_g = trial_g if is_ss_accept else current_g
+                debug_is_ss_accept = is_ss_accept
+            else:
+                is_ss_accept = False
+                debug_is_ss_accept = is_ss_accept
+                new_x = current_x
+                new_g = current_g
+                if debug:
+                    # run anyway to see if it would be rejected:
+                    trial_x_t = transformation(trial_x) if transformation else trial_x
+                    trial_g = performance(trial_x_t)
+                    debug_is_ss_accept = trial_g > threshold
+
+            subset_accept_arr[chain_index, state_idx - 1] = is_ss_accept
+            debug_subset_accept_arr[chain_index, state_idx - 1] = debug_is_ss_accept
+
+            all_x[chain_index, state_idx] = new_x
+            all_g[chain_index, state_idx] = new_g
+
+    subset_accept = np.mean(subset_accept_arr).item()
+    coarse_accept = np.mean(coarse_accept_arr).item()
+    mcmc_accept = np.mean(mcmc_accept_arr).item()
+    fine_eval_rate = np.mean(fine_eval_arr).item()
+    num_trials = num_chains * (num_states - 1)
+
+    false_coarse_rejection_rate = None
+    if debug:
+        false_coarse_rejection_rate = np.mean(
+            np.logical_and(~coarse_accept_arr, debug_subset_accept_arr)
+        )
+
+    return {
+        "subset_accept": subset_accept,
+        "mcmc_accept": mcmc_accept,
+        "subset_accept_arr": subset_accept_arr,
+        "coarse_accept_arr": coarse_accept_arr,
+        "coarse_accept": coarse_accept,
+        "fine_eval_rate": fine_eval_rate,
+        "num_fine_evals": int(fine_eval_arr.sum()) + add_fine_evals,
+        "num_coarse_evals": num_trials + add_coarse_evals,
+        "threshold_coarse": threshold_coarse,
+        "threshold_coarse_margin": margin,
+        "threshold_coarse_debug": calib_diag,
+        "debug_subset_accept_arr": debug_subset_accept_arr,
+        "false_coarse_rejection_rate": false_coarse_rejection_rate,
+    }
+
+
+def coarse_weight(g_coarse, threshold, temperature):
+    z = (g_coarse - threshold) / temperature
+    return 1.0 / (1.0 + np.exp(-z))
+
+
+def generate_coarse_subchain(
+    x,
+    gc,
+    performance_coarse,
+    proposal,
+    coarse_weight,
+    threshold,
+    temperature,
+    transformation,
+    num_inner_states,
+    rng,
+    chain_idx,
+    debug=False,
+):
+    current_sub_chain_x = np.asarray(x).copy()
+    current_sub_chain_gc = gc
+
+    inner_accepts = 0
+
+    debug_data = {}
+    if debug:
+        debug_data["current_sub_chain_x"] = []
+        debug_data["trial_x"] = []
+        debug_data["trial_gc"] = []
+        debug_data["rng_states"] = []
+
+    for _ in range(num_inner_states):
+
+        if debug:
+            debug_data["rng_states"].append(rng.bit_generator.state["state"])
+
+        trial_x, _ = generate_next_state(
+            x=current_sub_chain_x, proposal=proposal, rng=rng
+        )
+
+        if debug:
+            debug_data["current_sub_chain_x"].append(current_sub_chain_x)
+            debug_data["trial_x"].append(trial_x)
+
+        if np.array_equal(trial_x, current_sub_chain_x):
+            continue
+
+        trial_x_t = transformation(trial_x) if transformation else trial_x
+        trial_gc = performance_coarse(trial_x_t)
+
+        if debug:
+            debug_data["trial_gc"].append(trial_gc)
+
+        s_current = coarse_weight(current_sub_chain_gc, threshold, temperature)
+        s_trial = coarse_weight(trial_gc, threshold, temperature)
+        alpha = min(1.0, s_trial / s_current)
+
+        random_num = rng.random()
+        is_accept = random_num < alpha
+
+        if is_accept:
+            current_sub_chain_x = trial_x
+            current_sub_chain_gc = trial_gc
+            inner_accepts += 1
+
+    return current_sub_chain_x, current_sub_chain_gc, inner_accepts, debug_data
+
+
+def generate_next_level_samples_DA(
+    performance,
+    performance_coarse,
+    num_chains,
+    num_states,
+    dimension,
+    chain_seeds,
+    chain_g,
+    all_x,
+    all_g,
+    level_idx,
+    master_seed,
+    threshold,
+    proposal,
+    coarse_weight: Callable,
+    transformation: Callable | None = None,
+    temperature=1.0,
+    num_inner_states: int = 1,
+    spawn_key: tuple[int] | None = None,
+    debug: bool = False,
+):
+    """Fixed-length subchain surrogate transition for Subset Simulation.
+
+    This is the randomised-length subchain surrogate transition (RST) algorithm but with a
+    fixed length subchain. For num_inner_states=1, this should be identical to
+    ``generate_next_level_samples_DA_single_inner``.
+
+    Each outer transition:
+
+        current x
+            |
+            v
+        num_inner_states coarse-MH steps
+            |
+            v
+        endpoint psi
+            |
+            v
+        one fine evaluation (unless psi == x)
+            |
+            v
+        fine correction
+            |
+            v
+        new x
+
+    The inner MH kernel targets the coarse surrogate
+
+        pi_C(x) ∝ phi(x) * coarse_weight(g_c(x)).
+
+    The endpoint is then corrected to the fine target.
+    """
+
+    num_outer_trials = num_chains * (num_states - 1)
+
+    # ------------------------------------------------------------
+    # Per-outer-transition diagnostics
+    # ------------------------------------------------------------
+
+    # Fraction of inner coarse-MH proposals accepted.
+    inner_accept_rate_arr = np.zeros((num_chains, num_states - 1), dtype=float)
+
+    # Number of accepted coarse moves within each inner subchain.
+    inner_accept_count_arr = np.zeros((num_chains, num_states - 1), dtype=int)
+
+    # Whether the final endpoint differs from the outer current state.
+    endpoint_move_arr = np.zeros((num_chains, num_states - 1), dtype=bool)
+
+    # Whether the expensive fine model was evaluated.
+    fine_eval_arr = np.zeros((num_chains, num_states - 1), dtype=bool)
+
+    # Whether the endpoint passed the fine subset condition.
+    fine_subset_pass_arr = np.zeros((num_chains, num_states - 1), dtype=bool)
+
+    # Whether the final fine correction accepted the endpoint.
+    fine_accept_arr = np.zeros((num_chains, num_states - 1), dtype=bool)
+
+    # Whether the accepted endpoint is above the coarse threshold.
+    endpoint_coarse_subset_pass_arr = np.zeros((num_chains, num_states - 1), dtype=bool)
+
+    # Final coarse surrogate acceptance probability.
+    fine_alpha_arr = np.full((num_chains, num_states - 1), np.nan, dtype=float)
+
+    # ------------------------------------------------------------
+    # Store coarse performance at outer states
+    # ------------------------------------------------------------
+
+    all_gc = np.full((num_chains, num_states), np.nan, dtype=float)
+
+    debug_data = {}
+    if debug:
+        debug_data["chain_data"] = []
+
+    for chain_index in range(num_chains):
+        if debug:
+            debug_data["chain_data"].append({"state_data": []})
+
+        # --------------------------------------------------------
+        # Initial state
+        # --------------------------------------------------------
+
+        seed_x = chain_seeds[chain_index]
+
+        all_x[chain_index, 0] = seed_x
+        all_g[chain_index, 0] = chain_g[chain_index]
+
+        seed_x_t = transformation(seed_x) if transformation else seed_x
+
+        seed_gc = performance_coarse(seed_x_t)
+        all_gc[chain_index, 0] = seed_gc
+
+        # --------------------------------------------------------
+        # RNG for this chain
+        # --------------------------------------------------------
+
+        # `4` is usually the task insert ID of the generate_next_state task:
+        spawn_key_ = tuple([*(spawn_key or (4,)), level_idx, chain_index])
+        chain_rng = np.random.default_rng(
+            np.random.SeedSequence(
+                master_seed,
+                spawn_key=spawn_key_,
+            )
+        )
+
+        # --------------------------------------------------------
+        # Generate outer states
+        # --------------------------------------------------------
+
+        for state_idx in range(1, num_states):
+
+            if debug:
+                debug_data["chain_data"][chain_index]["state_data"].append({})
+                debug_dat_cs_ij = debug_data["chain_data"][chain_index]["state_data"][
+                    state_idx - 1
+                ]
+
+            current_x = all_x[chain_index, state_idx - 1]
+            current_g = all_g[chain_index, state_idx - 1]
+            current_gc = all_gc[chain_index, state_idx - 1]
+
+            # ----------------------------------------------------
+            # Run the coarse subchain
+            # ----------------------------------------------------
+
+            (
+                psi,
+                psi_gc,
+                n_inner_accepts,
+                sub_chain_debug_data,
+            ) = generate_coarse_subchain(
+                x=current_x,
+                gc=current_gc,
+                performance_coarse=performance_coarse,
+                proposal=proposal,
+                coarse_weight=coarse_weight,
+                threshold=threshold,
+                temperature=temperature,
+                transformation=transformation,
+                num_inner_states=num_inner_states,
+                rng=chain_rng,
+                chain_idx=chain_index,
+                debug=debug,
+            )
+
+            if debug:
+                debug_dat_cs_ij["generate_coarse_subchain_data"] = sub_chain_debug_data
+                debug_dat_cs_ij["psi"] = psi
+
+            inner_accept_count_arr[chain_index, state_idx - 1] = n_inner_accepts
+
+            inner_accept_rate_arr[chain_index, state_idx - 1] = (
+                n_inner_accepts / num_inner_states if num_inner_states > 0 else np.nan
+            )
+
+            # ----------------------------------------------------
+            # Did the coarse subchain actually move?
+            # ----------------------------------------------------
+
+            endpoint_moved = not np.array_equal(psi, current_x)
+
+            endpoint_move_arr[chain_index, state_idx - 1] = endpoint_moved
+
+            if not endpoint_moved:
+
+                # The subchain ended where it started.
+                # No fine evaluation is necessary.
+                new_x = current_x
+                new_g = current_g
+                new_gc = current_gc
+
+                if debug:
+                    debug_dat_cs_ij["psi_g"] = None
+
+            else:
+
+                # ------------------------------------------------
+                # Endpoint coarse diagnostics
+                # ------------------------------------------------
+
+                endpoint_coarse_subset_pass_arr[chain_index, state_idx - 1] = (
+                    psi_gc > threshold
+                )
+
+                # ------------------------------------------------
+                # Fine evaluation
+                # ------------------------------------------------
+
+                fine_eval_arr[chain_index, state_idx - 1] = True
+
+                psi_t = transformation(psi) if transformation else psi
+
+                psi_g = performance(psi_t)
+
+                if debug:
+                    debug_dat_cs_ij["psi_g"] = psi_g
+
+                # ------------------------------------------------
+                # Fine subset test
+                # ------------------------------------------------
+
+                fine_subset_pass = psi_g > threshold
+                fine_subset_pass_arr[chain_index, state_idx - 1] = fine_subset_pass
+
+                if not fine_subset_pass:
+
+                    # The fine target is zero here.
+                    new_x = current_x
+                    new_g = current_g
+                    new_gc = current_gc
+
+                else:
+
+                    # ------------------------------------------------
+                    # Final RST correction
+                    #
+                    # alpha_F =
+                    # min(1, pi_C(current_x) / pi_C(psi))
+                    #
+                    # The phi terms cancel, leaving:
+                    #
+                    # alpha_F =
+                    # min(1, s(current_x) / s(psi))
+                    # ------------------------------------------------
+
+                    s_current = coarse_weight(
+                        current_gc,
+                        threshold,
+                        temperature,
+                    )
+
+                    s_psi = coarse_weight(
+                        psi_gc,
+                        threshold,
+                        temperature,
+                    )
+
+                    alpha_fine = min(
+                        1.0,
+                        s_current / s_psi,
+                    )
+                    random_num = chain_rng.random()
+                    fine_alpha_arr[chain_index, state_idx - 1] = alpha_fine
+                    fine_accept = random_num < alpha_fine
+
+                    fine_accept_arr[chain_index, state_idx - 1] = fine_accept
+
+                    if fine_accept:
+                        new_x = psi
+                        new_g = psi_g
+                        new_gc = psi_gc
+                    else:
+                        new_x = current_x
+                        new_g = current_g
+                        new_gc = current_gc
+
+            if debug:
+                debug_dat_cs_ij["new_x"] = new_x
+                debug_dat_cs_ij["new_g"] = new_g
+                debug_dat_cs_ij["new_gc"] = new_gc
+
+            # ----------------------------------------------------
+            # Store outer state
+            # ----------------------------------------------------
+
+            all_x[chain_index, state_idx] = new_x
+            all_g[chain_index, state_idx] = new_g
+            all_gc[chain_index, state_idx] = new_gc
+
+    # ============================================================
+    # Aggregate diagnostics
+    # ============================================================
+
+    n_inner_proposals = num_chains * (num_states - 1) * num_inner_states
+    n_inner_accepts = int(inner_accept_count_arr.sum())
+    n_fine_evals = int(fine_eval_arr.sum())
+    n_fine_subset_pass = int(fine_subset_pass_arr.sum())
+    n_fine_accepts = int(fine_accept_arr.sum())
+    n_endpoint_moves = int(endpoint_move_arr.sum())
+
+    # Mean acceptance probability of individual coarse MH steps.
+    inner_accept_rate = (
+        n_inner_accepts / n_inner_proposals if n_inner_proposals > 0 else np.nan
+    )
+
+    # Fraction of outer transitions for which the coarse subchain
+    # produced an endpoint different from the current state.
+    endpoint_move_rate = (
+        n_endpoint_moves / num_outer_trials if num_outer_trials > 0 else np.nan
+    )
+
+    # Fraction of outer transitions requiring an expensive evaluation.
+    fine_eval_rate = n_fine_evals / num_outer_trials if num_outer_trials > 0 else np.nan
+
+    # Of the endpoints that were evaluated by the fine model,
+    # how many were actually in the fine subset?
+    fine_subset_pass_rate = (
+        n_fine_subset_pass / n_fine_evals if n_fine_evals > 0 else np.nan
+    )
+
+    # Of the endpoints passing the fine subset, how many passed
+    # the final RST correction?
+    fine_correction_accept_rate = (
+        n_fine_accepts / n_fine_subset_pass if n_fine_subset_pass > 0 else np.nan
+    )
+
+    # Probability of an actual outer-chain move.
+    outer_move_rate = (
+        n_fine_accepts / num_outer_trials if num_outer_trials > 0 else np.nan
+    )
+
+    # Among fine-evaluated endpoints, fraction also above the
+    # coarse threshold.
+    coarse_given_fine = (
+        np.sum(endpoint_coarse_subset_pass_arr & fine_subset_pass_arr)
+        / n_fine_subset_pass
+        if n_fine_subset_pass > 0
+        else np.nan
+    )
+
+    # Number of coarse model evaluations.
+    #
+    # This assumes generate_coarse_subchain evaluates the coarse
+    # model once per inner step. If it skips evaluation when the
+    # MMH proposal makes no move, adjust this using a counter
+    # returned by generate_coarse_subchain.
+    num_coarse_evals = num_chains + n_inner_proposals
+
+    return {
+        # --------------------------------------------------------
+        # Main computational quantities
+        # --------------------------------------------------------
+        "num_fine_evals": n_fine_evals,
+        "num_coarse_evals": num_coarse_evals,
+        "fine_eval_rate": fine_eval_rate,
+        # --------------------------------------------------------
+        # Inner coarse-MH diagnostics
+        # --------------------------------------------------------
+        "inner_accept_rate": inner_accept_rate,
+        "inner_accept_count_arr": inner_accept_count_arr,
+        "inner_accept_rate_arr": inner_accept_rate_arr,
+        # --------------------------------------------------------
+        # Endpoint diagnostics
+        # --------------------------------------------------------
+        "endpoint_move_rate": endpoint_move_rate,
+        "endpoint_move_arr": endpoint_move_arr,
+        # --------------------------------------------------------
+        # Fine correction diagnostics
+        # --------------------------------------------------------
+        "fine_subset_pass_rate": fine_subset_pass_rate,
+        "fine_correction_accept_rate": fine_correction_accept_rate,
+        "outer_move_rate": outer_move_rate,
+        "fine_eval_arr": fine_eval_arr,
+        "fine_subset_pass_arr": fine_subset_pass_arr,
+        "fine_accept_arr": fine_accept_arr,
+        "fine_alpha_arr": fine_alpha_arr,
+        # --------------------------------------------------------
+        # Coarse-vs-fine diagnostic at endpoints
+        # --------------------------------------------------------
+        "coarse_given_fine": coarse_given_fine,
+        "endpoint_coarse_subset_pass_arr": endpoint_coarse_subset_pass_arr,
+        # --------------------------------------------------------
+        # Optional debugging arrays
+        # --------------------------------------------------------
+        "all_gc": all_gc,
+        "debug_data": debug_data,
+    }
+
+
+def generate_next_level_samples_DA_single_inner(
+    performance,
+    performance_coarse,
+    num_chains,
+    num_states,
+    dimension,
+    chain_seeds,
+    chain_g,
+    all_x,
+    all_g,
+    level_idx,
+    master_seed,
+    threshold,
+    proposal,
+    coarse_weight: Callable,
+    transformation: Callable | None = None,
+    temperature=1.0,
+    debug: bool = False,
+):
+    """Delayed-acceptance modified Metropolis algorithm for subset simulation.
+
+    Set coarse_weight to a constant callable to reproduce vanilla subset simulation.
+
+    """
+
+    stage1_accept_arr = np.zeros((num_chains, num_states - 1)).astype(bool)
+    stage2_accept_arr = np.zeros((num_chains, num_states - 1)).astype(bool)
+    fine_subset_pass_arr = np.zeros((num_chains, num_states - 1)).astype(bool)
+    coarse_subset_pass_arr = np.zeros((num_chains, num_states - 1), dtype=bool)
+    fine_all_arr = np.zeros((num_chains, num_states - 1), dtype=bool)
+
+    all_gc = np.ones((num_chains, num_states)) * np.nan
+
+    for chain_index in range(num_chains):
+
+        # proceed this Markov chain until all states have been generated
+        seed_x = chain_seeds[chain_index]
+        all_x[chain_index, 0] = seed_x
+        all_g[chain_index, 0] = chain_g[chain_index]
+
+        seed_x_t = transformation(seed_x) if transformation else seed_x
+        seed_gc = performance_coarse(seed_x_t)
+        all_gc[chain_index, 0] = seed_gc
+
+        chain_rng = None
+        for state_idx in range(1, num_states):
+
+            # RNG seed sequence for Markov chains:
+            if state_idx == 1:
+                # spawn key to match the task ID in the matflow workflow
+                spawn_key = (4, level_idx, chain_index)
+                chain_rng = np.random.default_rng(
+                    np.random.SeedSequence(master_seed, spawn_key=spawn_key)
+                )
+
+            # current state
+            current_x = all_x[chain_index, state_idx - 1]
+            current_g = all_g[chain_index, state_idx - 1]
+            current_gc = all_gc[chain_index, state_idx - 1]
+
+            trial_x, mcmc_accept_rate = generate_next_state(
+                x=current_x,
+                proposal=proposal,
+                rng=chain_rng,
+            )
+
+            trial_x_t = transformation(trial_x) if transformation else trial_x
+            trial_gc = performance_coarse(trial_x_t)
+            coarse_subset_pass = trial_gc > threshold
+
+            # diagnostic only: evaluate the expensive model for every proposal:
+            trial_g_diagnostic = performance(trial_x_t)
+            fine_subset_pass_diagnostic = trial_g_diagnostic > threshold
+            fine_all_arr[chain_index, state_idx - 1] = fine_subset_pass_diagnostic
+
+            coarse_subset_pass_arr[chain_index, state_idx - 1] = coarse_subset_pass
+
+            s_current = coarse_weight(current_gc, threshold, temperature)
+            s_trial = coarse_weight(trial_gc, threshold, temperature)
+
+            alpha1 = min(1.0, s_trial / s_current)
+            stage1_accept = chain_rng.random() < alpha1
+
+            if not stage1_accept:
+
+                # no fine evaluation
+                new_x = current_x
+                new_g = current_g
+                new_gc = current_gc
+
+                fine_subset_pass = False
+                stage2_accept = False
+
+            else:
+
+                # stage 2: expensive model
+                trial_g = performance(trial_x_t)
+                fine_subset_pass = trial_g > threshold
+
+                if not fine_subset_pass:
+                    new_x = current_x
+                    new_g = current_g
+                    new_gc = current_gc
+                    stage2_accept = False
+
+                else:
+                    alpha2 = min(1.0, s_current / s_trial)
+                    stage2_accept = chain_rng.random() < alpha2
+                    if stage2_accept:
+                        new_x = trial_x
+                        new_g = trial_g
+                        new_gc = trial_gc
+                    else:
+                        new_x = current_x
+                        new_g = current_g
+                        new_gc = current_gc
+
+            all_x[chain_index, state_idx] = new_x
+            all_g[chain_index, state_idx] = new_g
+            all_gc[chain_index, state_idx] = new_gc
+
+            stage1_accept_arr[chain_index, state_idx - 1] = stage1_accept
+            stage2_accept_arr[chain_index, state_idx - 1] = stage2_accept
+            fine_subset_pass_arr[chain_index, state_idx - 1] = fine_subset_pass
+
+    coarse_accept = np.mean(stage1_accept_arr).item()
+    mcmc_accept = np.mean(fine_subset_pass_arr).item()
+    fine_eval_rate = np.mean(stage1_accept_arr).item()
+    num_trials = num_chains * (num_states - 1)
+
+    fine_pass = fine_all_arr
+    coarse_pass = coarse_subset_pass_arr
+
+    p_coarse = np.mean(coarse_pass)
+    n_fine_pass = np.sum(fine_pass)
+    n_both_pass = np.sum(fine_pass & coarse_pass)
+
+    p_stage1_accept = np.mean(stage1_accept_arr).item()
+
+    # probability the coarse model in failure domain, given the fine model is also in the
+    # failure domain; if this is high, the coarse model is a good approximation
+    p_coarse_given_fine = n_both_pass / n_fine_pass if n_fine_pass > 0 else np.nan
+
+    return {
+        "mcmc_accept": mcmc_accept,
+        "coarse_accept_arr": stage1_accept_arr,
+        "coarse_accept": coarse_accept,
+        "fine_eval_rate": fine_eval_rate,
+        "num_fine_evals": int(stage1_accept_arr.sum()),
+        "num_coarse_evals": num_trials + num_chains,
+        "p_coarse": p_coarse,
+        "n_fine_pass": n_fine_pass,
+        "n_both_pass": n_both_pass,
+        "p_coarse_given_fine": p_coarse_given_fine,
+        "p_stage1_accept": p_stage1_accept,
+    }
+
+
 def subset_simulation(
+    performance,
     dimension=200,
-    target_pf=1e-4,
     p_0=0.1,
     num_samples=100,
     num_levels=10,
     master_seed=None,
     sampling_method=generate_next_level_samples,
     sampling_method_kwargs=None,
+    transformation: Callable | None = None,
     mimic_matflow: bool = False,
     debug: bool = False,
 ):
@@ -489,20 +1478,53 @@ def subset_simulation(
         spawn_key=(0,),  # spawn key to match the task ID in the matflow workflow
         mimic_matflow=mimic_matflow,
     )
-    g = system_analysis_toy_model(x, dimension, target_pf=target_pf)
+    x_t = transformation(x) if transformation else x
+    g = performance(x_t)
     sampling_method_kwargs = copy.deepcopy(sampling_method_kwargs)
+
+    # pass the performance function on to the sampling method:
+    if "performance" not in sampling_method_kwargs:
+        sampling_method_kwargs["performance"] = performance
 
     if debug:
         x_original = x.copy()
 
     level_covs = []
     subset_accepts = []
+    coarse_accepts = []
+    subset_accepts_arr = []
+    coarse_accepts_arr = []
     mcmc_accepts = []
+    fine_eval_rates = []
+    thresholds = []
+    thresholds_coarse = []
+    threshold_coarse_debugs = []
+    p_coarse = []
+    p_fine = []
+    n_fine_pass = []
+    n_both_pass = []
+    p_coarse_given_fine = []
+    num_failed_all = []
+
+    # for DA: includes fine-acceptance even if coarse rejected:
+    debug_subset_accepts_arr = []
+    false_coarse_rejection_rates = []
+
+    debug_data = {"level_data": []}
+
     ret = None
     all_x = None
     all_g = None
+    # the initial direct-MC draw is always evaluated with the fine model
+    num_fine_evals_total = num_samples
+    num_coarse_evals_total = 0
     for level_idx in range(num_levels):
+
+        if debug:
+            debug_data["level_data"].append({})
+
         num_failed = int(np.sum(g > 0))
+        num_failed_all.append(num_failed)
         num_chains = int(len(g) * p_0)
         num_states = int(num_samples / num_chains)
         g_unsrt = g.copy()
@@ -513,6 +1535,7 @@ def subset_simulation(
         x = x[srt_idx, :]
 
         threshold = (g[num_chains - 1] + g[num_chains]) / 2
+        thresholds.append(threshold)
 
         # failure probability at this level:
         indicator = np.reshape(
@@ -537,8 +1560,13 @@ def subset_simulation(
                     "pf": pf,
                     "cov": cov,
                     "subset_accepts": subset_accepts,
+                    "coarse_accepts": coarse_accepts,
+                    "subset_accepts_arr": subset_accepts_arr,
+                    "coarse_accepts_arr": coarse_accepts_arr,
                     "mcmc_accepts": mcmc_accepts,
                     "x_original": x_original,
+                    "thresholds": thresholds,
+                    "thresholds_coarse": thresholds_coarse,
                     "debug_chain_states": (ret or {}).get("debug_chain_states"),
                     "debug_current_x": (ret or {}).get("debug_current_x"),
                     "debug_trial_x": (ret or {}).get("debug_trial_x"),
@@ -548,9 +1576,22 @@ def subset_simulation(
                     "all_x": all_x,
                     "all_g": all_g,
                     "num_failed": num_failed,
+                    "num_failed_all": num_failed_all,
                     "threshold": threshold,
                     "level_pf": level_pf,
                     "level_cov": level_cov,
+                    "fine_eval_rates": fine_eval_rates,
+                    "num_fine_evals": num_fine_evals_total,
+                    "num_coarse_evals": num_coarse_evals_total,
+                    "threshold_coarse_debugs": threshold_coarse_debugs,
+                    "debug_subset_accepts_arr": debug_subset_accepts_arr,
+                    "false_coarse_rejection_rates": false_coarse_rejection_rates,
+                    "p_coarse": p_coarse,
+                    "p_fine": p_fine,
+                    "n_fine_pass": n_fine_pass,
+                    "n_both_pass": n_both_pass,
+                    "p_coarse_given_fine": p_coarse_given_fine,
+                    "debug_data": debug_data,
                 }
             return pf, cov, subset_accepts, mcmc_accepts
 
@@ -566,18 +1607,73 @@ def subset_simulation(
             all_g=all_g,
             level_idx=level_idx,
             master_seed=master_seed,
-            target_pf=target_pf,
             threshold=threshold,
             debug=debug,
+            transformation=transformation,
             **sampling_method_kwargs,
         )
-        subset_accepts.append(ret["subset_accept"])
+        if "debug_data" in (ret or {}):
+            debug_data["level_data"][level_idx]["sampling_method_data"] = ret[
+                "debug_data"
+            ]
+
+        if "subset_accepts" in (ret or {}):
+            subset_accepts.append(ret["subset_accept"])
+
+        if "coarse_accept" in (ret or {}):
+            coarse_accepts.append(ret["coarse_accept"])
+
+        if "coarse_accept_arr" in (ret or {}):
+            coarse_accepts_arr.append(ret["coarse_accept_arr"])
+
+        if "subset_accept_arr" in (ret or {}):
+            subset_accepts_arr.append(ret["subset_accept_arr"])
 
         if "mcmc_accept" in (ret or {}):
             mcmc_accepts.append(ret["mcmc_accept"])
 
         if "lambda_" in (ret or {}):
             sampling_method_kwargs["lambda_"] = ret["lambda_"]
+
+        if "fine_eval_rate" in (ret or {}):
+            fine_eval_rates.append(ret["fine_eval_rate"])
+
+        if "threshold_coarse" in (ret or {}):
+            thresholds_coarse.append(ret["threshold_coarse"])
+            sampling_method_kwargs["previous_threshold_coarse_margin"] = ret[
+                "threshold_coarse_margin"
+            ]
+
+        if "threshold_coarse_debug" in (ret or {}):
+            threshold_coarse_debugs.append(ret["threshold_coarse_debug"])
+
+        if "debug_subset_accept_arr" in (ret or {}):
+            debug_subset_accepts_arr.append(ret["debug_subset_accept_arr"])
+
+        if "false_coarse_rejection_rate" in (ret or {}):
+            false_coarse_rejection_rates.append(ret["false_coarse_rejection_rate"])
+
+        if "p_coarse" in (ret or {}):
+            p_coarse.append(ret["p_coarse"])
+
+        if "p_fine" in (ret or {}):
+            p_fine.append(ret["p_fine"])
+
+        if "n_fine_pass" in (ret or {}):
+            n_fine_pass.append(ret["n_fine_pass"])
+
+        if "n_both_pass" in (ret or {}):
+            n_both_pass.append(ret["n_both_pass"])
+
+        if "p_coarse_given_fine" in (ret or {}):
+            p_coarse_given_fine.append(ret["p_coarse_given_fine"])
+
+        num_fine_evals_total += ret.get("num_fine_evals", 0)
+        num_coarse_evals_total += ret.get("num_coarse_evals", 0)
+
+        if debug:
+            debug_data["level_data"][level_idx]["all_x"] = all_x
+            debug_data["level_data"][level_idx]["all_g"] = all_g
 
         g = all_g.reshape((num_samples))
         x = all_x.reshape((num_samples, dimension))
@@ -589,7 +1685,14 @@ def subset_simulation(
         )
         return {
             "pf": pf,
+            "subset_accepts": subset_accepts,
+            "coarse_accepts": coarse_accepts,
+            "subset_accepts_arr": subset_accepts_arr,
+            "coarse_accepts_arr": coarse_accepts_arr,
+            "mcmc_accepts": mcmc_accepts,
             "x_original": x_original,
+            "thresholds": thresholds,
+            "thresholds_coarse": thresholds_coarse,
             "debug_chain_states": (ret or {}).get("debug_chain_states"),
             "debug_current_x": (ret or {}).get("debug_current_x"),
             "debug_trial_x": (ret or {}).get("debug_trial_x"),
@@ -599,22 +1702,43 @@ def subset_simulation(
             "all_x": all_x,
             "all_g": all_g,
             "num_failed": num_failed,
+            "num_failed_all": num_failed_all,
             "threshold": threshold,
             "level_pf": level_pf,
             "level_cov": level_cov,
+            "fine_eval_rates": fine_eval_rates,
+            "num_fine_evals": num_fine_evals_total,
+            "num_coarse_evals": num_coarse_evals_total,
+            "threshold_coarse_debugs": threshold_coarse_debugs,
+            "debug_subset_accepts_arr": debug_subset_accepts_arr,
+            "false_coarse_rejection_rates": false_coarse_rejection_rates,
+            "p_coarse": p_coarse,
+            "p_fine": p_fine,
+            "n_fine_pass": n_fine_pass,
+            "n_both_pass": n_both_pass,
+            "p_coarse_given_fine": p_coarse_given_fine,
+            "debug_data": debug_data,
         }
     else:
         raise RuntimeError(f"Failed to estimate in {num_levels} levels. Try increasing.")
 
 
-def get_stats(all_pf, all_cov, all_sus_acc, all_mcmc_acc):
+def get_stats(
+    all_pf,
+    all_cov,
+    all_sus_acc=None,
+    all_mcmc_acc=None,
+    all_num_fine_evals=None,
+    all_num_coarse_evals=None,
+    all_false_coarse_rejection_rates=None,
+):
 
     pf_mean = np.mean(all_pf).item()
     cov_empirical = np.std(all_pf) / pf_mean
     cov_estimate = np.mean(all_cov)
     cov_estimate_std = np.std(all_cov)
 
-    return {
+    stats = {
         "pf": all_pf,
         "cov": all_cov,
         "pf_mean": pf_mean,
@@ -624,47 +1748,105 @@ def get_stats(all_pf, all_cov, all_sus_acc, all_mcmc_acc):
         "all_sus_accept": all_sus_acc,
         "all_mcmc_accept": all_mcmc_acc,
     }
+    if all_num_fine_evals is not None:
+        stats["all_num_fine_evals"] = all_num_fine_evals
+        stats["num_fine_evals_mean"] = np.mean(all_num_fine_evals).item()
+
+    if all_num_coarse_evals is not None:
+        stats["all_num_coarse_evals"] = all_num_coarse_evals
+        stats["num_coarse_evals_mean"] = np.mean(all_num_coarse_evals).item()
+
+    if all_false_coarse_rejection_rates:
+        stats["all_false_coarse_rejection_rates"] = all_false_coarse_rejection_rates
+        stats["false_coarse_rejection_rate_mean"] = np.mean(
+            all_false_coarse_rejection_rates
+        ).item()
+    return stats
 
 
 def run_repeats(
+    performance,
     num_samples,
     sampling_method,
     sampling_method_kwargs=None,
     num_repeats=100,
     dimension=200,
-    target_pf=1e-4,
     p_0=0.1,
     num_levels=10,
+    seed=None,
     mimic_matflow=False,
+    max_retries=5,
+    transformation: Callable | None = None,
 ):
-    seeds = np.random.SeedSequence().generate_state(num_repeats)
+    seeds = np.random.SeedSequence(seed).generate_state(num_repeats)
     all_pf = []
     all_cov = []
     all_sus_acc = []
     all_mcmc_acc = []
+    all_num_fine_evals = []
+    all_num_coarse_evals = []
+    all_false_coarse_rejection_rates = []
+    num_retries_total = 0
     for repeat_idx in range(num_repeats):
         pc = (100 * (repeat_idx + 1)) // num_repeats
         if pc % 1 == 0:
             print(
                 f"\rrunning {num_repeats} repeats with N={num_samples}...{pc:3d}%", end=""
             )
-        pf, cov, SuS_acc, mcmc_acc = subset_simulation(
-            dimension=dimension,
-            target_pf=target_pf,
-            p_0=p_0,
-            num_samples=num_samples,
-            num_levels=num_levels,
-            sampling_method=sampling_method,
-            sampling_method_kwargs=sampling_method_kwargs,
-            master_seed=seeds[repeat_idx],
-            mimic_matflow=mimic_matflow,
-        )
-        all_pf.append(pf)
-        all_cov.append(cov)
-        all_sus_acc.append(SuS_acc)
-        all_mcmc_acc.append(mcmc_acc)
+        seed_i = seeds[repeat_idx]
+        for attempt in range(max_retries):
+            result = subset_simulation(
+                performance=performance,
+                dimension=dimension,
+                p_0=p_0,
+                num_samples=num_samples,
+                num_levels=num_levels,
+                sampling_method=sampling_method,
+                sampling_method_kwargs=sampling_method_kwargs,
+                master_seed=seed_i,
+                transformation=transformation,
+                mimic_matflow=mimic_matflow,
+                debug=True,
+            )
+            if "cov" in result:
+                break
+            # rare stochastic failure to converge in `num_levels` levels -- retry this
+            # repeat with a fresh seed instead of losing the whole run_repeats call.
+            num_retries_total += 1
+            seed_i = np.random.SeedSequence().generate_state(1)[0]
+        else:
+            raise RuntimeError(
+                f"Failed to estimate pf in {num_levels} levels after {max_retries} "
+                f"retries (repeat_idx={repeat_idx})."
+            )
+        all_pf.append(result["pf"])
+        all_cov.append(result["cov"])
+        all_sus_acc.append(result["subset_accepts"])
+        all_mcmc_acc.append(result["mcmc_accepts"])
+        all_num_fine_evals.append(result["num_fine_evals"])
+        all_num_coarse_evals.append(result["num_coarse_evals"])
+
+        # subset level zero only:
+        if result["false_coarse_rejection_rates"]:
+            all_false_coarse_rejection_rates.append(
+                result["false_coarse_rejection_rates"][0]
+            )
+
     print()
-    return get_stats(all_pf, all_cov, all_sus_acc, all_mcmc_acc)
+    if num_retries_total:
+        print(
+            f"(note: {num_retries_total} repeat(s) needed a retry due to "
+            f"max-levels-exceeded failures)"
+        )
+    return get_stats(
+        all_pf,
+        all_cov,
+        all_sus_acc,
+        all_mcmc_acc,
+        all_num_fine_evals,
+        all_num_coarse_evals,
+        all_false_coarse_rejection_rates,
+    )
 
 
 def dist_to_str(dist):
@@ -676,11 +1858,13 @@ def dist_to_str(dist):
 
 
 def run_convergence(
+    performance,
     converge_label: str,
     fixed_num: int,
     series: list[int],
-    sampling_method: callable,
+    sampling_method: Callable,
     sampling_method_kwargs: dict,
+    num_levels: int = 10,
     mimic_matflow: bool = False,
 ):
     """Run a convergence test on the toy model subset simulation, for either number of samples per level, N, or number of repeats, R.
@@ -712,9 +1896,11 @@ def run_convergence(
     }
     for num in series:
         run_kwargs_i = {
+            "performance": performance,
             "sampling_method": sampling_method,
             "sampling_method_kwargs": sampling_method_kwargs,
             "mimic_matflow": mimic_matflow,
+            "num_levels": num_levels,
         }
         if converge_label == "N":
             run_kwargs_i["num_samples"] = num
