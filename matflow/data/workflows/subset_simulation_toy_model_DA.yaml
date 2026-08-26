@@ -1,6 +1,3 @@
-template_components:
-  task_schemas:
-
 loops:
   - name: sub_chain
     tasks:
