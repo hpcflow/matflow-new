@@ -1,4 +1,4 @@
-import pprint
+import os
 from typing import Optional
 import numpy as np
 from scipy.stats import norm
@@ -32,6 +32,25 @@ def voxel_block_average(x, group_idx):
 
 
 def model_coarse(x, dimension, block_size):
+    simulate_failure = False
+    if simulate_failure:
+        loop_idx = {
+            loop_name: int(loop_idx)
+            for loop_name, loop_idx in (
+                item.split("=")
+                for item in os.environ["MATFLOW_ELEMENT_ITER_LOOP_IDX"].split(";")
+            )
+        }
+        chain_idx = int(os.environ["MATFLOW_ELEMENT_IDX"])
+        if (
+            chain_idx == 0
+            and loop_idx["levels"] == 1
+            and loop_idx.get("markov_chain_state") == 2
+            and loop_idx.get("sub_chain") == 1
+        ):
+            # simulate a failure:
+            print(f"simulated failure in coarse toy model.", flush=True)
+            raise RuntimeError("Simulated failure!")
     group_idx = make_voxel_grouping(dimension, block_size)
     x_coarse = voxel_block_average(x, group_idx)
     return np.max(x_coarse, axis=-1)

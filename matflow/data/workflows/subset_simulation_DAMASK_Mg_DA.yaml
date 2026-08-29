@@ -511,7 +511,14 @@ tasks:
         type: norm
         scale: 1.0
 
-  - schema: system_analysis_16 
+  - schema: system_analysis_16
+    resources:
+      simulate_VE_loading_damask:
+        any:
+          skip_downstream_on_failure: false
+      evaluate_yield_stress_limit_state:
+        any:
+          skip_downstream_on_failure: false        
     output_labels:
       evaluate_yield_stress_limit_state:
         - parameter: g

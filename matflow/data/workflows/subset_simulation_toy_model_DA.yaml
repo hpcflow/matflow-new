@@ -83,6 +83,9 @@ tasks:
         scale: 1.0
 
   - schema: system_analysis_toy_model_max_random_walk_coarse
+    resources:
+      any:
+        skip_downstream_on_failure: false
     inputs:
       dimension: 200
       target_pf: 1.0e-4

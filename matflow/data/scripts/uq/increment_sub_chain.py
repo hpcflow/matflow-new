@@ -62,17 +62,32 @@ def increment_sub_chain(
     trial_x = x[:]  # convert to numpy array
     trial_gc = g
 
-    s_current = coarse_weight(current_sub_chain_gc, threshold, temperature)
-    s_trial = coarse_weight(trial_gc, threshold, temperature)
-    alpha = min(1.0, s_trial / s_current)
+    if trial_gc is None:
+        # simulation failed for some reason; reject
+        chain_idx = int(os.environ["MATFLOW_ELEMENT_IDX"])
+        print(
+            f"Increment sub-chain: system analysis failed for chain index {chain_idx}, "
+            f"Markov chain iteration index {loop_idx.get('markov_chain_state')}, coarse "
+            f"sub-chain iteration index {loop_idx.get('sub_chain')!r}; rejecting the "
+            f"state!"
+        )
+        is_accept = False
+        new_x = current_sub_chain_x
+        new_gc = current_sub_chain_gc
 
-    random_num = rng.random()
-    is_accept = random_num < alpha
+    else:
 
-    new_x = trial_x if is_accept else current_sub_chain_x
-    new_gc = trial_gc if is_accept else current_sub_chain_gc
-    if is_accept:
-        num_inner_accepts += 1
+        s_current = coarse_weight(current_sub_chain_gc, threshold, temperature)
+        s_trial = coarse_weight(trial_gc, threshold, temperature)
+        alpha = min(1.0, s_trial / s_current)
+
+        random_num = rng.random()
+        is_accept = random_num < alpha
+
+        new_x = trial_x if is_accept else current_sub_chain_x
+        new_gc = trial_gc if is_accept else current_sub_chain_gc
+        if is_accept:
+            num_inner_accepts += 1
 
     sub_chain_x = np.vstack([sub_chain_x, new_x[None]])
     sub_chain_g_coarse = np.append(sub_chain_g_coarse, np.array(new_gc))
