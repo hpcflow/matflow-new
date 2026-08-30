@@ -9,7 +9,7 @@ import numpy as np
 
 import matflow as mf
 from matflow.tests.subset_simulation import (
-    coarse_weight,
+    log_surrogate_weight,
     generate_next_level_samples_DA,
     generate_next_level_samples_MLDA_incorrect,
     get_approx_y_star_random_walk,
@@ -168,10 +168,10 @@ def test_subset_simulation_toy_model_DA_prediction(tmp_path):
         sampling_method=generate_next_level_samples_DA,
         sampling_method_kwargs={
             "proposal": proposal,
-            "temperature": 1,
+            "temperature": 1,  # should be of a similar order of magnitude to threshold
             "performance_coarse": performance_coarse,
-            "coarse_weight": coarse_weight,
-            # "coarse_weight": lambda *args, **kwargs: 1,
+            "log_surrogate_weight": log_surrogate_weight,
+            # "log_surrogate_weight": lambda *args, **kwargs: 1,
             "num_inner_states": 3,
             "spawn_key": (5,),
         },
