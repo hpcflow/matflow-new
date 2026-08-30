@@ -1,11 +1,14 @@
 import os
 
 import numpy as np
+from scipy.special import log_expit
 
 
-def coarse_weight(g_coarse, threshold, temperature):
+def log_surrogate_weight(g_coarse, threshold, temperature):
+    """Note temperature should be of a similar order of magnitude to `g_coarse` and
+    `threshold`."""
     z = (g_coarse - threshold) / temperature
-    return 1.0 / (1.0 + np.exp(-z))
+    return log_expit(z)
 
 
 def increment_chain_RST(
@@ -89,13 +92,13 @@ def increment_chain_RST(
             # min(1, s(current_x) / s(psi))
             # ------------------------------------------------
 
-            s_current = coarse_weight(current_gc, threshold, temperature)
-            s_psi = coarse_weight(gc, threshold, temperature)
+            log_s_current = log_surrogate_weight(current_gc, threshold, temperature)
+            log_s_psi = log_surrogate_weight(gc, threshold, temperature)
 
-            alpha_fine = min(1.0, s_current / s_psi)
+            log_alpha_fine = min(0.0, log_s_current - log_s_psi)
 
             random_num = rng.random()
-            fine_accept = random_num < alpha_fine
+            fine_accept = np.log(random_num) < log_alpha_fine
 
             if fine_accept:
                 new_x = x[:]  # convert to Numpy array

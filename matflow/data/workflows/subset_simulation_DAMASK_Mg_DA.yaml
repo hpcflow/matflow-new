@@ -258,7 +258,7 @@ meta_tasks:
         remove_damask_hdf5: true
     - schema: evaluate_yield_stress_limit_state
       inputs:
-        threshold_yield_stress: 55.0e+6 # MPa
+        threshold_yield_stress: 55.0e+6 # Pa
       groups:
         - name: all
   system_analysis_16:
@@ -462,7 +462,7 @@ meta_tasks:
         remove_damask_hdf5: true
     - schema: evaluate_yield_stress_limit_state
       inputs:
-        threshold_yield_stress: 55.0e+6 # MPa
+        threshold_yield_stress: 55.0e+6 # Pa
       groups:
         - name: all
 
@@ -526,7 +526,7 @@ tasks:
 
   - schema: increment_sub_chain
     inputs:
-      temperature: 1
+      temperature: 1e+6 # Pa; should be of similar scale to threshold
    
   - schema: check_sub_chain
     inputs:

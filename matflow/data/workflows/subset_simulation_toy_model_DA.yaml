@@ -96,7 +96,7 @@ tasks:
 
   - schema: increment_sub_chain
     inputs:
-      temperature: 1
+      temperature: 1 # should be of similar scale to the threshold
    
   - schema: check_sub_chain
     inputs:

@@ -1,11 +1,14 @@
 import os
 
 import numpy as np
+from scipy.special import log_expit
 
 
-def coarse_weight(g_coarse, threshold, temperature):
+def log_surrogate_weight(g_coarse, threshold, temperature):
+    """Note temperature should be of a similar order of magnitude to `g_coarse` and
+    `threshold`."""
     z = (g_coarse - threshold) / temperature
-    return 1.0 / (1.0 + np.exp(-z))
+    return log_expit(z)
 
 
 def increment_sub_chain(
@@ -77,12 +80,12 @@ def increment_sub_chain(
 
     else:
 
-        s_current = coarse_weight(current_sub_chain_gc, threshold, temperature)
-        s_trial = coarse_weight(trial_gc, threshold, temperature)
-        alpha = min(1.0, s_trial / s_current)
+        log_s_current = log_surrogate_weight(current_sub_chain_gc, threshold, temperature)
+        log_s_trial = log_surrogate_weight(trial_gc, threshold, temperature)
+        log_alpha = min(0.0, log_s_trial - log_s_current)
 
         random_num = rng.random()
-        is_accept = random_num < alpha
+        is_accept = np.log(random_num) < log_alpha
 
         new_x = trial_x if is_accept else current_sub_chain_x
         new_gc = trial_gc if is_accept else current_sub_chain_gc
