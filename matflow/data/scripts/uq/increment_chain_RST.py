@@ -23,6 +23,9 @@ def increment_chain_RST(
     threshold,
     temperature,
     rng,
+    num_inner_states,
+    fine_eval_count,
+    coarse_eval_count,
 ):
     """
     Increment the outer Markov chain with either the proposal from the end of the coarse
@@ -52,8 +55,12 @@ def increment_chain_RST(
     }
 
     if loop_idx["markov_chain_state"] == 0:
-        # initial iteration of the outer Markov chain
+        # initial iteration of the outer Markov chain, for this subset level
         all_gc = np.array([g["coarse_initial"]])
+        fine_eval_count = 0
+        coarse_eval_count = 1  # initial coarse evaluation, once per subset level chain
+
+    coarse_eval_count += num_inner_states
 
     current_gc = all_gc[-1]
     current_x = all_x[-1]
@@ -66,6 +73,8 @@ def increment_chain_RST(
         new_gc = current_gc
 
     else:
+        fine_eval_count += 1
+
         g_fine = g["fine"]
         g = g_fine
 
@@ -123,4 +132,6 @@ def increment_chain_RST(
         "all_gc": all_gc,
         "all_accept": all_accept,
         "rng": rng,
+        "fine_eval_count": fine_eval_count,
+        "coarse_eval_count": coarse_eval_count,
     }

@@ -1809,6 +1809,18 @@
     - parameter: level_cov
       default_value: null
     - parameter: p_0
+    - parameter: total_fine_eval_count
+      default_value: 0
+    - parameter: total_coarse_eval_count
+      default_value: 0
+    - parameter: fine_eval_count
+      default_value: null
+      group: all
+    - parameter: coarse_eval_count
+      default_value: null      
+      group: all
+    - parameter: fine_eval_rates
+      default_value: null
   outputs:
     - parameter: chain_seeds
     - parameter: chain_g
@@ -1817,10 +1829,16 @@
     - parameter: num_failed
     - parameter: level_pf
     - parameter: level_cov
+    - parameter: level_fine_eval_count
+    - parameter: level_fine_eval_rate
+    - parameter: level_coarse_eval_count
+    - parameter: total_fine_eval_count
+    - parameter: total_coarse_eval_count
     - parameter: pf
     - parameter: is_finished
     - parameter: accept_rate
     - parameter: cov
+    - parameter: fine_eval_rates    
   actions:
     - script: <<script:uq/collate_results.py>>
       script_data_in:
@@ -1957,12 +1975,18 @@
     - parameter: all_g
     - parameter: all_accept
     - parameter: threshold
+    - parameter: fine_eval_count
+      default_value: null
+    - parameter: coarse_eval_count
+      default_value: null      
   outputs:
     - parameter: x
     - parameter: g
     - parameter: all_x
     - parameter: all_g
     - parameter: all_accept
+    - parameter: fine_eval_count
+    - parameter: coarse_eval_count
   actions:
     - script: <<script:uq/increment_chain.py>>
       script_data_in: direct
@@ -2242,6 +2266,11 @@
     - parameter: threshold
     - parameter: temperature
     - parameter: rng
+    - parameter: num_inner_states
+    - parameter: fine_eval_count
+      default_value: null
+    - parameter: coarse_eval_count
+      default_value: null
   outputs:
     - parameter: x
     - parameter: g
@@ -2251,6 +2280,8 @@
     - parameter: all_gc
     - parameter: all_accept
     - parameter: rng
+    - parameter: fine_eval_count
+    - parameter: coarse_eval_count
   actions:
     - script: <<script:uq/increment_chain_RST.py>>
       script_data_in: direct
