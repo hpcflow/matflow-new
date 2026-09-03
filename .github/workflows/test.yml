@@ -39,7 +39,7 @@ on:
 
 jobs:
   test:
-    uses: hpcflow/github-support/.github/workflows/test-impl.yml@main
+    uses: hpcflow/github-support/.github/workflows/test-impl.yml@scan
     with:
       pre_commit: ${{ github.event_name == 'pull_request' || github.event.inputs.pre_commit == 'true' }}
       unit_tests: ${{ github.event_name == 'pull_request' || github.event.inputs.unit_tests == 'true' }}
