@@ -10,6 +10,7 @@ from typing import Callable
 from matplotlib import pyplot as plt
 import numpy as np
 from scipy.stats import norm, multivariate_normal, uniform
+from scipy.special import log_expit
 from numpy.exceptions import AxisError
 from hpcflow.sdk.log import TimeIt
 
@@ -843,9 +844,11 @@ def generate_next_level_samples_DA_threshold_calibration(
     }
 
 
-def coarse_weight(g_coarse, threshold, temperature):
+def log_surrogate_weight(g_coarse, threshold, temperature):
+    """Note temperature should be of a similar order of magnitude to `g_coarse` and
+    `threshold`."""
     z = (g_coarse - threshold) / temperature
-    return 1.0 / (1.0 + np.exp(-z))
+    return log_expit(z)
 
 
 def generate_coarse_subchain(
@@ -853,7 +856,7 @@ def generate_coarse_subchain(
     gc,
     performance_coarse,
     proposal,
-    coarse_weight,
+    log_surrogate_weight,
     threshold,
     temperature,
     transformation,
@@ -896,12 +899,12 @@ def generate_coarse_subchain(
         if debug:
             debug_data["trial_gc"].append(trial_gc)
 
-        s_current = coarse_weight(current_sub_chain_gc, threshold, temperature)
-        s_trial = coarse_weight(trial_gc, threshold, temperature)
-        alpha = min(1.0, s_trial / s_current)
+        log_s_current = log_surrogate_weight(current_sub_chain_gc, threshold, temperature)
+        log_s_trial = log_surrogate_weight(trial_gc, threshold, temperature)
+        log_alpha = min(0.0, log_s_trial - log_s_current)
 
         random_num = rng.random()
-        is_accept = random_num < alpha
+        is_accept = np.log(random_num) < log_alpha
 
         if is_accept:
             current_sub_chain_x = trial_x
@@ -925,7 +928,7 @@ def generate_next_level_samples_DA(
     master_seed,
     threshold,
     proposal,
-    coarse_weight: Callable,
+    log_surrogate_weight: Callable,
     transformation: Callable | None = None,
     temperature=1.0,
     num_inner_states: int = 1,
@@ -959,7 +962,7 @@ def generate_next_level_samples_DA(
 
     The inner MH kernel targets the coarse surrogate
 
-        pi_C(x) ∝ phi(x) * coarse_weight(g_c(x)).
+        pi_C(x) ∝ phi(x) * log_surrogate_weight(g_c(x)).
 
     The endpoint is then corrected to the fine target.
     """
@@ -991,8 +994,8 @@ def generate_next_level_samples_DA(
     # Whether the accepted endpoint is above the coarse threshold.
     endpoint_coarse_subset_pass_arr = np.zeros((num_chains, num_states - 1), dtype=bool)
 
-    # Final coarse surrogate acceptance probability.
-    fine_alpha_arr = np.full((num_chains, num_states - 1), np.nan, dtype=float)
+    # Final coarse surrogate acceptance log probability.
+    fine_log_alpha_arr = np.full((num_chains, num_states - 1), np.nan, dtype=float)
 
     # ------------------------------------------------------------
     # Store coarse performance at outer states
@@ -1065,7 +1068,7 @@ def generate_next_level_samples_DA(
                 gc=current_gc,
                 performance_coarse=performance_coarse,
                 proposal=proposal,
-                coarse_weight=coarse_weight,
+                log_surrogate_weight=log_surrogate_weight,
                 threshold=threshold,
                 temperature=temperature,
                 transformation=transformation,
@@ -1155,25 +1158,22 @@ def generate_next_level_samples_DA(
                     # min(1, s(current_x) / s(psi))
                     # ------------------------------------------------
 
-                    s_current = coarse_weight(
+                    log_s_current = log_surrogate_weight(
                         current_gc,
                         threshold,
                         temperature,
                     )
 
-                    s_psi = coarse_weight(
+                    log_s_psi = log_surrogate_weight(
                         psi_gc,
                         threshold,
                         temperature,
                     )
 
-                    alpha_fine = min(
-                        1.0,
-                        s_current / s_psi,
-                    )
+                    log_alpha_fine = min(0.0, log_s_current - log_s_psi)
                     random_num = chain_rng.random()
-                    fine_alpha_arr[chain_index, state_idx - 1] = alpha_fine
-                    fine_accept = random_num < alpha_fine
+                    fine_log_alpha_arr[chain_index, state_idx - 1] = log_alpha_fine
+                    fine_accept = np.log(random_num) < log_alpha_fine
 
                     fine_accept_arr[chain_index, state_idx - 1] = fine_accept
 
@@ -1285,7 +1285,7 @@ def generate_next_level_samples_DA(
         "fine_eval_arr": fine_eval_arr,
         "fine_subset_pass_arr": fine_subset_pass_arr,
         "fine_accept_arr": fine_accept_arr,
-        "fine_alpha_arr": fine_alpha_arr,
+        "fine_log_alpha_arr": fine_log_alpha_arr,
         # --------------------------------------------------------
         # Coarse-vs-fine diagnostic at endpoints
         # --------------------------------------------------------
@@ -1313,14 +1313,14 @@ def generate_next_level_samples_DA_single_inner(
     master_seed,
     threshold,
     proposal,
-    coarse_weight: Callable,
+    log_surrogate_weight: Callable,
     transformation: Callable | None = None,
     temperature=1.0,
     debug: bool = False,
 ):
     """Delayed-acceptance modified Metropolis algorithm for subset simulation.
 
-    Set coarse_weight to a constant callable to reproduce vanilla subset simulation.
+    Set log_surrogate_weight to a constant callable to reproduce vanilla subset simulation.
 
     """
 
@@ -1376,11 +1376,11 @@ def generate_next_level_samples_DA_single_inner(
 
             coarse_subset_pass_arr[chain_index, state_idx - 1] = coarse_subset_pass
 
-            s_current = coarse_weight(current_gc, threshold, temperature)
-            s_trial = coarse_weight(trial_gc, threshold, temperature)
+            log_s_current = log_surrogate_weight(current_gc, threshold, temperature)
+            log_s_trial = log_surrogate_weight(trial_gc, threshold, temperature)
 
-            alpha1 = min(1.0, s_trial / s_current)
-            stage1_accept = chain_rng.random() < alpha1
+            log_alpha1 = min(0.0, log_s_trial - log_s_current)
+            stage1_accept = np.log(chain_rng.random()) < log_alpha1
 
             if not stage1_accept:
 
@@ -1405,8 +1405,8 @@ def generate_next_level_samples_DA_single_inner(
                     stage2_accept = False
 
                 else:
-                    alpha2 = min(1.0, s_current / s_trial)
-                    stage2_accept = chain_rng.random() < alpha2
+                    log_alpha2 = min(0.0, log_s_current - log_s_trial)
+                    stage2_accept = np.log(chain_rng.random()) < log_alpha2
                     if stage2_accept:
                         new_x = trial_x
                         new_g = trial_g
@@ -1552,6 +1552,8 @@ def subset_simulation(
         else:
             level_cov = estimate_cov(indicator, level_pf)
         level_covs.append(level_cov)
+
+        # TODO: if final level, break here? so num_levels=1 just gives direct MC result?
 
         if is_finished := threshold > 0:
             cov = np.sqrt(sum(np.pow(level_covs, 2))).item()
