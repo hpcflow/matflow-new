@@ -82,10 +82,12 @@ def collate_results(
         # excluding seed points, from previous level:
         total_states = num_chains * (num_states - 1)
 
-        if coarse_eval_count is not None:
-            # e.g. for delayed acceptance variant
+        if coarse_eval_count[0] is not None:
+            # e.g. for delayed acceptance variant; sum across chains:
             coarse_eval_count = int(np.sum(coarse_eval_count))
             total_coarse_eval_count += coarse_eval_count
+        else:
+            coarse_eval_count = None
     else:
         # from initial direct Monte Carlo samples:
         g_unsrt = np.array(g)
