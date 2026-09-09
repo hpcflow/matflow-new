@@ -14,7 +14,6 @@ tasks:
         - type: unimodal
           component_fraction: 1.0
           halfwidth: 5
-      compile: false
     sequences:
       - path: inputs.ODF_components.0.modal_orientation_euler
         values:
@@ -30,4 +29,4 @@ tasks:
       crystal_symmetry: cubic # so we only see one orientaion on the pole figure
       pole_figure_directions:
         - [1, 1, 1]
-      compile: false
+      use_contours: true

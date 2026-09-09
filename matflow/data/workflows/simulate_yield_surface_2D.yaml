@@ -19,7 +19,6 @@ tasks:
         - type: unimodal
           component_fraction: 1.0
           halfwidth: 3
-      compile: false
     sequences:
       - path: inputs.ODF_components.0.modal_orientation_euler
         values:
@@ -34,7 +33,7 @@ tasks:
       crystal_symmetry: cubic
       pole_figure_directions:
         - [1, 1, 1]
-      compile: false
+      use_contours: true
 
   - schema: generate_volume_element_from_voronoi
     inputs:

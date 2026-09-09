@@ -51,7 +51,8 @@
 
 - label: mtex_IPF_key
   name:
-    name: IPF_key.png
+    name: IPF_key\.png
+    is_regex: true
   doc: Key image for MTEX inverse pole figures.
 
 - label: dream_3D_pipeline
@@ -68,3 +69,47 @@
   name:
     name: pipeline.xdmf
   doc: DREAM.3D model data and metadata.
+
+- label: cipher_input_file
+  name:
+    name: cipher_input.yaml
+  doc: Main input file for CIPHER.
+
+- label: cipher_VTU_files
+  name:
+    is_regex: true
+    name: out_\d+\.vtu
+
+- label: precipitates_file
+  name:
+    name: precipitates.txt
+  
+- label: misorientation_plot
+  name:
+    name: misorientation.png
+
+- label: moose_input_file
+  name:
+    name: input.i
+  doc: |
+    The main MOOSE input file, whose format is described at: `https://mooseframework.inl.gov/application_usage/input_syntax.html <https://mooseframework.inl.gov/application_usage/input_syntax.html>`_
+
+- label: gmsh_geo_file
+  name:
+    name: script.geo
+  doc: Gmsh geometry script file.
+- label: gmsh_mesh_file
+  name:
+    name: (.*\.msh)
+    is_regex: true
+  doc: Gmsh mesh file, typically generated from a Gmsh .geo script.
+- label: moose_exodus_file
+  name:
+    name: (.*\.e)
+    is_regex: true
+  doc: Moose output file in the Exodus (NetCDF) format.
+
+- label: pyvale_dic_result_files
+  name:
+    name: (.*\.dic2d)
+    is_regex: true

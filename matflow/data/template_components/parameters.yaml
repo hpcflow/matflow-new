@@ -90,16 +90,16 @@
         and:
           - value.is_instance: [dict]
           - key.in:
-            - "type"
-            - "name"
-            - "crystal_structure"
-            - "volume_fraction"
-            - "size_distribution"
-            - "radial_distribution_function"
-            - "number_fraction_on_boundary"
-            - "preset_statistics_model"
-            - "ODF"
-            - "axis_ODF"
+              - "type"
+              - "name"
+              - "crystal_structure"
+              - "volume_fraction"
+              - "size_distribution"
+              - "radial_distribution_function"
+              - "number_fraction_on_boundary"
+              - "preset_statistics_model"
+              - "ODF"
+              - "axis_ODF"
     - path: [{ "type": "list_value" }, "type"]
       condition:
         and:
@@ -149,7 +149,8 @@
       condition:
         and:
           - value.is_instance: [dict]
-          - key.in: ["filename", "crop", "scale", "homog_points", "min_grain_size"]
+          - key.in:
+              ["filename", "crop", "scale", "homog_points", "min_grain_size"]
 - type: EBSD
   _validation:
     - path: []
@@ -157,7 +158,8 @@
       condition:
         and:
           - value.is_instance: [dict]
-          - key.in: ["filename", "boundary_tol", "min_grain_size", "homog_points"]
+          - key.in:
+              ["filename", "boundary_tol", "min_grain_size", "homog_points"]
 - type: EBSD_phase
   _validation:
     - path: []
@@ -171,11 +173,11 @@
         and:
           - value.is_instance: [str]
           - value.in:
-            - euler_to_spatial
-            - spatial_to_euler
-            # https://mtex-toolbox.github.io/EBSDReferenceFrame.html
-            - convertEuler2SpatialReferenceFrame
-            - convertSpatial2EulerReferenceFrame
+              - euler_to_spatial
+              - spatial_to_euler
+              # https://mtex-toolbox.github.io/EBSDReferenceFrame.html
+              - convertEuler2SpatialReferenceFrame
+              - convertSpatial2EulerReferenceFrame
 - type: EBSD_rotation
   _validation:
     - path: []
@@ -185,7 +187,7 @@
       condition:
         and:
           - value.is_instance: [dict]
-          - key.in: [ "euler_angles_deg", "keep_XY", "keep_euler" ]
+          - key.in: ["euler_angles_deg", "keep_XY", "keep_euler"]
 - type: num_orientations
   _validation:
     - path: []
@@ -221,14 +223,14 @@
         or `"incremental_data"` (now deprecated).
       condition:
         and:
-        - value.is_instance: [dict]
-        - key.in:
-          - "geom_path"
-          - "incremental_data"
-          - "volume_data"
-          - "phase_data"
-          - "field_data"
-          - "grain_data"
+          - value.is_instance: [dict]
+          - key.in:
+              - "geom_path"
+              - "incremental_data"
+              - "volume_data"
+              - "phase_data"
+              - "field_data"
+              - "grain_data"
 - type: homogenization
   _validation:
     - path: []
@@ -259,33 +261,33 @@
         and:
           - value.is_instance: [dict]
           - key.in: ["name", "args", "opts"]
-    - path: [{ "type": "list_value" }, "name" ]
+    - path: [{ "type": "list_value" }, "name"]
       doc: See `damask.Result` for what the operations do.
       condition:
         and:
           - value.is_instance: [str]
           - value.in:
-            # I think these are the relevant operations
-            - "add_absolute"
-            - "add_calculation"
-            - "add_stress_Cauchy"
-            - "add_determinant"
-            - "add_deviator"
-            - "add_eigenvalue"
-            - "add_eigenvector"
-            - "add_IPF_color"
-            - "add_maximum_shear"
-            - "add_equivalent_Mises"
-            - "add_norm"
-            - "add_stress_second_Piola_Kirchhoff"
-            - "add_pole"
-            - "add_rotation"
-            - "add_spherical"
-            - "add_strain"
-            - "add_stretch_tensor"
-            - "add_curl"
-            - "add_divergence"
-            - "add_gradient"
+              # I think these are the relevant operations
+              - "add_absolute"
+              - "add_calculation"
+              - "add_stress_Cauchy"
+              - "add_determinant"
+              - "add_deviator"
+              - "add_eigenvalue"
+              - "add_eigenvector"
+              - "add_IPF_color"
+              - "add_maximum_shear"
+              - "add_equivalent_Mises"
+              - "add_norm"
+              - "add_stress_second_Piola_Kirchhoff"
+              - "add_pole"
+              - "add_rotation"
+              - "add_spherical"
+              - "add_strain"
+              - "add_stretch_tensor"
+              - "add_curl"
+              - "add_divergence"
+              - "add_gradient"
 - type: damask_viz
   _validation:
     - path: []
@@ -296,8 +298,8 @@
       condition:
         or:
           - and:
-            - value.is_instance: [dict]
-            - key.in: ["increments", "phases", "homogenizations", "fields"]
+              - value.is_instance: [dict]
+              - key.in: ["increments", "phases", "homogenizations", "fields"]
           - value.is_instance: [list]
 - type: damask_solver
   _validation:
@@ -324,7 +326,7 @@
 - type: dump_path
   _validation:
     - path: []
-      doc: Where to write dump data. 
+      doc: Where to write dump data.
       condition: { value.is_instance: [str, path] }
 - type: yield_point # vol-avg equivalent plastic strain
   _validation:
@@ -451,13 +453,13 @@
           - value.is_instance: [list]
           - value.length.equal_to: 3
     - path: [{ "type": "list_value" }]
-      condition: { value.is_instance: [int, float]}
+      condition: { value.is_instance: [int, float] }
 - type: resolution
   _validation:
     - path: []
       condition: { value.is_instance: [list] }
     - path: [{ "type": "list_value" }]
-      condition: { value.is_instance: [int, float]}
+      condition: { value.is_instance: [int, float] }
 - type: levenberg_marquardt_fitter
   _validation:
     - path: []
@@ -475,7 +477,7 @@
     - path: []
       condition: { value.is_instance: [list] }
     - path: [{ "type": "list_value" }]
-      condition: { value.is_instance: [str]}
+      condition: { value.is_instance: [str] }
 - type: find_grains_algorithm
   _validation:
     - path: []
@@ -487,8 +489,7 @@
   _validation:
     - path: []
       doc:
-        description:
-          Single parameter to make an instance of MTEX `crystalSymmetry`.
+        description: Single parameter to make an instance of MTEX `crystalSymmetry`.
         examples:
           - "`cubic` - Cubic symmetry"
           - "`hexagonal` - Hexagonal symmetry"
@@ -505,7 +506,7 @@
           - value.is_instance: [list]
           - value.length.equal_to: 3
     - path: [{ "type": "list_value" }, { "type": "list_value" }]
-      condition: { value.is_instance: [int, float]}
+      condition: { value.is_instance: [int, float] }
 - type: IPF_reference_direction
   _validation:
     - path: []
@@ -522,7 +523,7 @@
           - value.is_instance: [list]
           - value.length.equal_to: 2
     - path: [{ "type": "list_value" }]
-      condition: { value.is_instance: [float]}
+      condition: { value.is_instance: [float] }
 - type: ODF_components
   _validation:
     - path: []
@@ -531,7 +532,7 @@
         and:
           - value.is_instance: [list]
     - path: [{ "type": "list_value" }]
-      condition: { value.is_instance: [dict]}
+      condition: { value.is_instance: [dict] }
 - type: order
   _validation:
     - path: []
@@ -556,7 +557,7 @@
           - value.is_instance: [list]
           - value.length.equal_to: 6
     - path: [{ "type": "list_value" }]
-      condition: { value.is_instance: [int]}
+      condition: { value.is_instance: [int] }
 - type: phase_ids
   _validation:
     - path: []
@@ -567,7 +568,7 @@
           - value.is_instance: [list]
           - value.length.equal_to: 6
     - path: [{ "type": "list_value" }]
-      condition: { value.is_instance: [int]}
+      condition: { value.is_instance: [int] }
 - type: phase_labels
   _validation:
     - path: []
@@ -578,7 +579,7 @@
           - value.is_instance: [list]
           - value.length.equal_to: 6
     - path: [{ "type": "list_value" }]
-      condition: { value.is_instance: [str]}
+      condition: { value.is_instance: [str] }
 - type: phase_label_mapping
   _validation:
     - path: []
@@ -586,6 +587,206 @@
         Mapping from phase labels in the `microstructure_image` to phase
         labels for created in the VE.
       condition: { value.is_instance: [dict] }
+
+- type: geometry_name
+  _validation:
+    - path: []
+      doc:
+        description: The name of the geometry to mesh. Currently only `quarter_plate_with_hole` is accepted.
+      condition: { value.is_instance: [str] }
+- type: plate_width
+  _validation:
+    - path: []
+      doc:
+        description: The width of the full plate.
+      condition: { value.is_instance: [float] }
+- type: hole_diameter
+  _validation:
+    - path: []
+      doc:
+        description: The diameter of the hole in the plate.
+      condition: { value.is_instance: [float] }
+
+- type: hole_sect_nodes
+  _validation:
+    - path: []
+      doc:
+        description: The number of nodes to place around the circumference of the quarter-hole.
+      condition: { value.is_instance: [int] }
+
+- type: plate_radial_nodes
+  _validation:
+    - path: []
+      doc:
+        description: The number of nodes to place along the radial direction.
+      condition: { value.is_instance: [int] }
+
+- type: plate_diff
+  _validation:
+    - path: []
+      doc:
+        description: The height of the extra block added to the top of the mesh.
+      condition: { value.is_instance: [int] }
+
+- type: plate_diff_nodes
+  _validation:
+    - path: []
+      doc:
+        description: The number of nodes to place along the vertical direction within the extra block added to the top of the mesh.
+      condition: { value.is_instance: [int] }
+
+- type: generate_exodus
+  _validation:
+    - path: []
+      doc:
+        description: Whether to generate an Exodus file of the mesh to allow visualisation in ParaView.
+      condition: { value.is_instance: [bool] }
+
+- type: gmsh_mesh_str
+  _validation:
+    - path: []
+      doc:
+        description: The Gmsh-generated mesh, as a string.
+      condition: { value.is_instance: [str] }
+
+- type: reference_image_path
+  _validation:
+    - path: []
+      doc: 
+      condition: { value.is_instance: [str, path] }
+- type: deformed_image_path
+  _validation:
+    - path: []
+      doc: 
+      condition: { value.is_instance: [str, path] }
+- type: subset_size
+  _validation: 
+    - path: []
+      doc: "Size of the square subset window in pixels (default: 21)."
+      condition: { value.is_instance: [int] }
+- type: subset_step
+  _validation:
+    - path: []
+      doc: "Step size between subset centers in pixels (default: 10)."
+      condition: { value.is_instance: [int] }
+- type: correlation_criteria
+  _validation:
+    - path: []
+      doc: "Metric for matching subsets: `ZNSSD`, `NSSD` or `SSD` (default: `ZNSSD`)."
+      condition:
+        and:
+          - value.is_instance: [str]
+          - value.in: [ZNSSD, NSSD, SSD]
+- type: shape_function
+  _validation:
+    - path: []
+      doc: "Deformation model: e.g., `AFFINE`, `RIGID` (default: `AFFINE`)."
+      condition:
+        and:
+          - value.is_instance: [str]
+          - value.in: [AFFINE, RIGID]
+- type: interpolation_routine
+  _validation:
+    - path: []
+      doc: >
+        Interpolation method used on image intensity. `BICUBIC` is currently the 
+        only supported option.
+      condition:
+        and:
+          - value.is_instance: [str]
+          - value.in: [BICUBIC]
+- type: max_iterations
+  _validation:
+    - path: []
+      doc: "Maximum number of iterations allowed for subset optimization (default: 40)."
+      condition: { value.is_instance: [int] }
+- type: precision
+  _validation:
+    - path: []
+      doc: "Precision threshold for iterative optimization convergence (default: 0.001)."
+      condition: { value.is_instance: [float] }
+- type: threshold
+  _validation:
+    - path: []
+      doc: "Minimum correlation/cost coefficient value to be considered a matching subset (default: 0.9)."
+      condition: { value.is_instance: [float] }
+- type: bf_threshold
+  _validation:
+    - path: []
+      doc: >
+        Correlation threshold used in rigid bruteforce check for a subset to be 
+        considered a good match(default: 0.6).
+      condition: { value.is_instance: [float] }
+- type: max_displacement
+  _validation:
+    - path: []
+      doc: "Estimate for the Maximum displacement in any direction (in pixels) (default: 128)."
+      condition: { value.is_instance: [int] }
+- type: method
+  _validation:
+    - path: []
+      doc: >
+        Subset scanning method: `RG` for Reliability-Guided (best overall approach), 
+        `IMAGE_SCAN` for a standard scan across the image with no seeding (best 
+        performance with for subpixel displacements with high quality images), `FFT` 
+        for a multi-window FFT based approach (Good for large displacements)
+      condition:
+        and:
+          - value.is_instance: [str]
+          - value.in: [RG, IMAGE_SCAN, FFT]
+- type: fft_mad
+  _validation:
+    - path: []
+      doc: >
+        The option to smooth FFT windowing data by identifying and replacing outliers 
+        using a robust statistical method. For each subset, the function collects 
+        values from its neighboring subsets (within a 5x5 window, i.e., radius = 2), 
+        computes the median and Median Absolute Deviation (MAD), and determines whether 
+        the value at the current subset is an outlier. If it is, the value is replaced 
+        with the median of its neighbors. (default: False)
+      condition: { value.is_instance: [bool] }
+- type: fft_mad_scale
+  _validation:
+    - path: []
+      doc: >
+        An outlier is defined as a value whose deviation from the local median exceeds 
+        fft_mad_scale times the MAD. This value choses the scaling factor that determines 
+        the threshold for detecting outliers relative to the MAD.
+      condition: { value.is_instance: [bool] }
+- type: output_delimiter
+  _validation:
+    - path: []
+      doc: "Delimiter used in text output files (default: `,`)."
+      condition: { value.is_instance: [str] }
+- type: output_below_threshold
+  _validation:
+    - path: []
+      doc: >
+        If True, subset results with cost values that did not exceed the cost threshold 
+        will still be present in output (default: False).
+      condition: { value.is_instance: [bool] }
+- type: dic_seed
+  _validation:
+    - path: []
+      doc: >
+        Coordinates `[x, y]` of the seed point for Reliability-Guided (RG) scanning, 
+        default is centre of image.
+      condition:
+        and:
+          - value.is_instance: [list]
+          - value.length.equal_to: 2
+    - path: [{ "type": "list_value" }]
+      condition: { value.is_instance: [int] }
+- type: crop_dists
+  _validation:
+    - path: []
+      doc: Number of px to exclude from each edge of image (`left`, `right`, `top`, `bottom`).
+      condition:
+        and:
+          - value.is_instance: [dict]
+          - key.in: ["left", "right", "top", "bottom"]
+    - path: [{ "type": "map_value" }]
+      condition: { value.is_instance: [int] }
 
 # Types only used to transfer values between tasks
 - type: damask_post_processing_result
@@ -600,3 +801,4 @@
 - type: single_crystal_parameters
 - type: tensile_test
 - type: yield_point_criteria
+- type: input_deck

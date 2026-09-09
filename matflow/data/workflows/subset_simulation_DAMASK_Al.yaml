@@ -101,6 +101,8 @@ tasks:
   - schema: sample_direct_MC
     inputs:
       dimension: 120 # 20 grains * (3 seed point dimensions + 3 orientation dimensions)
+    groups:
+      - name: all
     repeats: 100 # num_samples
   - schema: system_analysis
   - schema: collate_results # [outer loop]
@@ -115,7 +117,9 @@ tasks:
           step: 1
   - schema: generate_next_state # [inner loop]
     inputs:
-      prop_std: 0.5
+      proposal:
+        type: norm
+        scale: 0.5
   - schema: system_analysis # [inner loop]
   - schema: increment_chain # [inner loop]
     groups:
