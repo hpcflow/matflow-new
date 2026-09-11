@@ -3036,3 +3036,19 @@
           from_files: [pyvale_dic_result_files]
           save_files: [pyvale_dic_result_files]
           script: <<script:pyvale/extract_dic_result.py>>
+
+- objective: damask_geom_file_from_dream3D
+  inputs:
+  - parameter: dream_3D_hdf5_file_path
+  outputs:
+  - parameter: geom_path
+  actions:
+  - script: <<script:damask/write_geom_from_dream_3D.py>>
+    script_exe: python_script
+    script_data_in: direct
+    script_data_out: direct
+    save_files: [damask_geom_file]
+    environments:
+    - scope:
+        type: any
+      environment: damask_parse_env

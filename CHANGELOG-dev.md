@@ -1,4 +1,57 @@
 
+<a name="v0.4.0a6"></a>
+## [v0.4.0a6](https://github.com/hpcflow/matflow/compare/v0.4.0a5...v0.4.0a6) - 2026.09.10
+
+### ✨ Features
+
+* bump hpcflow version
+* bump hpcflow version
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.4.0a5"></a>
+## [v0.4.0a5](https://github.com/hpcflow/matflow/compare/v0.4.0a4...v0.4.0a5) - 2026.08.21
+
+### 🐛 Bug Fixes
+
+* increase number of load incs in Mg DAMASK example
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.4.0a4"></a>
+## [v0.4.0a4](https://github.com/hpcflow/matflow/compare/v0.4.0a3...v0.4.0a4) - 2026.08.21
+
+### ✨ Features
+
+* bump hpcflow version
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.4.0a3"></a>
+## [v0.4.0a3](https://github.com/hpcflow/matflow/compare/v0.4.0a2...v0.4.0a3) - 2026.08.04
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
+<a name="v0.4.0a2"></a>
+## [v0.4.0a2](https://github.com/hpcflow/matflow/compare/v0.4.0a1...v0.4.0a2) - 2026.07.30
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.4.0a1"></a>
 ## [v0.4.0a1](https://github.com/hpcflow/matflow/compare/v0.4.0a0...v0.4.0a1) - 2026.06.17
 
