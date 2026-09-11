@@ -1,4 +1,27 @@
 
+<a name="v0.4.0a7"></a>
+## [v0.4.0a7](https://github.com/hpcflow/matflow/compare/v0.4.0a6...v0.4.0a7) - 2026.09.11
+
+### ✨ Features
+
+* add printed summary to collate results
+* initial delayed acceptance SuS DAMASK demo
+
+### 🐛 Bug Fixes
+
+* tests
+* SuS collate_results vanilla
+* improve numerical stability in SuS-DA, and note that temperature should have an appropriate scale
+* handle simulation failures in the coarse subchain in SuS-DA
+* num dimensions in DA SuS DAMASK demo
+* various improvements and implementation of a more-correct delayed-acceptance SuS variant
+* add multi-level delayed acceptance toy model subset simulation workflow
+
+### 👷 Build changes
+
+* update binary download links file [skip ci]
+
+
 <a name="v0.4.0a6"></a>
 ## [v0.4.0a6](https://github.com/hpcflow/matflow/compare/v0.4.0a5...v0.4.0a6) - 2026.09.10
 
