@@ -70,7 +70,19 @@ def generate_next_state(x, proposal, rng, chain_index):
         )
     }
 
-    if loop_idx["markov_chain_state"] == 0:
+    MC_loop_idx = loop_idx.get("markov_chain_state")
+    sub_chain_idx = loop_idx.get("sub_chain")
+    if MC_loop_idx is None:
+        new_rng = (
+            loop_idx.get("inner_markov_chain") == 0
+            and loop_idx.get("outer_markov_chain") == 0
+        )
+    elif sub_chain_idx is None:
+        new_rng = MC_loop_idx == 0
+    else:
+        new_rng = MC_loop_idx == 0 and sub_chain_idx == 0
+
+    if new_rng:
         # new chain, so want a new RNG:
         rng = _init_rng(chain_index, loop_idx)
 
