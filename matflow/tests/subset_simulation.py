@@ -1619,7 +1619,7 @@ def subset_simulation(
                 "debug_data"
             ]
 
-        if "subset_accepts" in (ret or {}):
+        if "subset_accept" in (ret or {}):
             subset_accepts.append(ret["subset_accept"])
 
         if "coarse_accept" in (ret or {}):
